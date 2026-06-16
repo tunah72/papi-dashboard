@@ -62,14 +62,14 @@ def to_pid(name):
 # 2) Bảng tra cứu trục
 # --------------------------------------------------------------------------------------
 DIM_INDICATOR = pd.DataFrame([
-    dict(code="D1", name_vi="Tham gia của người dân ở cấp cơ sở",      name_en="Participation",            short="Tham gia",         color="#1f77b4", sort=1, from_year=2011),
-    dict(code="D2", name_vi="Công khai, minh bạch trong ra quyết định", name_en="Transparency",             short="Minh bạch",        color="#ff7f0e", sort=2, from_year=2011),
-    dict(code="D3", name_vi="Trách nhiệm giải trình với người dân",     name_en="Vertical Accountability",  short="Giải trình",       color="#2ca02c", sort=3, from_year=2011),
-    dict(code="D4", name_vi="Kiểm soát tham nhũng trong khu vực công",  name_en="Control of Corruption",    short="Chống tham nhũng", color="#d62728", sort=4, from_year=2011),
-    dict(code="D5", name_vi="Thủ tục hành chính công",                  name_en="Public Admin. Procedures", short="Thủ tục HC",       color="#9467bd", sort=5, from_year=2011),
-    dict(code="D6", name_vi="Cung ứng dịch vụ công",                    name_en="Public Service Delivery",  short="Dịch vụ công",     color="#8c564b", sort=6, from_year=2011),
-    dict(code="D7", name_vi="Quản trị môi trường",                      name_en="Environmental Governance", short="Môi trường",       color="#17becf", sort=7, from_year=2018),
-    dict(code="D8", name_vi="Quản trị điện tử",                         name_en="E-Governance",             short="QT điện tử",       color="#bcbd22", sort=8, from_year=2018),
+    dict(code="D1", name_vi="Tham gia của người dân ở cấp cơ sở",      name_en="Participation",            short="Tham gia",         color="#4C6A9C", sort=1, from_year=2011),
+    dict(code="D2", name_vi="Công khai, minh bạch trong ra quyết định", name_en="Transparency",             short="Minh bạch",        color="#E0A23B", sort=2, from_year=2011),
+    dict(code="D3", name_vi="Trách nhiệm giải trình với người dân",     name_en="Vertical Accountability",  short="Giải trình",       color="#578145", sort=3, from_year=2011),
+    dict(code="D4", name_vi="Kiểm soát tham nhũng trong khu vực công",  name_en="Control of Corruption",    short="Chống tham nhũng", color="#B13507", sort=4, from_year=2011),
+    dict(code="D5", name_vi="Thủ tục hành chính công",                  name_en="Public Admin. Procedures", short="Thủ tục HC",       color="#6D4C9C", sort=5, from_year=2011),
+    dict(code="D6", name_vi="Cung ứng dịch vụ công",                    name_en="Public Service Delivery",  short="Dịch vụ công",     color="#2C8C99", sort=6, from_year=2011),
+    dict(code="D7", name_vi="Quản trị môi trường",                      name_en="Environmental Governance", short="Môi trường",       color="#8C6D3F", sort=7, from_year=2018),
+    dict(code="D8", name_vi="Quản trị điện tử",                         name_en="E-Governance",             short="QT điện tử",       color="#A63D57", sort=8, from_year=2018),
 ])
 
 # --------------------------------------------------------------------------------------

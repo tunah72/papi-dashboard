@@ -1,5 +1,5 @@
 # Nhật ký xử lý dữ liệu PAPI (build_dataset.py)
-_Chạy lúc: 2026-06-16 10:47_
+_Chạy lúc: 2026-06-16 11:59_
 
 ## Bước 1 — Đọc & parse theo nguồn canonical mỗi năm
 

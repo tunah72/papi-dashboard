@@ -28,10 +28,17 @@ Trạng thái: [XONG] / [ĐANG LÀM] / [CHƯA].
 
 ## Phase 3 — Dashboard Streamlit  [ĐANG LÀM]
 Kế hoạch: `docs/dashboard_plan.md`. Kiến trúc: `docs/architecture.md`. Phân công: `docs/work_assignment.md`.
+Convention thiết kế: `docs/design_convention.md`.
 - [x] Đợt nền F1-F6 (`docs/foundation_checklist.md`): cây `app/`, `total_papi_6dim`, geojson,
-      `app/lib/` (config, data, charts, filters), `app/main.py` multipage, trang Overview
+      `app/lib/` (config, data, charts, filters, layout), `app/main.py` multipage, trang Overview
+- [x] Nền tảng style OWID: theme `config.toml`, palette OWID (8 lĩnh vực + vùng + tier + thang),
+      `charts.py` bake style (tiêu đề+phụ đề+nguồn, nhãn cuối đường, heatmap, diverging bar),
+      `layout.py` helper (page_header, kpi_cards có sparkline, section_header, chart)
+- [x] Trang H1 `time_trend.py` hoàn thiện làm khuôn: bố cục lưới card, KPI, line tổng,
+      cột so sánh COVID, heatmap lĩnh vực×năm, diverging bar; tương tác click-to-drill (on_select),
+      hover, range năm; văn phong PAPI (tên lĩnh vực đầy đủ, nhãn tổng theo chế độ)
 - [x] Verify: pipeline pass, app boot (AppTest + server thật HTTP 200)
-- [ ] 4 trang phân tích (mỗi thành viên 1 vertical slice + 1 `src/analysis` module)
+- [ ] 3 trang phân tích còn lại (mỗi thành viên 1 vertical slice + 1 `src/analysis` module)
 - [ ] Storytelling: nhận xét trên mỗi biểu đồ
 
 ## Phase 4 — AI module human-in-the-loop  [ĐANG LÀM]
