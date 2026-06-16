@@ -10,6 +10,7 @@ import plotly.express as px
 import streamlit as st
 
 from lib import config, data, charts, filters, layout
+from analysis import trend
 
 d = data.load_data()
 L = config.DIM_LABELS
@@ -35,14 +36,7 @@ w = d["prov_year"]
 nat = d["national"]
 total_col = cfg["total_col"]
 
-tot = (
-    w[w.year >= cfg["year_min"]]
-    .groupby("year")[total_col]
-    .mean()
-    .reset_index()
-    .dropna()
-)
-tot = tot[tot.year.between(y0, y1)]
+tot = trend.total_by_year(w, total_col, y0, y1)
 dim_nat = nat[nat.code.isin(cfg["dims"]) & nat.year.between(y0, y1)]
 
 if tot.empty or dim_nat.empty:
@@ -50,17 +44,13 @@ if tot.empty or dim_nat.empty:
     st.stop()
 
 # Delta từng lĩnh vực (năm đầu → năm cuối trong khoảng đã lọc)
-delta = (
-    dim_nat.sort_values("year")
-    .groupby("code", observed=True)["mean_score"]
-    .agg(lambda s: s.iloc[-1] - s.iloc[0])
-)
+delta = trend.dim_deltas(nat, cfg["dims"], y0, y1)
 up, down = delta.idxmax(), delta.idxmin()
 
-latest, first = int(tot.year.max()), int(tot.year.min())
-v_latest = float(tot.loc[tot.year == latest, total_col].iloc[0])
-v_first = float(tot.loc[tot.year == first, total_col].iloc[0])
-net = v_latest - v_first
+# Tóm tắt chuỗi điểm tổng (hai đầu mút, mức ròng, đỉnh/đáy)
+s = trend.summarize_total(tot, total_col)
+first, latest = s["first"], s["latest"]
+v_first, v_latest, net = s["v_first"], s["v_latest"], s["net"]
 
 # Nhãn KPI tổng phụ thuộc chế độ (không gọi total_papi_6dim là "Tổng PAPI")
 if total_col == "total_papi_6dim":
@@ -88,19 +78,17 @@ col_left, col_right = st.columns([1.5, 1])
 
 with col_left:
     with st.container(border=True):
-        # Sinh tiêu đề từ dữ liệu
-        peak_year = int(tot.loc[tot[total_col].idxmax(), "year"])
-        peak_val = float(tot[total_col].max())
-        dip_val = float(tot[total_col].min())
+        # Sinh tiêu đề từ dữ liệu (peak/dip lấy từ summarize_total ở trên)
+        peak_year, peak_val, dip_val = s["peak_year"], s["peak_val"], s["dip_val"]
         if dip_val < min(v_first, v_latest) - 0.3:
-            trend = "giảm rồi hồi phục một phần"
+            trend_word = "giảm rồi hồi phục một phần"
         elif abs(net) < 1:
-            trend = "dao động trong biên độ hẹp"
+            trend_word = "dao động trong biên độ hẹp"
         else:
-            trend = "tăng" if net > 0 else "giảm"
+            trend_word = "tăng" if net > 0 else "giảm"
         not_peak = v_latest < peak_val - 0.05 and peak_year != latest
         title1 = (
-            f"Điểm tổng {trend}"
+            f"Điểm tổng {trend_word}"
             + (f", chưa vượt mức năm {peak_year}" if not_peak else "")
         )
         unit = (
@@ -131,27 +119,16 @@ with col_left:
 
 with col_right:
     with st.container(border=True):
-        # Biểu đồ cột nhóm COVID — D6 và D8
-        rows, dl = [], {}
+        # Biểu đồ cột nhóm COVID — D6 và D8 (so sánh trước/sau đại dịch)
+        cmp = trend.compare_periods(nat, ["D6", "D8"], [2018, 2019], [2021, 2022])
+        dl = {code: cmp[code]["diff"] for code in cmp}
+        rows = []
         for code in ["D6", "D8"]:
-            g = nat[nat.code == code]
-            before = g[g.year.isin([2018, 2019])].mean_score.mean()
-            after = g[g.year.isin([2021, 2022])].mean_score.mean()
-            dl[code] = (
-                (after - before)
-                if pd.notna(before) and pd.notna(after)
-                else float("nan")
-            )
             rows += [
-                {"Lĩnh vực": L[code], "Giai đoạn": "2018–2019", "Điểm": before},
-                {"Lĩnh vực": L[code], "Giai đoạn": "2021–2022", "Điểm": after},
+                {"Lĩnh vực": L[code], "Giai đoạn": "2018–2019", "Điểm": cmp[code]["before"]},
+                {"Lĩnh vực": L[code], "Giai đoạn": "2021–2022", "Điểm": cmp[code]["after"]},
             ]
         covid = pd.DataFrame(rows)
-
-        def _verb(x):
-            if pd.isna(x):
-                return "không đủ dữ liệu"
-            return "tăng" if x > 0.03 else ("giảm" if x < -0.03 else "gần như không đổi")
 
         # Kiểm tra khoảng năm có phủ 2018–2022 không
         has_covid_range = (y0 <= 2019) and (y1 >= 2021)
@@ -162,8 +139,8 @@ with col_right:
             )
         elif covid["Điểm"].notna().any():
             title3 = (
-                f"Quản trị điện tử {_verb(dl['D8'])}; "
-                f"cung ứng dịch vụ công {_verb(dl['D6'])} sau đại dịch"
+                f"Quản trị điện tử {trend.classify_change(dl['D8'])}; "
+                f"cung ứng dịch vụ công {trend.classify_change(dl['D6'])} sau đại dịch"
             )
             fig3 = px.bar(
                 covid, x="Lĩnh vực", y="Điểm", color="Giai đoạn", barmode="group",
@@ -264,7 +241,7 @@ if div_rows:
                     d0_val = sub.loc[sub.year == sub.year.min(), "mean_score"].values[0]
                     d1_val = sub.loc[sub.year == sub.year.max(), "mean_score"].values[0]
                     delta_chosen = d1_val - d0_val
-                    verb = "tăng" if delta_chosen > 0.03 else ("giảm" if delta_chosen < -0.03 else "gần như không đổi")
+                    verb = trend.classify_change(delta_chosen)
                     abs_delta = abs(delta_chosen)
                     # Tiêu đề data-driven
                     detail_title = f"{sel_name} {verb} {abs_delta:.2f} điểm, {first}–{latest}"
