@@ -1,0 +1,64 @@
+province_id,province_vi,province_en,region,region_id
+1,Hà Giang,Ha Giang,Trung du và miền núi phía Bắc,1
+2,Cao Bằng,Cao Bang,Trung du và miền núi phía Bắc,1
+3,Bắc Kạn,Bac Kan,Trung du và miền núi phía Bắc,1
+4,Tuyên Quang,Tuyen Quang,Trung du và miền núi phía Bắc,1
+5,Lào Cai,Lao Cai,Trung du và miền núi phía Bắc,1
+6,Yên Bái,Yen Bai,Trung du và miền núi phía Bắc,1
+7,Thái Nguyên,Thai Nguyen,Trung du và miền núi phía Bắc,1
+8,Lạng Sơn,Lang Son,Trung du và miền núi phía Bắc,1
+9,Bắc Giang,Bac Giang,Trung du và miền núi phía Bắc,1
+10,Phú Thọ,Phu Tho,Trung du và miền núi phía Bắc,1
+11,Điện Biên,Đien Bien,Trung du và miền núi phía Bắc,1
+12,Lai Châu,Lai Chau,Trung du và miền núi phía Bắc,1
+13,Sơn La,Son La,Trung du và miền núi phía Bắc,1
+14,Hòa Bình,Hoa Binh,Trung du và miền núi phía Bắc,1
+15,Hà Nội,Ha Noi,Đồng bằng sông Hồng,2
+16,Vĩnh Phúc,Vinh Phuc,Đồng bằng sông Hồng,2
+17,Bắc Ninh,Bac Ninh,Đồng bằng sông Hồng,2
+18,Quảng Ninh,Quang Ninh,Đồng bằng sông Hồng,2
+19,Hải Dương,Hai Duong,Đồng bằng sông Hồng,2
+20,Hải Phòng,Hai Phong,Đồng bằng sông Hồng,2
+21,Hưng Yên,Hung Yen,Đồng bằng sông Hồng,2
+22,Thái Bình,Thai Binh,Đồng bằng sông Hồng,2
+23,Hà Nam,Ha Nam,Đồng bằng sông Hồng,2
+24,Nam Định,Nam Đinh,Đồng bằng sông Hồng,2
+25,Ninh Bình,Ninh Binh,Đồng bằng sông Hồng,2
+26,Thanh Hóa,Thanh Hoa,Bắc Trung Bộ và Duyên hải miền Trung,3
+27,Nghệ An,Nghe An,Bắc Trung Bộ và Duyên hải miền Trung,3
+28,Hà Tĩnh,Ha Tinh,Bắc Trung Bộ và Duyên hải miền Trung,3
+29,Quảng Bình,Quang Binh,Bắc Trung Bộ và Duyên hải miền Trung,3
+30,Quảng Trị,Quang Tri,Bắc Trung Bộ và Duyên hải miền Trung,3
+31,Thừa Thiên Huế,Thua Thien Hue,Bắc Trung Bộ và Duyên hải miền Trung,3
+32,Đà Nẵng,Đa Nang,Bắc Trung Bộ và Duyên hải miền Trung,3
+33,Quảng Nam,Quang Nam,Bắc Trung Bộ và Duyên hải miền Trung,3
+34,Quảng Ngãi,Quang Ngai,Bắc Trung Bộ và Duyên hải miền Trung,3
+35,Bình Định,Binh Đinh,Bắc Trung Bộ và Duyên hải miền Trung,3
+36,Phú Yên,Phu Yen,Bắc Trung Bộ và Duyên hải miền Trung,3
+37,Khánh Hòa,Khanh Hoa,Bắc Trung Bộ và Duyên hải miền Trung,3
+38,Ninh Thuận,Ninh Thuan,Bắc Trung Bộ và Duyên hải miền Trung,3
+39,Bình Thuận,Binh Thuan,Bắc Trung Bộ và Duyên hải miền Trung,3
+40,Kon Tum,Kon Tum,Tây Nguyên,4
+41,Gia Lai,Gia Lai,Tây Nguyên,4
+42,Đắk Lắk,Đak Lak,Tây Nguyên,4
+43,Đắk Nông,Đak Nong,Tây Nguyên,4
+44,Lâm Đồng,Lam Đong,Tây Nguyên,4
+45,Bình Phước,Binh Phuoc,Đông Nam Bộ,5
+46,Tây Ninh,Tay Ninh,Đông Nam Bộ,5
+47,Bình Dương,Binh Duong,Đông Nam Bộ,5
+48,Đồng Nai,Đong Nai,Đông Nam Bộ,5
+49,Bà Rịa - Vũng Tàu,Ba Ria - Vung Tau,Đông Nam Bộ,5
+50,Hồ Chí Minh,Ho Chi Minh,Đông Nam Bộ,5
+51,Long An,Long An,Đồng bằng sông Cửu Long,6
+52,Tiền Giang,Tien Giang,Đồng bằng sông Cửu Long,6
+53,Bến Tre,Ben Tre,Đồng bằng sông Cửu Long,6
+54,Trà Vinh,Tra Vinh,Đồng bằng sông Cửu Long,6
+55,Vĩnh Long,Vinh Long,Đồng bằng sông Cửu Long,6
+56,Đồng Tháp,Đong Thap,Đồng bằng sông Cửu Long,6
+57,An Giang,An Giang,Đồng bằng sông Cửu Long,6
+58,Kiên Giang,Kien Giang,Đồng bằng sông Cửu Long,6
+59,Cần Thơ,Can Tho,Đồng bằng sông Cửu Long,6
+60,Hậu Giang,Hau Giang,Đồng bằng sông Cửu Long,6
+61,Sóc Trăng,Soc Trang,Đồng bằng sông Cửu Long,6
+62,Bạc Liêu,Bac Lieu,Đồng bằng sông Cửu Long,6
+63,Cà Mau,Ca Mau,Đồng bằng sông Cửu Long,6

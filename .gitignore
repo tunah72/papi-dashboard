@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Virtual environment
+.venv/
+venv/
+
+# Notebook
+.ipynb_checkpoints/
+
+# macOS
+.DS_Store
+
+# Excel lock files
+~$*
+
+# Streamlit secrets (API key của LLM)
+.streamlit/secrets.toml
+
+# Logs sinh ra lúc chạy AI module (giữ thư mục, bỏ nội dung)
+logs/*
+!logs/.gitkeep

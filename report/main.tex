@@ -1,0 +1,82 @@
+\documentclass[12pt]{article}
+
+\usepackage{hcmus-report-template}
+
+% Disable indentation on new paragraphs
+\setlength{\parindent}{0pt}
+\setlength{\parskip}{2pt plus 1pt minus 1pt}
+
+% Compact report spacing
+\setstretch{1.15}
+\raggedbottom
+
+% Reduce float/list whitespace while keeping figures readable.
+\setlist{topsep=2pt, itemsep=1pt, parsep=0pt, partopsep=0pt}
+\captionsetup{font=small, skip=4pt}
+\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
+\setlength{\floatsep}{8pt plus 2pt minus 2pt}
+\setlength{\intextsep}{8pt plus 2pt minus 2pt}
+\setlength{\abovecaptionskip}{4pt}
+\setlength{\belowcaptionskip}{0pt}
+\renewcommand{\topfraction}{0.92}
+\renewcommand{\bottomfraction}{0.85}
+\renewcommand{\textfraction}{0.08}
+\renewcommand{\floatpagefraction}{0.82}
+
+% Using bibtex
+%\usepackage{biblatex}
+% Graphic path: tìm hình trong thư mục img/ của báo cáo và docs/img/ của repo
+\graphicspath{{img/}}
+
+% To use Times font family, uncomment this row
+% \usepackage{mathptmx}
+
+% To use roman section / subsection, uncomment these rows
+% \renewcommand{\thesection}{\Roman{section}}
+% \renewcommand{\thesubsection}{\thesection.\Roman{subsection}}
+
+% Define course name, report name and report title.
+\newcommand{\coursename}{Trực quan hóa Dữ liệu}
+\newcommand{\reportname}{}
+\newcommand{\reporttitle}{BÁO CÁO ĐỒ ÁN CUỐI KỲ}
+
+\newcommand{\studentname}{23120199 - Lê Xuân Trí \\ 23120208 - Dương Tuấn Anh \\ 23122038 - Nguyễn Trần Trung Kiên \\ 23122045 - Lê Đức Phúc}
+\newcommand{\teachername}{Thầy Bùi Tiến Lên \\ Thầy Trần Huy Bân \\ Thầy Võ Nhật Tân}
+
+% Header
+\lhead{\reporttitle}
+\rhead{Trường Đại học Khoa học Tự nhiên - ĐHQG HCM\\
+\coursename
+}
+
+% Footer
+
+
+% ============ DOCUMENT ============
+\begin{document}
+
+\pagenumbering{roman}
+\input{content/title.tex}
+
+\tableofcontents
+\pagebreak
+\listoftables
+\pagebreak
+\listoffigures
+\pagebreak
+
+\pagenumbering{arabic}
+\setcounter{page}{1}
+
+% ============ NỘI DUNG BÁO CÁO ============
+
+
+
+% ============ THAM KHẢO & PHỤ LỤC ============
+\input{ref/ref.tex}
+\pagebreak
+\input{appendix/appendix.tex}
+
+
+
+\end{document}
