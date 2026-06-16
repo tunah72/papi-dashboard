@@ -28,7 +28,7 @@ request = st.text_area("Yêu cầu phân tích (ngôn ngữ tự nhiên)", value
 if st.button("Sinh code (AI đề xuất)", type="primary"):
     try:
         with st.spinner("Gemini đang sinh code..."):
-            out = api_ai.generate(request, d)
+            out = api_ai.generate(request, d, context=st.session_state.get("dash_context"))
         st.session_state["ai_code"] = out["code"]
         st.session_state["ai_explanation"] = out["explanation"]
         st.session_state["ai_request"] = request
@@ -49,6 +49,7 @@ if "ai_code" in st.session_state:
             "request": st.session_state.get("ai_request", ""),
             "code_ai": st.session_state["ai_code"], "code_run": edited,
             "explanation": st.session_state.get("ai_explanation", ""),
+            "context": st.session_state.get("dash_context"),
             "error": res["error"],
             "has_result": res["result"] is not None, "has_fig": res["fig"] is not None,
         })
