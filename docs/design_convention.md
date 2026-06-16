@@ -37,19 +37,28 @@ layout.chart(charts.X(...), note_text="...") # biểu đồ đã style + nhận 
 ... lặp lại theo số section ...
 ```
 
-## 5. Hợp đồng cho thành viên
-Một trang phân tích cơ bản chỉ cần:
-1. `data.load_data()` và chọn filter qua `filters.*`.
-2. Với mỗi chủ đề: `layout.section_header(...)` rồi `layout.chart(charts.<loại>(df, title=, subtitle=, source=), note_text=)`.
-3. Viết tiêu đề (kết luận), phụ đề, và nhận xét.
+## 5. Hợp đồng cho thành viên — design system chung, composition tự do
 
-Thành viên **được tự thêm biểu đồ** phù hợp trang của mình: ưu tiên dùng lại `charts.*`; nếu cần loại
-mới thì dựng trong page (one-off) hoặc thêm hàm mới vào `charts.py` (chỉ thêm, không sửa hàm có sẵn).
-Mọi biểu đồ tự dựng **phải gọi** `charts.apply_owid(fig, title=, subtitle=, source=)` để giữ đồng bộ
-style OWID.
+Nguyên tắc: **chia sẻ design system, không chia sẻ catalog biểu đồ.** Bốn trang trông như một sản
+phẩm nhờ cùng style + token + khung trang, không phải nhờ dùng chung các hàm vẽ. Phần lớn biểu đồ
+gắn chặt với câu hỏi của từng hướng nên khó (và không cần) tái dùng giữa các trang.
 
-Không sửa: chữ ký hàm có sẵn trong `app/lib/`, `app/main.py`, theme `config.toml`, màu trong
-`dim_indicator.csv` (tránh vỡ trang của người khác).
+**Bắt buộc dùng chung (giữ đồng bộ):**
+- `config`: palette màu (lĩnh vực, vùng, tier, `SEQ_SCALE`/`DIV_SCALE`, `ACCENT`), `DIM_LABELS`,
+  `scale_config`. Không tự đặt màu ngoài palette.
+- `charts.apply_owid(fig, title=, subtitle=, source=)`: **mọi biểu đồ phải bọc qua đây**.
+- `layout`: `page_header`, `kpi_cards`, `section_header`, `chart` — khung trang dùng chung.
+- Theme `.streamlit/config.toml`; `data.load_data` để đọc dữ liệu.
+
+**Page tự do hoàn toàn:** chọn loại biểu đồ, bố cục/lưới, filter (loại nào, đặt đâu), tương tác
+(drill, hover, selection). Tự viết hàm vẽ inline trong page, hoặc thêm hàm mới vào `charts.py`
+(chỉ thêm ở cuối, không sửa hàm có sẵn). `charts.py` (line, bar, radar, heatmap, diverging…) là
+**menu primitive tuỳ chọn** — dùng nếu hợp, không thì tự dựng.
+
+**Hai ràng buộc duy nhất:**
+1. Mọi biểu đồ gọi `charts.apply_owid(...)` và lấy màu từ `config`.
+2. Không sửa chữ ký hàm có sẵn trong `app/lib/`, `app/main.py`, theme `config.toml`, palette
+   `dim_indicator.csv` (tránh vỡ trang của người khác).
 
 ## 6. Quy ước nội dung và văn phong
 - **Title trang mô tả nội dung cụ thể** (chủ đề + khoảng thời gian), không chung chung. Nhãn menu

@@ -80,16 +80,17 @@ Chi tiết câu hỏi và ý nghĩa từng hướng: `docs/dashboard_plan.md`.
 5. Có ít nhất một tương tác có ý nghĩa (filter hoặc drill).
 
 ## 5. Contract và quy ước git
-- Contract: schema `fact_papi_long`/`agg_province_year`, chữ ký hàm `app/lib/`, interface plugin —
-  chốt ở đợt nền, không đổi khi đang làm song song.
-- Mỗi người một branch `feat/<hướng>`.
-- **Được tự thêm biểu đồ** phù hợp trang của mình. Ưu tiên dùng lại `charts.*`; nếu cần loại mới thì
-  dựng ngay trong page của mình (one-off) hoặc thêm một **hàm mới** vào `charts.py` (chỉ thêm, không
-  sửa hàm có sẵn, đặt ở cuối file để giảm xung đột merge). Mọi biểu đồ tự dựng **phải gọi**
-  `charts.apply_owid(fig, title=, subtitle=, source=)` để giữ đồng bộ style OWID.
-- **Không sửa** chữ ký hàm có sẵn trong `app/lib/`, `app/main.py`, theme `config.toml`,
-  `dim_indicator.csv` (tránh vỡ trang của người khác).
-- Mọi page chỉ đọc dữ liệu đã xử lý, không truy cập raw. Không commit `secrets.toml`.
+
+**Chia sẻ design system, không chia sẻ catalog biểu đồ.** Thứ giữ bốn trang đồng bộ là style + token +
+khung trang, không phải các hàm vẽ.
+
+- **Bắt buộc dùng chung:** palette trong `config`, `charts.apply_owid(...)`, khung `layout`
+  (`page_header`/`kpi_cards`/`section_header`/`chart`), theme `config.toml`, `data.load_data`.
+- **Page tự do** chọn biểu đồ, bố cục, filter, tương tác. `charts.py` là **menu primitive tuỳ chọn**;
+  tự viết hàm vẽ inline trong page hoặc thêm hàm mới vào `charts.py` (chỉ thêm ở cuối, không sửa hàm
+  có sẵn). Mọi biểu đồ tự dựng **phải gọi** `charts.apply_owid(...)` và lấy màu từ `config`.
+- **Không sửa** chữ ký hàm có sẵn trong `app/lib/`, `app/main.py`, theme `config.toml`, `dim_indicator.csv`.
+- Mỗi người một branch `feat/<hướng>`. Page chỉ đọc dữ liệu đã xử lý, không truy cập raw. Không commit `secrets.toml`.
 
 ## 6. Tính độc lập
 Các vertical slice không gọi lẫn nhau nên mỗi người chạy/test page của mình ngay sau đợt nền; một
