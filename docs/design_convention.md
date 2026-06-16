@@ -37,16 +37,19 @@ layout.chart(charts.X(...), note_text="...") # biểu đồ đã style + nhận 
 ... lặp lại theo số section ...
 ```
 
-## 5. Hợp đồng cho thành viên (chỉ thêm biểu đồ)
-Một trang phân tích chỉ cần:
+## 5. Hợp đồng cho thành viên
+Một trang phân tích cơ bản chỉ cần:
 1. `data.load_data()` và chọn filter qua `filters.*`.
 2. Với mỗi chủ đề: `layout.section_header(...)` rồi `layout.chart(charts.<loại>(df, title=, subtitle=, source=), note_text=)`.
 3. Viết tiêu đề (kết luận), phụ đề, và nhận xét.
 
-Không chạm: `app/lib/` (config, charts, layout, filters), `app/main.py`, theme `config.toml`,
-màu trong `dim_indicator.csv`. Cần một loại biểu đồ mới → đề xuất thêm vào `charts.py`, không
-tự style trong trang. Biểu đồ tuỳ biến (vd grouped bar) vẫn phải gọi `charts.apply_owid(fig, ...)`
-để giữ đồng bộ.
+Thành viên **được tự thêm biểu đồ** phù hợp trang của mình: ưu tiên dùng lại `charts.*`; nếu cần loại
+mới thì dựng trong page (one-off) hoặc thêm hàm mới vào `charts.py` (chỉ thêm, không sửa hàm có sẵn).
+Mọi biểu đồ tự dựng **phải gọi** `charts.apply_owid(fig, title=, subtitle=, source=)` để giữ đồng bộ
+style OWID.
+
+Không sửa: chữ ký hàm có sẵn trong `app/lib/`, `app/main.py`, theme `config.toml`, màu trong
+`dim_indicator.csv` (tránh vỡ trang của người khác).
 
 ## 6. Quy ước nội dung và văn phong
 - **Title trang mô tả nội dung cụ thể** (chủ đề + khoảng thời gian), không chung chung. Nhãn menu
