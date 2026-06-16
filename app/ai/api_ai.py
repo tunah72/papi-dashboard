@@ -8,7 +8,7 @@ import re
 
 from ai import api_exec
 
-DEFAULT_MODEL = "gemini-2.0-flash"
+DEFAULT_MODEL = "gemini-2.5-flash"
 
 _SYSTEM = """Bạn là trợ lý phân tích dữ liệu PAPI. Hãy sinh code Python để trả lời yêu cầu của người dùng.
 
