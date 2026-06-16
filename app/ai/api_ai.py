@@ -36,18 +36,46 @@ def build_schema_context(data) -> str:
 
 
 def _parse_response(text: str) -> dict:
-    """Tách JSON {code, explanation} từ phản hồi của LLM, chịu được code fence."""
-    # bỏ fence ```json ... ``` nếu có
-    m = re.search(r"```(?:json)?\s*(\{.*\})\s*```", text, re.DOTALL)
-    raw = m.group(1) if m else text
+    """Tách JSON {code, explanation} từ phản hồi của LLM.
+
+    Thử theo thứ tự ưu tiên — KHÔNG BAO GIỜ ném ngoại lệ:
+    (a) JSON sạch → json.loads trực tiếp.
+    (b) Fence ```json ... ``` → bóc nội dung rồi json.loads.
+    (c) Fence ```python ... ``` → coi là code, explanation="".
+    (d) Không khớp gì → code = text.strip(), explanation="".
+
+    Luôn trả {"code": str, "explanation": str}; "code" không bao giờ là None.
+    """
+    # (a) Thử parse JSON sạch trước
+    stripped = text.strip()
     try:
-        obj = json.loads(raw)
-        return {"code": obj.get("code", ""), "explanation": obj.get("explanation", "")}
-    except json.JSONDecodeError:
-        # fallback: lấy block ```python ... ``` làm code
-        cm = re.search(r"```(?:python)?\s*(.*?)\s*```", text, re.DOTALL)
-        code = cm.group(1) if cm else text
-        return {"code": code, "explanation": ""}
+        obj = json.loads(stripped)
+        return {
+            "code": str(obj.get("code") or ""),
+            "explanation": str(obj.get("explanation") or ""),
+        }
+    except (json.JSONDecodeError, ValueError, TypeError):
+        pass
+
+    # (b) Thử bóc fence ```json ... ```
+    m_json = re.search(r"```json\s*(\{.*?\})\s*```", text, re.DOTALL)
+    if m_json:
+        try:
+            obj = json.loads(m_json.group(1))
+            return {
+                "code": str(obj.get("code") or ""),
+                "explanation": str(obj.get("explanation") or ""),
+            }
+        except (json.JSONDecodeError, ValueError, TypeError):
+            pass
+
+    # (c) Thử bóc fence ```python ... ``` → lấy làm code
+    m_py = re.search(r"```python\s*(.*?)\s*```", text, re.DOTALL)
+    if m_py:
+        return {"code": m_py.group(1).strip(), "explanation": ""}
+
+    # (d) Không khớp gì → toàn bộ text là code
+    return {"code": stripped, "explanation": ""}
 
 
 def generate(request: str, data: dict, model: str = DEFAULT_MODEL) -> dict:
