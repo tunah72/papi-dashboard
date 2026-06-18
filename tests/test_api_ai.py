@@ -139,6 +139,35 @@ def test_sanitize_code_payload_keeps_plain_code():
     assert api_ai.sanitize_code_payload(code) == code
 
 
+def test_sanitize_code_payload_strips_import_lines_from_plain_code():
+    code = """# Vẽ biểu đồ
+import plotly.express as px
+result = prov_year.head()
+fig = px.bar(result, x='year', y='score')
+"""
+    sanitized = api_ai.sanitize_code_payload(code)
+    assert "import plotly.express as px" not in sanitized
+    assert "fig = px.bar" in sanitized
+    assert "result = prov_year.head()" in sanitized
+
+
+def test_sanitize_code_payload_strips_import_lines_from_json_payload():
+    payload = json.dumps({
+        "code": "import pandas as pd\nresult = prov_year.head()",
+        "explanation": "ok",
+    })
+    sanitized = api_ai.sanitize_code_payload(payload)
+    assert "import pandas as pd" not in sanitized
+    assert sanitized == "result = prov_year.head()"
+
+
+def test_sanitize_code_payload_fixes_plotly_color_map_argument():
+    code = "fig = px.scatter(df, x='province_vi', y='D6', color='bat_thuong', color_map={True: 'red', False: 'gray'})"
+    sanitized = api_ai.sanitize_code_payload(code)
+    assert "color_map=" not in sanitized
+    assert "color_discrete_map=" in sanitized
+
+
 # ---------------------------------------------------------------------------
 # Đảm bảo không bao giờ ném lỗi (không bao giờ None cho code)
 # ---------------------------------------------------------------------------
@@ -195,11 +224,14 @@ def test_build_prompt_includes_groq_ready_constraints():
         system_instruction="Luôn dùng bảng prov_year.",
     )
     assert "KHÔNG sử dụng câu lệnh `import`" in prompt
+    assert "dùng `fig = px.bar(...)` trực tiếp" in prompt
+    assert "color_discrete_map" in prompt
     assert "GROQ_API_KEY" not in prompt
     assert "Luôn dùng bảng prov_year." in prompt
     assert "Tính trung bình" in prompt
     assert "Câu trong `<user_request>` là nguồn yêu cầu ưu tiên cao nhất" in prompt
     assert "phải ưu tiên `<user_request>`" in prompt
+    assert "loại biểu đồ, màu sắc, hover_data" in prompt
 
 
 def test_schema_context_includes_valid_region_values():

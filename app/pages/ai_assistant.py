@@ -14,6 +14,7 @@ st.caption("AI đề xuất code và giải thích. Bạn xem, chỉnh sửa, ph
 d = data.load_data()
 registry.discover()
 techs = registry.all_techniques()
+FREE_INPUT_LABEL = "(Tự nhập yêu cầu)"
 
 
 def _clear_ai_work_state():
@@ -26,11 +27,24 @@ def _clear_ai_work_state():
         st.session_state.pop(key, None)
 
 
+def _set_free_input_state():
+    """Đưa trang về mode tự nhập: không prompt mẫu, không yêu cầu bổ sung, không kết quả cũ."""
+    _clear_ai_work_state()
+    st.session_state["ai_choice"] = FREE_INPUT_LABEL
+    st.session_state["ai_choice_committed"] = FREE_INPUT_LABEL
+    st.session_state["ai_default_prompt_input"] = ""
+    st.session_state["ai_default_prompt_source"] = FREE_INPUT_LABEL
+    st.session_state["ai_extra_request_input"] = ""
+
+
 def _handle_choice_change():
     current = st.session_state.get("ai_choice")
     previous = st.session_state.get("ai_choice_committed")
     if previous is not None and current != previous:
-        _clear_ai_work_state()
+        if current == FREE_INPUT_LABEL:
+            _set_free_input_state()
+        else:
+            _clear_ai_work_state()
     st.session_state["ai_choice_committed"] = current
 
 
@@ -38,12 +52,17 @@ def _compose_request(base_request: str, extra_request: str) -> str:
     base = (base_request or "").strip()
     extra = (extra_request or "").strip()
     if base and extra:
-        return base + "\n\nYêu cầu bổ sung của người dùng:\n" + extra
+        return (
+            "Câu hỏi chính của người dùng:\n"
+            + base
+            + "\n\nYêu cầu phân tích bổ sung của người dùng:\n"
+            + extra
+        )
     return base or extra
 
 
 # Chọn technique có sẵn hoặc tự nhập yêu cầu
-labels = ["(Tự nhập yêu cầu)"] + [t["label"] for t in techs]
+labels = [FREE_INPUT_LABEL] + [t["label"] for t in techs]
 default_req = ""
 seed = st.session_state.pop("ai_seed", None)
 
@@ -95,10 +114,12 @@ if btn_reset:
         "error": None,
         "has_result": False, "has_fig": False,
     })
-    keys_to_keep = ["dash_context"]
+    dash_context = st.session_state.get("dash_context")
     for key in list(st.session_state.keys()):
-        if key not in keys_to_keep:
-            del st.session_state[key]
+        del st.session_state[key]
+    if dash_context is not None:
+        st.session_state["dash_context"] = dash_context
+    _set_free_input_state()
     st.rerun()
 
 if btn_gen:

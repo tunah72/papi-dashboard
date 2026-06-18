@@ -18,6 +18,8 @@ Nhiệm vụ của bạn là sinh ra mã Python an toàn, chính xác để gi�
 
 <constraints>
 - KHÔNG sử dụng câu lệnh `import`. Chỉ sử dụng các thư viện và biến đã được cung cấp sẵn trong môi trường: {names}.
+- Các tên `pd`, `np`, `px`, `go`, `stats`, `KMeans`, `StandardScaler`, `silhouette_score` đã có sẵn. Ví dụ: dùng `fig = px.bar(...)` trực tiếp, KHÔNG viết `import plotly.express as px`.
+- Khi chỉ định màu trong Plotly Express, dùng đúng tham số `color_discrete_map` hoặc `color_discrete_sequence`; KHÔNG dùng tham số không tồn tại như `color_map`.
 - Các DataFrame có sẵn được cung cấp cấu trúc trong phần `<schema>`. Bạn chỉ được ĐỌC dữ liệu, tuyệt đối KHÔNG SỬA dữ liệu gốc.
 - BẮT BUỘC gán bảng kết quả (pandas DataFrame hoặc Series) vào biến có tên là `result`. 
 - Nếu có yêu cầu vẽ biểu đồ, BẮT BUỘC gán đối tượng plotly figure vào biến có tên là `fig`.
@@ -28,7 +30,7 @@ Nhiệm vụ của bạn là sinh ra mã Python an toàn, chính xác để gi�
 - Không đọc/ghi file, không gọi mạng, không dùng `open`, `exec`, `eval`, `__import__`, `input`.
 - Không được tự bịa giá trị danh mục như `region`, `tier`, `code`. Chỉ lọc bằng các giá trị có trong schema/dữ liệu. Nếu cần kiểm tra danh mục trong code, dùng `.unique()` rồi lọc theo giá trị thật.
 - Sau mọi bước lọc, nếu DataFrame rỗng hoặc không đủ số dòng cho thuật toán, phải gán `result` là DataFrame giải thích lý do và gán `fig = None` thay vì để code crash.
-- Câu trong `<user_request>` là nguồn yêu cầu ưu tiên cao nhất. Nếu `<plugin_instruction>` có tham số mặc định nhưng người dùng sửa câu hỏi để chọn lĩnh vực, năm, chỉ tiêu, số cụm, trục biểu đồ hoặc phương pháp khác, hãy làm theo `<user_request>`.
+- Câu trong `<user_request>` là nguồn yêu cầu ưu tiên cao nhất. Nếu `<plugin_instruction>` có tham số mặc định nhưng người dùng sửa câu hỏi để chọn lĩnh vực, năm, chỉ tiêu, số cụm, trục biểu đồ, loại biểu đồ, màu sắc, hover_data, nhãn trục, tiêu đề hoặc phương pháp khác, hãy làm theo `<user_request>`.
 </constraints>
 
 <output_format>
@@ -130,12 +132,39 @@ def sanitize_code_payload(text: str) -> str:
         return ""
     looks_like_payload = stripped.startswith("{") and '"code"' in stripped
     if not looks_like_payload:
-        return text
+        return normalize_generated_code(text)
     parsed = _parse_response(stripped)
     code = parsed.get("code", "")
     if code and code != stripped:
-        return code
-    return text
+        return normalize_generated_code(code)
+    return normalize_generated_code(text)
+
+
+def normalize_generated_code(code: str) -> str:
+    """Chuẩn hóa các lỗi LLM hay sinh trước khi hiển thị/chạy code."""
+    code = strip_import_lines(code)
+    # Plotly Express không có tham số color_map; LLM hay nhầm với color_discrete_map.
+    return re.sub(r"(?<![A-Za-z0-9_])color_map\s*=", "color_discrete_map=", code)
+
+
+def strip_import_lines(code: str) -> str:
+    """Loại các dòng import khỏi code AI vì sandbox đã cung cấp sẵn thư viện.
+
+    LLM thỉnh thoảng sinh `import plotly.express as px` dù prompt cấm. Nếu giữ
+    lại, executor sẽ lỗi vì `__import__` không có trong safe builtins. Việc bỏ
+    import giúp các câu hỏi tự nhập ngoài plugin vẫn chạy được khi code còn lại
+    chỉ dùng các tên đã được cấp sẵn như `pd`, `px`, `KMeans`.
+    """
+    if not isinstance(code, str):
+        return ""
+
+    kept = []
+    for line in code.splitlines():
+        stripped = line.strip()
+        if stripped.startswith("import ") or stripped.startswith("from "):
+            continue
+        kept.append(line)
+    return "\n".join(kept).strip()
 
 
 def _format_context_value(value):
@@ -222,7 +251,7 @@ def _build_prompt(request: str, data: dict, context=None, system_instruction=Non
     if system_instruction:
         prompt += "<plugin_instruction>\nĐây là khung chuyên môn/default cho kỹ thuật đang chọn. "
         prompt += "Chỉ dùng các tham số mặc định trong khung này khi `<user_request>` không nêu lựa chọn khác. "
-        prompt += "Nếu `<user_request>` đã sửa lĩnh vực, năm, biến điểm, số cụm, trục biểu đồ hoặc phương pháp, phải ưu tiên `<user_request>`.\n"
+        prompt += "Nếu `<user_request>` đã sửa lĩnh vực, năm, biến điểm, số cụm, trục biểu đồ, loại biểu đồ, màu sắc, hover_data, nhãn trục, tiêu đề hoặc phương pháp, phải ưu tiên `<user_request>`.\n"
         prompt += system_instruction + "\n</plugin_instruction>\n\n"
 
     # 5. Thêm Yêu cầu của người dùng
