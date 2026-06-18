@@ -8,7 +8,7 @@ import re
 
 from ai import api_exec
 
-DEFAULT_MODEL = "gemini-2.0-flash"
+DEFAULT_MODEL = "gemini-2.5-flash"
 
 _SYSTEM = """Bạn là trợ lý phân tích dữ liệu PAPI. Hãy sinh code Python để trả lời yêu cầu của người dùng.
 
@@ -36,23 +36,88 @@ def build_schema_context(data) -> str:
 
 
 def _parse_response(text: str) -> dict:
-    """Tách JSON {code, explanation} từ phản hồi của LLM, chịu được code fence."""
-    # bỏ fence ```json ... ``` nếu có
-    m = re.search(r"```(?:json)?\s*(\{.*\})\s*```", text, re.DOTALL)
-    raw = m.group(1) if m else text
+    """Tách JSON {code, explanation} từ phản hồi của LLM.
+
+    Thử theo thứ tự ưu tiên — KHÔNG BAO GIỜ ném ngoại lệ:
+    (a) JSON sạch → json.loads trực tiếp.
+    (b) Fence ```json ... ``` → bóc nội dung rồi json.loads.
+    (c) Fence ```python ... ``` → coi là code, explanation="".
+    (d) Không khớp gì → code = text.strip(), explanation="".
+
+    Luôn trả {"code": str, "explanation": str}; "code" không bao giờ là None.
+    """
+    # (a) Thử parse JSON sạch trước
+    stripped = text.strip()
     try:
-        obj = json.loads(raw)
-        return {"code": obj.get("code", ""), "explanation": obj.get("explanation", "")}
-    except json.JSONDecodeError:
-        # fallback: lấy block ```python ... ``` làm code
-        cm = re.search(r"```(?:python)?\s*(.*?)\s*```", text, re.DOTALL)
-        code = cm.group(1) if cm else text
-        return {"code": code, "explanation": ""}
+        obj = json.loads(stripped)
+        return {
+            "code": str(obj.get("code") or ""),
+            "explanation": str(obj.get("explanation") or ""),
+        }
+    except (json.JSONDecodeError, ValueError, TypeError):
+        pass
+
+    # (b) Thử bóc fence ```json ... ```
+    m_json = re.search(r"```json\s*(\{.*?\})\s*```", text, re.DOTALL)
+    if m_json:
+        try:
+            obj = json.loads(m_json.group(1))
+            return {
+                "code": str(obj.get("code") or ""),
+                "explanation": str(obj.get("explanation") or ""),
+            }
+        except (json.JSONDecodeError, ValueError, TypeError):
+            pass
+
+    # (c) Thử bóc fence ```python ... ``` → lấy làm code
+    m_py = re.search(r"```python\s*(.*?)\s*```", text, re.DOTALL)
+    if m_py:
+        return {"code": m_py.group(1).strip(), "explanation": ""}
+
+    # (d) Không khớp gì → toàn bộ text là code
+    return {"code": stripped, "explanation": ""}
 
 
-def generate(request: str, data: dict, model: str = DEFAULT_MODEL) -> dict:
+def _format_context(context) -> str:
+    """Định dạng ngữ cảnh dashboard thành chuỗi đưa vào prompt.
+
+    Nếu context là None hoặc rỗng → trả "".
+    Ngược lại trả khối nhiều dòng bắt đầu bằng "NGỮ CẢNH DASHBOARD (người dùng đang xem):".
+    try/except bảo vệ từng dòng — thiếu khóa thì bỏ qua dòng đó.
+    """
+    if not context:
+        return ""
+    lines = ["NGỮ CẢNH DASHBOARD (người dùng đang xem):"]
+    try:
+        lines.append(f"- Trang: {context['page']}")
+    except (KeyError, TypeError):
+        pass
+    try:
+        lines.append(f"- Phạm vi so sánh: {context['scale_mode']}")
+    except (KeyError, TypeError):
+        pass
+    try:
+        lines.append(f"- Cột tổng: {context['total_col']}")
+    except (KeyError, TypeError):
+        pass
+    try:
+        dims_str = ", ".join(context["dims"].values())
+        lines.append(f"- Lĩnh vực đang xét: {dims_str}")
+    except (KeyError, TypeError, AttributeError):
+        pass
+    try:
+        lines.append(f"- Khoảng năm: {context['year_range'][0]}-{context['year_range'][1]}")
+    except (KeyError, TypeError, IndexError):
+        pass
+    return "\n".join(lines)
+
+
+def generate(request: str, data: dict, context=None, model: str = DEFAULT_MODEL) -> dict:
     """Gọi Gemini sinh code + giải thích. Trả về {code, explanation}.
-    Ném RuntimeError nếu thiếu SDK hoặc API key."""
+    Ném RuntimeError nếu thiếu SDK hoặc API key.
+
+    context (tuỳ chọn): dict ngữ cảnh dashboard từ st.session_state["dash_context"].
+    """
     import streamlit as st
     try:
         from google import genai
@@ -64,8 +129,13 @@ def generate(request: str, data: dict, model: str = DEFAULT_MODEL) -> dict:
         raise RuntimeError("Chưa có GEMINI_API_KEY trong .streamlit/secrets.toml")
 
     names = ", ".join(api_exec.available_names(data))
-    prompt = (_SYSTEM.format(names=names) + "\n\n" + build_schema_context(data)
-              + "\n\nYêu cầu của người dùng: " + request)
+    schema_part = build_schema_context(data)
+    context_part = _format_context(context)
+
+    prompt = _SYSTEM.format(names=names) + "\n\n" + schema_part
+    if context_part:
+        prompt += "\n\n" + context_part
+    prompt += "\n\nYêu cầu của người dùng: " + request
 
     client = genai.Client(api_key=key)
     resp = client.models.generate_content(model=model, contents=prompt)

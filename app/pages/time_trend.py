@@ -36,6 +36,14 @@ w = d["prov_year"]
 nat = d["national"]
 total_col = cfg["total_col"]
 
+# Publish trạng thái filter để AI Assistant dùng làm ngữ cảnh
+st.session_state["dash_context"] = {
+    "page": "Diễn biến theo thời gian",
+    "scale_mode": mode, "total_col": total_col,
+    "dims": {c: config.DIM_LABELS[c] for c in cfg["dims"]},
+    "year_range": [int(y0), int(y1)],
+}
+
 tot = trend.total_by_year(w, total_col, y0, y1)
 dim_nat = nat[nat.code.isin(cfg["dims"]) & nat.year.between(y0, y1)]
 
