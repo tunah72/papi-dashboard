@@ -11,7 +11,7 @@ Quy ước bất biến (mọi task tuân thủ): không đụng `app/ai/api_exe
 
 ## Gói WP-A — Nền tảng api_ai + test (🤖 Sonnet, độc lập file)
 
-**A1. Thêm dependency** — `requirements.txt`: thêm dòng `google-genai`. Thử `pip install google-genai`;
+**A1. Thêm dependency** — `requirements.txt`: thêm dòng `groq`. Thử `pip install groq`;
 nếu mạng chặn, vẫn ghi vào requirements và ghi chú lại. *DoD:* requirements có entry.
 
 **A4. Làm chắc `api_ai._parse_response`** (`app/ai/api_ai.py`). Hàm phải **không bao giờ ném lỗi** và
@@ -31,7 +31,7 @@ Mỗi ca khẳng định `code`/`explanation` đúng kỳ vọng. *DoD:* `pytest
 
 ---
 
-## Gói WP-Plugins — 4 plugin technique (🤖 Sonnet viết nháp · 👤 nghiệm thu bằng Gemini)
+## Gói WP-Plugins — 4 plugin technique (🤖 Sonnet viết nháp · 👤 nghiệm thu bằng Groq)
 
 Mỗi file `app/ai/techniques/<key>.py` chỉ gọi `registry.register(key, label, description, default_request)`
 theo mẫu `app/ai/techniques/example_describe.py`. `default_request` PHẢI: nêu rõ **bảng + cột** dùng,
@@ -110,7 +110,7 @@ không exception. *DoD:* `pytest` xanh; AppTest boot sạch.
 ---
 
 ## Việc của con người (👤 — không giao agent)
-- **A2.** Lấy `GEMINI_API_KEY` (aistudio.google.com) → `.streamlit/secrets.toml`. (Sonnet chỉ tạo `secrets.toml.example`.)
+- **A2.** Lấy `GROQ_API_KEY` (https://console.groq.com/keys) → `.streamlit/secrets.toml`. (Sonnet chỉ tạo `secrets.toml.example`.)
 - **B-nghiệm thu.** Chạy thật 4 plugin qua AI Assistant, tinh chỉnh `default_request` tới khi số khớp dashboard.
 - **D1.** Chốt ≥4 câu hỏi vấn đáp + tập demo + chụp ảnh dự phòng.
 - **D2.** Viết mục báo cáo "quá trình dùng AI", trích `logs/ai_sessions.jsonl`.

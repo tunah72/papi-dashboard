@@ -25,5 +25,5 @@ ipykernel
 streamlit==1.58.0
 plotly==6.8.0
 
-# AI module (LLM provider: Gemini qua Google AI Studio, free tier)
-google-genai>=1.0
+# AI module (LLM provider: Groq)
+groq>=0.13

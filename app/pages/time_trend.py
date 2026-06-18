@@ -42,6 +42,13 @@ st.session_state["dash_context"] = {
     "scale_mode": mode, "total_col": total_col,
     "dims": {c: config.DIM_LABELS[c] for c in cfg["dims"]},
     "year_range": [int(y0), int(y1)],
+    "filters": {
+        "scale_mode": mode,
+        "total_col": total_col,
+        "year_range": [int(y0), int(y1)],
+        "dims": {c: config.DIM_LABELS[c] for c in cfg["dims"]},
+    },
+    "data_scope": {"tables": ["prov_year", "national"], "score_column": total_col},
 }
 
 tot = trend.total_by_year(w, total_col, y0, y1)
@@ -124,6 +131,11 @@ with col_left:
             font=dict(size=12, color=config.TITLE_COLOR),
         )
         layout.chart(fig1)
+        layout.ai_explain_button(
+            "Diễn biến tổng điểm",
+            context={"data_scope": {"table": "prov_year", "score_column": total_col, "chart": "line_trend"}},
+            disabled=tot.empty,
+        )
 
 with col_right:
     with st.container(border=True):
@@ -198,10 +210,14 @@ div_rows = []
 for code in cfg["dims"]:
     g = dim_nat[dim_nat.code == code].sort_values("year")
     if len(g) >= 2:
-        d0 = g[g.year == g.year.min()].mean_score.values[0]
-        d1 = g[g.year == g.year.max()].mean_score.values[0]
-        if pd.notna(d0) and pd.notna(d1):
-            div_rows.append({"Lĩnh vực": L[code], "Thay đổi": d1 - d0, "_code": code})
+        d0_series = g[g.year == g.year.min()].mean_score.values
+        d1_series = g[g.year == g.year.max()].mean_score.values
+        
+        if len(d0_series) > 0 and len(d1_series) > 0:
+            d0 = d0_series[0]
+            d1 = d1_series[0]
+            if pd.notna(d0) and pd.notna(d1):
+                div_rows.append({"Lĩnh vực": L[code], "Thay đổi": d1 - d0, "_code": code})
 
 col_c_left, col_c_right = st.columns([1, 1])
 
@@ -246,31 +262,37 @@ if div_rows:
             if sel_code:
                 sub = dim_nat[dim_nat.code == sel_code].copy()
                 if not sub.empty:
-                    d0_val = sub.loc[sub.year == sub.year.min(), "mean_score"].values[0]
-                    d1_val = sub.loc[sub.year == sub.year.max(), "mean_score"].values[0]
-                    delta_chosen = d1_val - d0_val
-                    verb = trend.classify_change(delta_chosen)
-                    abs_delta = abs(delta_chosen)
-                    # Tiêu đề data-driven
-                    detail_title = f"{sel_name} {verb} {abs_delta:.2f} điểm, {first}–{latest}"
-                    fig_drill = charts.line_trend(
-                        sub, x="year", y="mean_score", color=None, direct_labels=False,
-                        title=detail_title,
-                        subtitle="Trung bình 63 tỉnh",
-                        source=config.SOURCE_DEFAULT,
-                        height=max(300, 44 * len(div_df) + 100),
-                    )
-                    # Tô màu đúng lĩnh vực
-                    fig_drill.update_traces(
-                        line=dict(color=color_map.get(sel_code, config.ACCENT))
-                    )
-                    # Vline COVID nếu khoảng năm phủ 2021
-                    if y0 <= 2021 <= y1:
-                        fig_drill.add_vline(
-                            x=2021, line_dash="dash", line_color="#cbb89a",
-                            annotation_text="COVID-19", annotation_position="top",
+                    # Lấy giá trị cẩn thận, tránh lỗi IndexError
+                    d0_series = sub.loc[sub.year == sub.year.min(), "mean_score"].values
+                    d1_series = sub.loc[sub.year == sub.year.max(), "mean_score"].values
+                    if len(d0_series) > 0 and len(d1_series) > 0:
+                        d0_val = d0_series[0]
+                        d1_val = d1_series[0]
+                        delta_chosen = d1_val - d0_val
+                        verb = trend.classify_change(delta_chosen)
+                        abs_delta = abs(delta_chosen)
+                        # Tiêu đề data-driven
+                        detail_title = f"{sel_name} {verb} {abs_delta:.2f} điểm, {first}–{latest}"
+                        fig_drill = charts.line_trend(
+                            sub, x="year", y="mean_score", color=None, direct_labels=False,
+                            title=detail_title,
+                            subtitle="Trung bình 63 tỉnh",
+                            source=config.SOURCE_DEFAULT,
+                            height=max(300, 44 * len(div_df) + 100),
                         )
-                    layout.chart(fig_drill)
+                        # Tô màu đúng lĩnh vực
+                        fig_drill.update_traces(
+                            line=dict(color=color_map.get(sel_code, config.ACCENT))
+                        )
+                        # Vline COVID nếu khoảng năm phủ 2021
+                        if y0 <= 2021 <= y1:
+                            fig_drill.add_vline(
+                                x=2021, line_dash="dash", line_color="#cbb89a",
+                                annotation_text="COVID-19", annotation_position="top",
+                            )
+                        layout.chart(fig_drill)
+                    else:
+                        st.caption("Thiếu dữ liệu năm đầu/năm cuối để tính mức thay đổi.")
                 else:
                     st.caption("Không có dữ liệu cho lĩnh vực này trong khoảng năm đã chọn.")
             else:

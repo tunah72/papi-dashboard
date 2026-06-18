@@ -5,6 +5,7 @@ Offline — KHÔNG gọi mạng, KHÔNG cần API key.
 """
 import json
 import sys
+import types
 from pathlib import Path
 
 # Thêm 'app' vào sys.path để `from ai import api_ai` chạy được
@@ -96,6 +97,34 @@ def test_plain_text_multiline_no_fence():
     assert out["explanation"] == ""
 
 
+def test_loose_json_with_raw_newlines_in_code():
+    text = '''{
+  "code": "
+# Lọc dữ liệu
+result = prov_year.head()
+",
+  "explanation": "Lấy vài dòng đầu."
+}'''
+    out = _parse(text)
+    assert out["code"] == "# Lọc dữ liệu\nresult = prov_year.head()"
+    assert out["explanation"] == "Lấy vài dòng đầu."
+
+
+def test_sanitize_code_payload_extracts_code_from_json_like_text():
+    payload = '''{
+  "code": "
+result = prov_year.head()
+",
+  "explanation": "ok"
+}'''
+    assert api_ai.sanitize_code_payload(payload) == "result = prov_year.head()"
+
+
+def test_sanitize_code_payload_keeps_plain_code():
+    code = "result = prov_year.head()"
+    assert api_ai.sanitize_code_payload(code) == code
+
+
 # ---------------------------------------------------------------------------
 # Đảm bảo không bao giờ ném lỗi (không bao giờ None cho code)
 # ---------------------------------------------------------------------------
@@ -109,3 +138,83 @@ def test_garbage_input_does_not_raise():
     out = _parse("!!@#$%^&* không phải JSON không phải code")
     assert isinstance(out["code"], str)
     assert out["code"] != ""  # text gốc nên được giữ lại
+
+
+def test_format_context_empty():
+    assert api_ai._format_context(None) == ""
+    assert api_ai._format_context({}) == ""
+
+
+def test_format_context_legacy_schema():
+    text = api_ai._format_context({
+        "page": "Diễn biến theo thời gian",
+        "scale_mode": "6 lĩnh vực",
+        "total_col": "total_papi_6dim",
+        "dims": {"D1": "Tham gia", "D2": "Minh bạch"},
+        "year_range": [2011, 2024],
+    })
+    assert "Diễn biến theo thời gian" in text
+    assert "total_papi_6dim" in text
+    assert "2011 đến 2024" in text
+    assert "Tham gia" in text
+
+
+def test_format_context_new_schema():
+    text = api_ai._format_context({
+        "page": "Tổng quan",
+        "filters": {"year": 2024, "province": "Hà Nội"},
+        "data_scope": {"table": "prov_year", "score_column": "total_papi"},
+        "chart_id": "Bản đồ PAPI",
+    })
+    assert "Tổng quan" in text
+    assert "year=2024" in text
+    assert "province=Hà Nội" in text
+    assert "score_column=total_papi" in text
+    assert "Bản đồ PAPI" in text
+
+
+def test_build_prompt_includes_groq_ready_constraints():
+    prompt = api_ai._build_prompt(
+        "Tính trung bình",
+        {"prov_year": object()},
+        context={"page": "Tổng quan", "year": 2024},
+        system_instruction="Luôn dùng bảng prov_year.",
+    )
+    assert "KHÔNG sử dụng câu lệnh `import`" in prompt
+    assert "GROQ_API_KEY" not in prompt
+    assert "Luôn dùng bảng prov_year." in prompt
+    assert "Tính trung bình" in prompt
+
+
+def test_generate_uses_groq_chat_completion(monkeypatch):
+    calls = {}
+
+    class _Message:
+        content = '{"code": "result = prov_year.head()", "explanation": "ok"}'
+
+    class _Choice:
+        message = _Message()
+
+    class _Completions:
+        def create(self, **kwargs):
+            calls.update(kwargs)
+            return types.SimpleNamespace(choices=[_Choice()])
+
+    class _Chat:
+        completions = _Completions()
+
+    class _Groq:
+        def __init__(self, api_key):
+            calls["api_key"] = api_key
+            self.chat = _Chat()
+
+    fake_groq = types.SimpleNamespace(Groq=_Groq)
+    monkeypatch.setitem(sys.modules, "groq", fake_groq)
+    monkeypatch.setattr(api_ai, "_get_groq_api_key", lambda: "test-key")
+
+    out = api_ai.generate("Lấy mẫu", {"prov_year": object()})
+
+    assert calls["api_key"] == "test-key"
+    assert calls["model"] == api_ai.DEFAULT_MODEL
+    assert calls["messages"][0]["role"] == "user"
+    assert out["code"] == "result = prov_year.head()"

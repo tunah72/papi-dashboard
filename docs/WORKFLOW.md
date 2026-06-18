@@ -42,8 +42,8 @@ Convention thiết kế: `docs/design_convention.md`.
 - [ ] Storytelling: nhận xét trên mỗi biểu đồ
 
 ## Phase 4 — AI module human-in-the-loop  [ĐANG LÀM]
-Provider: Gemini (key trong `.streamlit/secrets.toml`, không commit).
-- [x] Framework F6: `api_ai` (Gemini), `api_exec` (sandbox, chặn import nguy hiểm), `api_logs`,
+Provider: Groq (key trong `.streamlit/secrets.toml`, không commit).
+- [x] Framework F6: `api_ai` (Groq), `api_exec` (sandbox, chặn import nguy hiểm), `api_logs`,
       `registry`, trang `ai_assistant`
 - [x] Luồng chờ duyệt → sửa → phê duyệt → thực thi local → ghi log
 - [ ] 4 AI technique plugin (mỗi thành viên 1: trend classification, anomaly, insight, clustering)

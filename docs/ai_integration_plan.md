@@ -20,8 +20,8 @@ và `app/lib/*` / `.streamlit/config.toml` / `data/processed/dim_indicator.csv`.
 | Hạng mục | Trạng thái |
 |---|---|
 | 3 API + `ai_assistant` + `registry` + plugin `describe` | ✅ skeleton có |
-| `google-genai` cài | ❌ chưa |
-| `GEMINI_API_KEY` | ⚠️ `secrets.toml` có, chưa rõ key |
+| `groq` cài | ✅ đã cài trong `.venv`, đã ghi requirements |
+| `GROQ_API_KEY` | ⚠️ cần có trong `secrets.toml` hoặc biến môi trường |
 | 4 plugin thật | ❌ chưa |
 | Context-aware / diff log / nút giải thích | ❌ chưa |
 | Câu hỏi vấn đáp / mục báo cáo / test | ❌ chưa |
@@ -29,8 +29,8 @@ và `app/lib/*` / `.streamlit/config.toml` / `data/processed/dim_indicator.csv`.
 ## 2. Bốn giai đoạn
 
 ### GĐ A — Làm module CHẠY THẬT (nền tảng) · 16–18/6
-- **A1.** `pip install google-genai` → ghim vào `requirements.txt`.
-- **A2.** Lấy key free tại aistudio.google.com → `secrets.toml`; tạo `secrets.toml.example` (key rỗng) cho
+- **A1.** `pip install groq` → ghim vào `requirements.txt`.
+- **A2.** Lấy key tại https://console.groq.com/keys → `secrets.toml`; tạo `secrets.toml.example` (key rỗng) cho
   nhóm; xác nhận `.gitignore` đã chặn `secrets.toml`.
 - **A3.** Smoke test end-to-end với plugin `describe`: chọn → sinh code → duyệt → chạy → `result` → log ghi file.
 - **A4.** Làm chắc `api_ai._parse_response`: model trả sai JSON → báo lỗi rõ + nút sinh lại (đã có fallback, cần test).
@@ -47,7 +47,7 @@ Mỗi plugin = 1 file `app/ai/techniques/<key>.py`, chỉ gọi `register(...)` 
 | `insight` | H3 | nhận xét tự động cho một lĩnh vực/tỉnh |
 | `clustering` | H4 | gom nhóm tỉnh theo hồ sơ lĩnh vực (StandardScaler + KMeans) |
 
-Quy trình mỗi plugin: viết `default_request` → chạy thật với Gemini → tinh chỉnh tới khi code sinh ra
+Quy trình mỗi plugin: viết `default_request` → chạy thật với Groq → tinh chỉnh tới khi code sinh ra
 chạy sạch và **số khớp dashboard**.
 - **DoD:** cả 4 hiện trong dropdown; mỗi cái sinh→duyệt→chạy ra `result`+`fig` hợp lý.
 
@@ -72,7 +72,7 @@ chạy sạch và **số khớp dashboard**.
 - **Cộng:** C1 (context-aware) + C3 (nút giải thích).
 
 ## 4. Rủi ро & giảm thiểu
-- **Quota/mạng Gemini:** dùng `gemini-2.0-flash` free; giữ chế độ "tự nhập yêu cầu"; **chụp sẵn vài kết quả**
+- **Quota/mạng Groq:** dùng model mặc định `llama-3.3-70b-versatile`; giữ chế độ "tự nhập yêu cầu"; **chụp sẵn vài kết quả**
   phòng rớt mạng lúc demo.
 - **Model trả sai JSON / code lỗi runtime:** fallback parse + sandbox bắt exception, hiện lỗi, người sửa chạy lại.
 - **Xung đột tải 24–26/6** (vừa P4 merge cả nhóm vừa D): đẩy A+B xong sớm; nếu kẹt, hạ scope theo mục 3.

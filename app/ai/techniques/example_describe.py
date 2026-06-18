@@ -6,8 +6,10 @@ register(
     key="describe",
     label="Thống kê mô tả tổng điểm theo năm",
     description="Tính mean, std, min, max của total_papi cho từng năm.",
-    default_request=(
-        "Tính thống kê mô tả gồm mean, std, min, max của cột total_papi trong bảng prov_year "
-        "theo từng năm. Gán bảng kết quả vào biến result."
-    ),
+    user_prompt="Tính thống kê mô tả (trung bình, độ lệch chuẩn, lớn nhất, nhỏ nhất) của tổng điểm PAPI theo từng năm.",
+    system_instruction=(
+        "Sử dụng bảng `prov_year`. "
+        "Tính thống kê mô tả gồm mean, std, min, max của cột `total_papi` theo từng năm (`year`). "
+        "Gán bảng kết quả vào biến `result`. Không cần vẽ biểu đồ."
+    )
 )

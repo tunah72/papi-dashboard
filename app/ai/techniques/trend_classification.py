@@ -5,10 +5,11 @@ register(
     key="trend_classification",
     label="Phân loại lĩnh vực cải thiện/ổn định/suy giảm",
     description=(
-        "Tính delta mean_score (năm lớn nhất − năm nhỏ nhất) cho từng lĩnh vực D1–D8 "
-        "và phân loại theo ngưỡng ±0.03."
+        "Đánh giá mức độ thay đổi của toàn bộ 8 lĩnh vực PAPI "
+        "để phân nhóm chúng thành 'cải thiện', 'suy giảm' hoặc 'ổn định'."
     ),
-    default_request=(
+    user_prompt="Hãy phân loại xu hướng của toàn bộ 8 lĩnh vực PAPI (từ D1 đến D8) thành các nhóm: 'cải thiện', 'suy giảm', hoặc 'ổn định' dựa trên sự thay đổi điểm số giữa năm đầu và năm cuối.",
+    system_instruction=(
         "Sử dụng bảng `national` (các cột: year, code, mean_score). "
         "Với mỗi lĩnh vực trong cột code (D1, D2, D3, D4, D5, D6, D7, D8), "
         "tính delta = mean_score ở năm lớn nhất − mean_score ở năm nhỏ nhất. "
@@ -26,5 +27,5 @@ register(
         "trục x là delta, trục y là linh_vuc, màu theo nhan "
         "('cải thiện'=xanh lá, 'ổn định'=xám, 'suy giảm'=đỏ), "
         "thêm đường kẻ dọc x=0, tiêu đề 'Xu hướng thay đổi điểm PAPI theo lĩnh vực'."
-    ),
+    )
 )
