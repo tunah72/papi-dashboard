@@ -11,6 +11,7 @@ register(
     user_prompt="Hãy phân loại xu hướng của toàn bộ 8 lĩnh vực PAPI (từ D1 đến D8) thành các nhóm: 'cải thiện', 'suy giảm', hoặc 'ổn định' dựa trên sự thay đổi điểm số giữa năm đầu và năm cuối.",
     system_instruction=(
         "Sử dụng bảng `national` (các cột: year, code, mean_score). "
+        "Nếu câu hỏi người dùng yêu cầu một tập lĩnh vực hoặc khoảng năm cụ thể, hãy lọc theo yêu cầu đó; nếu không thì dùng toàn bộ D1-D8 và toàn bộ khoảng năm. "
         "Với mỗi lĩnh vực trong cột code (D1, D2, D3, D4, D5, D6, D7, D8), "
         "tính delta = mean_score ở năm lớn nhất − mean_score ở năm nhỏ nhất. "
         "Phân loại theo ngưỡng: delta > 0.03 → 'cải thiện'; delta < −0.03 → 'suy giảm'; "

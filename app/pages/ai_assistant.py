@@ -20,6 +20,7 @@ def _clear_ai_work_state():
     """Xóa trạng thái sinh/chạy code hiện tại nhưng giữ context dashboard và lựa chọn technique."""
     for key in [
         "ai_code", "ai_explanation", "ai_request", "ai_request_input",
+        "ai_default_prompt_input", "ai_default_prompt_source", "ai_extra_request_input",
         "ai_edit", "exec_result", "ai_last_run_status",
     ]:
         st.session_state.pop(key, None)
@@ -31,6 +32,14 @@ def _handle_choice_change():
     if previous is not None and current != previous:
         _clear_ai_work_state()
     st.session_state["ai_choice_committed"] = current
+
+
+def _compose_request(base_request: str, extra_request: str) -> str:
+    base = (base_request or "").strip()
+    extra = (extra_request or "").strip()
+    if base and extra:
+        return base + "\n\nYêu cầu bổ sung của người dùng:\n" + extra
+    return base or extra
 
 
 # Chọn technique có sẵn hoặc tự nhập yêu cầu
@@ -48,13 +57,28 @@ else:
     choice = st.selectbox("Chọn kỹ thuật phân tích", labels, key="ai_choice", on_change=_handle_choice_change)
     if choice != labels[0]:
         t = next(t for t in techs if t["label"] == choice)
-        st.info(t.get("description", ""))
         default_req = t.get("user_prompt", t.get("default_request", ""))
         current_system_instruction = t.get("system_instruction", "")
 
 st.session_state["ai_choice_committed"] = choice
 
-request = st.text_area("Yêu cầu phân tích (ngôn ngữ tự nhiên)", value=default_req, height=100, key="ai_request_input")
+if st.session_state.get("ai_default_prompt_source") != choice:
+    st.session_state["ai_default_prompt_input"] = default_req
+    st.session_state["ai_default_prompt_source"] = choice
+
+base_request = st.text_area(
+    "Câu hỏi gợi ý (có thể chỉnh sửa)",
+    value=default_req,
+    height=86,
+    key="ai_default_prompt_input",
+)
+extra_request = st.text_area(
+    "Yêu cầu phân tích bổ sung (tuỳ chọn)",
+    value="",
+    height=80,
+    key="ai_extra_request_input",
+)
+request = _compose_request(base_request, extra_request)
 
 col_gen, col_reset = st.columns([1, 1])
 with col_gen:

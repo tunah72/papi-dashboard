@@ -10,6 +10,7 @@ register(
     ),
     user_prompt="Hãy phân tích và nhận xét các điểm nổi bật của lĩnh vực D4 (Kiểm soát tham nhũng).",
     system_instruction=(
+        "Nếu câu hỏi người dùng nêu lĩnh vực khác D4 (ví dụ D8, D6), hãy phân tích đúng lĩnh vực đó. "
         "Yêu cầu xử lý chia làm 2 phần:\n"
         "PHẦN 1 — xu hướng quốc gia: lọc bảng `national` theo code tương ứng với lĩnh vực người dùng yêu cầu (ví dụ: 'D4'). "
         "Xác định: năm đầu tiên, năm cuối cùng, mean_score tương ứng; "

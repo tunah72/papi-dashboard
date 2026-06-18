@@ -10,9 +10,11 @@ register(
     ),
     user_prompt="Hãy tìm và vẽ biểu đồ các tỉnh có tổng điểm PAPI bất thường so với mặt bằng chung trong năm mới nhất.",
     system_instruction=(
-        "Sử dụng bảng `prov_year` (các cột: province_vi, year, total_papi, total_papi_6dim). "
+        "Sử dụng bảng `prov_year` (các cột: province_vi, year, total_papi, total_papi_6dim, D1..D8). "
+        "Nếu câu hỏi người dùng nêu rõ một lĩnh vực/chỉ tiêu cụ thể (ví dụ D4, D8, total_papi_6dim, total_papi), hãy dùng đúng cột đó làm `score`. "
+        "Nếu người dùng không nêu chỉ tiêu cụ thể thì mới dùng logic mặc định bên dưới. "
         "Lọc về năm mới nhất có dữ liệu (max của cột year) và BẮT BUỘC gọi `.copy()` sau khi lọc, ví dụ `df = prov_year[prov_year['year'] == year_new].copy()`. "
-        "Chọn cột điểm: nếu cột total_papi không có giá trị NaN quá 10% thì dùng total_papi, "
+        "Logic mặc định chọn cột điểm: nếu cột total_papi không có giá trị NaN quá 10% thì dùng total_papi, "
         "ngược lại dùng total_papi_6dim. Gọi cột được chọn là `score`. "
         "Tính z-score = (score − mean(score)) / std(score) cho từng tỉnh; khi gán cột mới phải dùng `.loc[:, 'z_score'] = ...`. "
         "Đánh dấu cột `bat_thuong`: True nếu |z| > 2, False nếu không; khi gán phải dùng `.loc[:, 'bat_thuong'] = ...`. "

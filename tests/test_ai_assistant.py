@@ -11,6 +11,7 @@ sys.path.insert(0, str(ROOT / "app"))
 def test_ai_assistant_happy_path(monkeypatch, tmp_path):
     from ai import api_ai, api_logs
     from lib import data
+    captured = {}
 
     demo_data = {
         "prov_year": pd.DataFrame({"year": [2024, 2024], "total_papi": [40.0, 42.0]}),
@@ -19,14 +20,14 @@ def test_ai_assistant_happy_path(monkeypatch, tmp_path):
     }
 
     monkeypatch.setattr(data, "load_data", lambda: demo_data)
-    monkeypatch.setattr(
-        api_ai,
-        "generate",
-        lambda request, data, context=None, system_instruction=None, model=api_ai.DEFAULT_MODEL: {
+    def fake_generate(request, data, context=None, system_instruction=None, model=api_ai.DEFAULT_MODEL):
+        captured["request"] = request
+        return {
             "code": "result = prov_year.head()",
             "explanation": "Lấy vài dòng đầu để kiểm tra.",
-        },
-    )
+        }
+
+    monkeypatch.setattr(api_ai, "generate", fake_generate)
     monkeypatch.setattr(api_logs, "LOG_FILE", tmp_path / "ai_sessions.jsonl")
 
     app = AppTest.from_file(str(ROOT / "app" / "pages" / "ai_assistant.py"))
@@ -34,9 +35,13 @@ def test_ai_assistant_happy_path(monkeypatch, tmp_path):
     assert not app.exception
 
     app.text_area[0].set_value("Lấy vài dòng đầu")
+    app.text_area[1].set_value("Chỉ lấy năm 2024")
     app.button[0].click().run()
     assert not app.exception
-    assert "result = prov_year.head()" in app.text_area[1].value
+    assert "Lấy vài dòng đầu" in captured["request"]
+    assert "Yêu cầu bổ sung của người dùng" in captured["request"]
+    assert "Chỉ lấy năm 2024" in captured["request"]
+    assert "result = prov_year.head()" in app.text_area[2].value
 
     app.button[2].click().run()
     assert not app.exception
@@ -70,10 +75,49 @@ def test_changing_technique_clears_previous_code_and_result(monkeypatch, tmp_pat
     app.button[0].click().run()
     app.button[2].click().run()
     assert app.dataframe
-    assert len(app.text_area) == 2
+    assert len(app.text_area) == 3
 
     app.selectbox[0].set_value("Gom nhóm tỉnh theo hồ sơ lĩnh vực").run()
 
     assert not app.dataframe
-    assert len(app.text_area) == 1
+    assert len(app.text_area) == 2
     assert "gom nhóm" in app.text_area[0].value.lower()
+    assert app.text_area[1].value == ""
+
+
+def test_selected_technique_uses_edited_suggestion_not_default(monkeypatch, tmp_path):
+    from ai import api_ai, api_logs
+    from lib import data
+    captured = {}
+
+    demo_data = {
+        "prov_year": pd.DataFrame({"year": [2024, 2024], "total_papi": [40.0, 42.0], "D8": [1.0, 3.0]}),
+        "national": pd.DataFrame({"year": [2024], "code": ["D8"], "mean_score": [5.0]}),
+        "geojson": {"type": "FeatureCollection", "features": []},
+    }
+
+    monkeypatch.setattr(data, "load_data", lambda: demo_data)
+
+    def fake_generate(request, data, context=None, system_instruction=None, model=api_ai.DEFAULT_MODEL):
+        captured["request"] = request
+        captured["system_instruction"] = system_instruction
+        return {
+            "code": "result = prov_year[['province_vi']] if 'province_vi' in prov_year else prov_year.head()",
+            "explanation": "test",
+        }
+
+    monkeypatch.setattr(api_ai, "generate", fake_generate)
+    monkeypatch.setattr(api_logs, "LOG_FILE", tmp_path / "ai_sessions.jsonl")
+
+    app = AppTest.from_file(str(ROOT / "app" / "pages" / "ai_assistant.py"))
+    app.run()
+    app.selectbox[0].set_value("Phát hiện tỉnh bất thường").run()
+
+    edited_question = "Hãy phát hiện tỉnh bất thường riêng cho lĩnh vực D8 trong năm mới nhất."
+    app.text_area[0].set_value(edited_question)
+    app.button[0].click().run()
+
+    assert captured["request"] == edited_question
+    assert "D8" in captured["request"]
+    assert "total_papi bất thường so với mặt bằng chung" not in captured["request"]
+    assert "Nếu câu hỏi người dùng nêu rõ" in captured["system_instruction"]

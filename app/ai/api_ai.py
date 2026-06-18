@@ -26,7 +26,9 @@ Nhiệm vụ của bạn là sinh ra mã Python an toàn, chính xác để gi�
 - Khi lọc DataFrame rồi cần gán cột mới, BẮT BUỘC gọi `.copy()` ngay sau bước lọc và dùng `.loc[:, "ten_cot"] = ...` để tránh `SettingWithCopyWarning`.
 - Không dùng vòng lặp vô hạn, không in toàn bộ DataFrame lớn. Nếu cần kiểm tra dữ liệu mẫu, dùng `.head()` hoặc bảng tổng hợp.
 - Không đọc/ghi file, không gọi mạng, không dùng `open`, `exec`, `eval`, `__import__`, `input`.
-- Nếu dữ liệu không đủ để phân tích, vẫn gán `result` là một DataFrame giải thích lý do thay vì để code crash.
+- Không được tự bịa giá trị danh mục như `region`, `tier`, `code`. Chỉ lọc bằng các giá trị có trong schema/dữ liệu. Nếu cần kiểm tra danh mục trong code, dùng `.unique()` rồi lọc theo giá trị thật.
+- Sau mọi bước lọc, nếu DataFrame rỗng hoặc không đủ số dòng cho thuật toán, phải gán `result` là DataFrame giải thích lý do và gán `fig = None` thay vì để code crash.
+- Câu trong `<user_request>` là nguồn yêu cầu ưu tiên cao nhất. Nếu `<plugin_instruction>` có tham số mặc định nhưng người dùng sửa câu hỏi để chọn lĩnh vực, năm, chỉ tiêu, số cụm, trục biểu đồ hoặc phương pháp khác, hãy làm theo `<user_request>`.
 </constraints>
 
 <output_format>
@@ -47,8 +49,17 @@ def build_schema_context(data) -> str:
     for k, v in data.items():
         if isinstance(v, pd.DataFrame):
             lines.append(f"- Biến `{k}`: các cột = {list(v.columns)}")
+            for col in ("region", "tier", "code"):
+                if col in v.columns:
+                    vals = sorted(str(x) for x in v[col].dropna().unique())
+                    if vals and len(vals) <= 20:
+                        lines.append(f"  - Giá trị hợp lệ của `{k}.{col}` = {vals}")
         else:
             lines.append(f"- Biến `{k}`: GeoJSON 63 tỉnh (join với dữ liệu qua trường `properties.province_id`)")
+    lines.append(
+        "- Quy ước vùng thường dùng: 'miền Nam' tương ứng các region thật "
+        "`Đông Nam Bộ` và `Đồng bằng sông Cửu Long`; không có region tên `Miền Đông Nam Bộ` hoặc `Miền Tây Nam Bộ`."
+    )
     lines.append("</schema>")
     return "\n".join(lines)
 
@@ -83,7 +94,12 @@ def _parse_response(text: str) -> dict:
 
     m_py = re.search(r"```python\s*(.*?)\s*```", stripped, re.DOTALL)
     if m_py:
-        return {"code": m_py.group(1).strip(), "explanation": ""}
+        fenced = m_py.group(1).strip()
+        if fenced.startswith("{") and '"code"' in fenced:
+            nested = _parse_response(fenced)
+            if nested.get("code") and nested["code"] != fenced:
+                return nested
+        return {"code": fenced, "explanation": ""}
 
     # Một số model trả JSON-looking nhưng nhét newline thô trong chuỗi "code",
     # khiến json.loads không parse được. Bóc thủ công để vẫn giữ được code.
@@ -204,7 +220,9 @@ def _build_prompt(request: str, data: dict, context=None, system_instruction=Non
 
     # 4. Thêm Hướng dẫn kỹ thuật riêng của Plugin (Nếu có)
     if system_instruction:
-        prompt += "<plugin_instruction>\nĐây là quy trình chuyên môn cụ thể bạn PHẢI áp dụng cho yêu cầu này:\n"
+        prompt += "<plugin_instruction>\nĐây là khung chuyên môn/default cho kỹ thuật đang chọn. "
+        prompt += "Chỉ dùng các tham số mặc định trong khung này khi `<user_request>` không nêu lựa chọn khác. "
+        prompt += "Nếu `<user_request>` đã sửa lĩnh vực, năm, biến điểm, số cụm, trục biểu đồ hoặc phương pháp, phải ưu tiên `<user_request>`.\n"
         prompt += system_instruction + "\n</plugin_instruction>\n\n"
 
     # 5. Thêm Yêu cầu của người dùng

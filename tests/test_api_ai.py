@@ -80,6 +80,20 @@ def test_python_fence_multiline():
     assert out["explanation"] == ""
 
 
+def test_python_fence_wrapping_loose_json_payload():
+    text = '''```python
+{
+  "code": "
+result = prov_year.head()
+",
+  "explanation": "ok"
+}
+```'''
+    out = _parse(text)
+    assert out["code"] == "result = prov_year.head()"
+    assert out["explanation"] == "ok"
+
+
 # ---------------------------------------------------------------------------
 # (d) Text thuần (không fence) → vào code
 # ---------------------------------------------------------------------------
@@ -184,6 +198,25 @@ def test_build_prompt_includes_groq_ready_constraints():
     assert "GROQ_API_KEY" not in prompt
     assert "Luôn dùng bảng prov_year." in prompt
     assert "Tính trung bình" in prompt
+    assert "Câu trong `<user_request>` là nguồn yêu cầu ưu tiên cao nhất" in prompt
+    assert "phải ưu tiên `<user_request>`" in prompt
+
+
+def test_schema_context_includes_valid_region_values():
+    import pandas as pd
+
+    schema = api_ai.build_schema_context({
+        "prov_year": pd.DataFrame({
+            "region": ["Đông Nam Bộ", "Đồng bằng sông Cửu Long"],
+            "year": [2024, 2024],
+        })
+    })
+
+    assert "Giá trị hợp lệ của `prov_year.region`" in schema
+    assert "Đông Nam Bộ" in schema
+    assert "Đồng bằng sông Cửu Long" in schema
+    assert "miền Nam" in schema
+    assert "Miền Tây Nam Bộ" in schema
 
 
 def test_generate_uses_groq_chat_completion(monkeypatch):
