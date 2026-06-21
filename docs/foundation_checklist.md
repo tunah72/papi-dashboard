@@ -30,15 +30,15 @@ từng phase, báo cáo, rồi tiếp phase sau. Trạng thái: [ ] chưa làm, 
 - [x] `app/pages/overview.py` (4 KPI, choropleth theo năm, top/bottom 10, link tới 4 page)
 - [x] Verify AppTest: boot không exception, dùng `width="stretch"` (chuẩn streamlit mới)
 
-## Phase F6: AI module framework [XONG] (LLM provider: Gemini)
+## Phase F6: AI module framework [XONG] (LLM provider: Groq)
 - [x] `app/ai/api_logs.py` (ghi/đọc nhật ký JSON lines), `app/ai/api_exec.py` (sandbox, chặn import nguy hiểm)
-- [x] `app/ai/api_ai.py` (gọi Gemini qua google-genai, trả code + giải thích, parser chịu code fence)
+- [x] `app/ai/api_ai.py` (gọi Groq qua SDK `groq`, trả code + giải thích, parser chịu code fence)
 - [x] `app/ai/registry.py` (plugin registry + discovery) + plugin ví dụ `example_describe.py`
 - [x] `app/pages/ai_assistant.py` (luồng chờ duyệt -> sửa -> phê duyệt -> thực thi -> log)
-- [x] `.streamlit/secrets.toml.example` (mẫu GEMINI_API_KEY) + thêm google-genai vào requirements
+- [x] `.streamlit/secrets.toml.example` (mẫu GROQ_API_KEY) + thêm groq vào requirements
 - [x] Verify: registry discover, exec chạy code + chặn import os, parser, page boot graceful khi thiếu key
 
 ## Sau đợt nền [HOÀN TẤT]
 Toàn bộ đợt nền đã xong và verify. Bốn thành viên bắt đầu vertical slice theo `docs/work_assignment.md`.
-Trước khi chạy AI thật: tạo `.streamlit/secrets.toml` với GEMINI_API_KEY (lấy free tại aistudio.google.com).
+Trước khi chạy AI thật: tạo `.streamlit/secrets.toml` với GROQ_API_KEY (lấy tại https://console.groq.com/keys).
 Mỗi phase tiếp theo (4 page, report) có checklist riêng khi tới.

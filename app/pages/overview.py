@@ -13,6 +13,14 @@ layout.page_header(
 d = data.load_data()
 year = filters.select_year(d, label="Năm xem tổng quan", default=config.YEAR_MAX)
 
+# Publish trạng thái để AI Assistant dùng làm ngữ cảnh
+st.session_state["dash_context"] = {
+    "page": "Tổng quan",
+    "year": int(year),
+    "filters": {"year": int(year)},
+    "data_scope": {"table": "prov_year", "score_column": "total_papi"},
+}
+
 w = d["prov_year"]
 wy = w[w.year == year].dropna(subset=["total_papi"])
 top = wy.loc[wy.total_papi.idxmax()]
@@ -34,6 +42,11 @@ with left:
         title=f"Bản đồ tổng điểm PAPI năm {year}",
         subtitle="Tổng 8 trục, thang 8–80 · tỉnh thiếu dữ liệu để trống",
     ))
+    layout.ai_explain_button(
+        f"Bản đồ PAPI năm {year}",
+        context={"data_scope": {"table": "prov_year", "score_column": "total_papi", "chart": "choropleth"}},
+        disabled=wy.empty,
+    )
 with right:
     layout.section_header("Xếp hạng")
     tab_top, tab_bot = st.tabs(["Top 10", "Bottom 10"])

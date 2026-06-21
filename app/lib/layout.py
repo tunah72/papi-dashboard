@@ -115,3 +115,16 @@ def chart(fig, note_text=None):
     st.plotly_chart(fig, width="stretch", config={"displayModeBar": False})
     if note_text:
         note(note_text)
+
+
+def ai_explain_button(chart_name, description="phân tích giúp tôi các điểm nổi bật", context=None, disabled=False):
+    """Nút bấm nhỏ dưới biểu đồ để chuyển sang AI Assistant với câu hỏi mẫu."""
+    key = "ai_btn_" + "".join(ch if ch.isalnum() else "_" for ch in chart_name)
+    if st.button(f"Giải thích {chart_name}", key=key, disabled=disabled):
+        chart_context = dict(st.session_state.get("dash_context") or {})
+        if context:
+            chart_context.update(context)
+        chart_context["chart_id"] = chart_name
+        st.session_state["dash_context"] = chart_context
+        st.session_state["ai_seed"] = f"Hãy {description} của biểu đồ '{chart_name}' dựa trên ngữ cảnh hiện tại."
+        st.switch_page("pages/ai_assistant.py")

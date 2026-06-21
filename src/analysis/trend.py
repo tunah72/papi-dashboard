@@ -50,14 +50,19 @@ def summarize_total(tot, total_col):
             "first", "latest", "v_first", "v_latest", "net",
             "peak_year", "peak_val", "dip_val")}
     first, latest = int(tot.year.min()), int(tot.year.max())
-    v_first = float(tot.loc[tot.year == first, total_col].iloc[0])
-    v_latest = float(tot.loc[tot.year == latest, total_col].iloc[0])
+    
+    first_rows = tot.loc[tot.year == first, total_col]
+    latest_rows = tot.loc[tot.year == latest, total_col]
+    
+    v_first = float(first_rows.iloc[0]) if not first_rows.empty else float("nan")
+    v_latest = float(latest_rows.iloc[0]) if not latest_rows.empty else float("nan")
+    
     return {
         "first": first,
         "latest": latest,
         "v_first": v_first,
         "v_latest": v_latest,
-        "net": v_latest - v_first,
+        "net": v_latest - v_first if pd.notna(v_first) and pd.notna(v_latest) else float("nan"),
         "peak_year": int(tot.loc[tot[total_col].idxmax(), "year"]),
         "peak_val": float(tot[total_col].max()),
         "dip_val": float(tot[total_col].min()),

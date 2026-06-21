@@ -56,12 +56,12 @@ App mở ở trình duyệt với trang Tổng quan và bốn trang phân tích.
 
 ## 5. Cấu hình AI module
 
-AI module dùng Gemini (free API tier). Lấy API key tại https://aistudio.google.com rồi tạo tệp
+AI module dùng Groq. Lấy API key tại https://console.groq.com/keys rồi tạo tệp
 `.streamlit/secrets.toml` (đã được `.gitignore` loại trừ, không commit):
 
 ```bash
 cp .streamlit/secrets.toml.example .streamlit/secrets.toml
-# rồi sửa GEMINI_API_KEY bằng key thật
+# rồi sửa GROQ_API_KEY bằng key thật
 ```
 
 Không có key, các trang trực quan vẫn chạy bình thường; chỉ chức năng sinh code của trang AI Assistant

@@ -9,9 +9,21 @@ import pkgutil
 _REGISTRY = {}
 
 
-def register(key: str, label: str, description: str, default_request: str):
-    _REGISTRY[key] = {"key": key, "label": label,
-                      "description": description, "default_request": default_request}
+def register(key: str, label: str, description: str, 
+             default_request: str = "", 
+             user_prompt: str = "", 
+             system_instruction: str = ""):
+    # Hỗ trợ backward compatibility (nếu plugin chưa được cập nhật)
+    actual_user_prompt = user_prompt if user_prompt else default_request
+
+    _REGISTRY[key] = {
+        "key": key, 
+        "label": label,
+        "description": description, 
+        "default_request": actual_user_prompt,
+        "user_prompt": actual_user_prompt,
+        "system_instruction": system_instruction
+    }
 
 
 def discover():
