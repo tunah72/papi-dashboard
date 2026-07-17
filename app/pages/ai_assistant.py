@@ -236,7 +236,7 @@ with st.expander("Nhật ký phiên AI (10 mục gần nhất)"):
             event = r.get("event")
             if event == "generated_pending_approval":
                 st.caption("AI đã sinh code — chờ người dùng xem, sửa hoặc phê duyệt; chưa thực thi.")
-            elif event == "executed_after_approval":
+            elif event == "executed_after_approval" or r.get("code_run"):
                 st.caption("Đã thực thi local sau khi người dùng phê duyệt.")
             st.write(f"**Thời gian:** {r.get('time')} | **Lỗi:** {r.get('error')}")
             st.write(f"**Yêu cầu:** {r.get('request', '')}")
@@ -258,7 +258,7 @@ with st.expander("Nhật ký phiên AI (10 mục gần nhất)"):
             elif not r.get("code_ai") and r.get("code_run"):
                 st.caption("Code (không có bản gốc AI):")
                 st.code(r.get("code_run", ""), language="python")
-            elif r.get("code_ai") and r.get("code_run") and r.get("event") == "executed_after_approval":
+            elif r.get("code_ai") and r.get("code_run"):
                 st.caption("Người dùng giữ nguyên code AI đề xuất.")
             elif r.get("code_ai"):
                 st.caption("Code AI đang chờ người dùng duyệt:")
