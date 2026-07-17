@@ -110,7 +110,7 @@ layout.section_header(
 )
 stories = [
     ("HƯỚNG 1", "Diễn biến theo thời gian", "Theo dõi các lĩnh vực cải thiện, suy giảm và mốc COVID-19.", "Đã có nội dung", "pages/time_trend.py"),
-    ("HƯỚNG 2", "So sánh giữa các tỉnh", "Đặt khác biệt tỉnh và vùng cạnh nhau.", "Đang xây dựng", "pages/provincial.py"),
+    ("HƯỚNG 2", "So sánh giữa các tỉnh", "Đặt khác biệt vùng, độ phân tán và vị trí từng tỉnh cạnh nhau.", "Đã có nội dung", "pages/provincial.py"),
     ("HƯỚNG 3", "Phân tích theo lĩnh vực", "Kiểm tra mối liên hệ và phân hoá giữa các lĩnh vực.", "Đang xây dựng", "pages/dimension.py"),
     ("HƯỚNG 4", "Động lực thay đổi và phân nhóm", "Xem tỉnh nào thay đổi và các hồ sơ PAPI nổi bật.", "Đang xây dựng", "pages/dynamics.py"),
 ]
