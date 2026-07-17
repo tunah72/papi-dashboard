@@ -135,6 +135,15 @@ if btn_gen:
         st.session_state["ai_explanation"] = out["explanation"]
         st.session_state["ai_request"] = request
         st.session_state["ai_last_run_status"] = "pending"
+        # Log ngay khi AI đề xuất để cả code chưa được duyệt cũng truy xuất được.
+        api_logs.log({
+            "event": "generated_pending_approval",
+            "request": request,
+            "code_ai": st.session_state["ai_code"], "code_run": "",
+            "explanation": out["explanation"],
+            "context": st.session_state.get("dash_context"),
+            "error": None, "has_result": False, "has_fig": False,
+        })
         # Reset trạng thái chỉnh sửa cũ
         if "ai_edit" in st.session_state:
             del st.session_state["ai_edit"]
@@ -178,6 +187,7 @@ if "ai_code" in st.session_state:
         elif isinstance(result, pd.Series):
             result_shape = [int(result.shape[0])]
         api_logs.log({
+            "event": "executed_after_approval",
             "request": st.session_state.get("ai_request", ""),
             "code_ai": code_ai, "code_run": edited_to_run,
             "explanation": st.session_state.get("ai_explanation", ""),
@@ -223,6 +233,11 @@ with st.expander("Nhật ký phiên AI (10 mục gần nhất)"):
         st.write("Chưa có log.")
     for r in logs:
         with st.container(border=True):
+            event = r.get("event")
+            if event == "generated_pending_approval":
+                st.caption("AI đã sinh code — chờ người dùng xem, sửa hoặc phê duyệt; chưa thực thi.")
+            elif event == "executed_after_approval" or r.get("code_run"):
+                st.caption("Đã thực thi local sau khi người dùng phê duyệt.")
             st.write(f"**Thời gian:** {r.get('time')} | **Lỗi:** {r.get('error')}")
             st.write(f"**Yêu cầu:** {r.get('request', '')}")
             
@@ -243,5 +258,8 @@ with st.expander("Nhật ký phiên AI (10 mục gần nhất)"):
             elif not r.get("code_ai") and r.get("code_run"):
                 st.caption("Code (không có bản gốc AI):")
                 st.code(r.get("code_run", ""), language="python")
-            else:
+            elif r.get("code_ai") and r.get("code_run"):
                 st.caption("Người dùng giữ nguyên code AI đề xuất.")
+            elif r.get("code_ai"):
+                st.caption("Code AI đang chờ người dùng duyệt:")
+                st.code(r.get("code_ai", ""), language="python")
