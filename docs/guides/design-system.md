@@ -1,12 +1,12 @@
-# Design convention — Dashboard PAPI (phong cách Our World in Data)
+# Quy ước thiết kế Dashboard PAPI
 
 Tài liệu chốt quy ước thiết kế để bốn trang phân tích trông như một sản phẩm. Phần lớn
 quy ước được **enforce bằng code** trong `app/lib/` và `.streamlit/config.toml`, nên thành
 viên chủ yếu chỉ thêm nội dung, không tự đặt style.
 
 ## 1. Nguyên tắc
-- Dashboard **thiết kế tổng quát**, không in câu hỏi lên màn hình. Câu hỏi định hướng
-  (xem `dashboard_plan.md`) chỉ để dẫn dắt phân tích; người xem **quan sát biểu đồ để tự trả lời**.
+- Dashboard **thiết kế tổng quát**, không in câu hỏi lên màn hình. Câu hỏi định hướng trong
+  [`docs/roadmap.md`](../roadmap.md) chỉ để dẫn dắt phân tích; người xem **quan sát biểu đồ để tự trả lời**.
 - "Đẹp" = phục vụ đọc dữ liệu nhanh và trung thực, không trang trí.
 - Ít biểu đồ nhưng to và rõ; nhiều khoảng trắng.
 

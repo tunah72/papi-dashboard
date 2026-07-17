@@ -1,6 +1,6 @@
 # Manual test cases cho AI Engine
 
-Ngày cập nhật: 2026-06-19
+Ngày rà soát theo UI hiện tại: 2026-07-17
 
 Mục tiêu: kiểm tra luồng AI human-in-the-loop trong trang `AI Assistant`, đặc biệt các thay đổi mới:
 
@@ -81,7 +81,7 @@ Mục tiêu: kiểm tra luồng AI human-in-the-loop trong trang `AI Assistant`,
 **Bước thực hiện:**
 
 1. Mở `AI Assistant`.
-2. Chọn `Phân tích insight theo lĩnh vực`.
+2. Chọn `Nhận xét tự động cho một lĩnh vực`.
 3. Trong ô `Câu hỏi gợi ý`, đổi nội dung thành:
 
    ```text
@@ -109,3 +109,26 @@ Mục tiêu: kiểm tra luồng AI human-in-the-loop trong trang `AI Assistant`,
 - Code vẫn dùng `D4` hoặc “Kiểm soát tham nhũng”.
 - Kết quả không có top cao/thấp như yêu cầu bổ sung.
 - AI trả code thiếu `result` hoặc thiếu `fig` trong khi có yêu cầu biểu đồ.
+
+## Test case 4: Context từ biểu đồ và quyền phê duyệt
+
+**Mục tiêu:** xác nhận AI nhận đúng chart/filter context và không thực thi trước quyết định của người dùng.
+
+**Bước thực hiện:**
+
+1. Mở trang `Diễn biến theo thời gian`, chọn phạm vi 6 lĩnh vực và khoảng năm 2015–2024.
+2. Bấm `Giải thích Diễn biến tổng điểm`.
+3. Xác nhận AI Assistant mở với câu hỏi đã được seed theo biểu đồ.
+4. Bấm `Sinh code (AI đề xuất)` nhưng chưa bấm phê duyệt.
+5. Kiểm tra code/giải thích hiển thị và chưa có `Kết quả thực thi` mới.
+6. Sửa một dòng comment hoặc tham số hợp lệ, sau đó bấm `Phê duyệt và thực thi`.
+
+**Kỳ vọng đạt:**
+
+- Prompt gửi đi có page, chế độ 6 lĩnh vực, khoảng 2015–2024 và chart ID.
+- Không chạy code ở bước 4–5.
+- Sau phê duyệt mới xuất hiện result/fig/error.
+- Nhật ký thực thi hiển thị diff giữa code AI và code người dùng đã duyệt.
+
+**Lưu ý về giới hạn hiện tại:** nếu chỉ sinh code rồi rời trang mà không thực thi, hệ thống chưa tạo
+bản ghi log. Đây là backlog đã ghi trong `docs/roadmap.md`, không phải kết quả mong đợi của test.

@@ -3,7 +3,7 @@ build_dataset.py — Gộp 14 file PAPI raw (2011-2024) về dataset chuẩn d�
 Logic dùng chung nằm ở src/papi_lib.py. File này lo orchestration + QC + xuất + ghi log.
 
 Đầu vào : data/raw/*.xlsx  (BẤT KHẢ XÂM PHẠM — chỉ đọc)
-Đầu ra  : data/processed/  + docs/data_processing_log.md
+Đầu ra  : data/processed/  + docs/data/processing-log.md
 Chạy    : python3 src/build_dataset.py
 """
 from __future__ import annotations
@@ -142,7 +142,7 @@ def main():
     wide, nat = aggregate(fact_dim, official_total)
     ok = quality_checks(fact_dim, wide)
     export(fact_dim, wide, nat)
-    with open(f"{DOCS}/data_processing_log.md", "w", encoding="utf-8") as f:
+    with open(f"{DOCS}/data/processing-log.md", "w", encoding="utf-8") as f:
         f.write("\n".join(LOG))
     print("\n" + ("✅ TẤT CẢ KIỂM TRA PASS" if ok else "⚠️ CÓ KIỂM TRA FAIL — xem log"))
     return ok
