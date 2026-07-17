@@ -133,14 +133,15 @@ Dữ liệu trải 3 thời kỳ với cấu trúc **không tương thích**, kh
 ## 8. Hàm ý cho việc build dataset
 
 **Vì sao phải chuyển sang dạng long:** để wide (1 tỉnh-năm/dòng) chỉ 63 × 14 = **882 dòng** → trượt mốc
-2000 của đề. Chuyển long (tỉnh × năm × trục): 7×63×6 + 7×63×8 = **6.174 dòng** → đạt.
+2000 của đề. Lưới đầy đủ theo lý thuyết có 7×63×6 + 7×63×8 = **6.174 dòng**. Sau khi giữ dữ liệu
+thiếu tại nguồn là thiếu và loại các điểm 0 không hợp lệ, fact thực tế có **6.094 dòng** → vẫn đạt.
 
 **Quyết định build v0 (tối thiểu, để bắt đầu EDA):**
 - Lấy **Tổng PAPI + 8 trục**; tạm bỏ trục thành phần (thêm sau nếu EDA cần).
 - Chỉ dòng **Unweighted**.
 - Chuẩn hoá tên tỉnh → `province_id`; NULL giữ nguyên, đánh dấu.
 - Xuất: `fact_papi_long` (gốc) + `agg_province_year` (wide) + `agg_national_year` + bảng tra cứu.
-- Ghi `docs/data_processing_log.md` từng bước.
+- Ghi `docs/data/processing-log.md` từng bước.
 
 ## 9. Đối chiếu ràng buộc đề bài
 
@@ -150,8 +151,8 @@ Dữ liệu trải 3 thời kỳ với cấu trúc **không tương thích**, kh
 | Về Việt Nam, >50% | ✅ | 100% Việt Nam |
 | Nguồn đáng tin, minh bạch | ✅ | Công khai, có phương pháp luận |
 | ≥7 biến độc lập | ✅ | ≥10 (tỉnh, mã, vùng, năm, trục, điểm, tổng, hạng, tier…) |
-| ≥2000 dòng | ✅ | 6.174 dòng (dạng long) |
-| Ghi rõ các bước xử lý | ✅ | data_processing_log.md |
+| ≥2000 dòng | ✅ | 6.094 dòng thực tế (dạng long) |
+| Ghi rõ các bước xử lý | ✅ | `docs/data/processing-log.md` |
 
 **Hạn chế cần nêu trong báo cáo:** dữ liệu là **cảm nhận chủ quan** của dân, không phải số liệu hành
 chính; và là **cấp tỉnh đã tổng hợp** nên không phân tích được khác biệt nam/nữ, dân tộc, hộ khẩu
@@ -165,4 +166,4 @@ chính; và là **cấp tỉnh đã tổng hợp** nên không phân tích đư�
 
 ---
 *Tài liệu này là bản tổng hợp giai đoạn Data Understanding. Các phát hiện sẽ được kiểm chứng lại trong
-bước EDA (`docs/eda_findings.md`) và quá trình xử lý ghi tại `docs/data_processing_log.md`.*
+bước EDA (`docs/data/eda-findings.md`) và quá trình xử lý ghi tại `docs/data/processing-log.md`.*

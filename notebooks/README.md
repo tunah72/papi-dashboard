@@ -11,8 +11,8 @@ Mỗi notebook có các block **🔎 Nhận xét** bình luận kết quả.
 
 ## Chuẩn bị
 ```bash
-pip install -r ../requirements.txt
+pip install -r ../requirements-dev.txt
 ```
-- `preprocessing.ipynb` đọc `../data/raw/` → ghi `../data/processed/` + `../docs/data_processing_log.md`.
+- `preprocessing.ipynb` đọc `../data/raw/` → ghi `../data/processed/` + `../docs/data/processing-log.md`.
 - `eda.ipynb` chỉ đọc `../data/processed/` (không sửa dữ liệu).
 - Logic dùng chung ở `../src/papi_lib.py`; notebook gọi lại đúng hàm đó (một nguồn sự thật).

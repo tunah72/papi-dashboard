@@ -1,8 +1,9 @@
 # Dataset đã xử lý — PAPI (v0)
 
 > Sản phẩm của `src/build_dataset.py` (gộp 14 file raw 2011–2024). Nhật ký xử lý đầy đủ:
-> `docs/data_processing_log.md`. Nền tảng dữ liệu thô: `docs/data_understanding.md`.
-> **Mọi kiểm tra chất lượng đều PASS.** Tổng tính khớp 100% tổng official (369 dòng, lệch 0.0000).
+> `docs/data/processing-log.md`. Nền tảng dữ liệu thô: `docs/data/data-understanding.md`.
+> **Mọi kiểm tra chất lượng hiện có của pipeline đều PASS.** Tổng tính khớp 100% tổng official
+> (369 dòng, lệch 0.0000). Pipeline chưa kiểm tra tính duy nhất của feature GeoJSON.
 
 ## 1. Bộ file (data/processed/)
 
@@ -43,10 +44,10 @@ Cột: `province_id, province_vi, region, region_id, year, D1…D8, total_papi, 
 
 Mẫu thật (top 3 năm 2024):
 ```
-province_vi   region                year   D1    D4    D8   total_papi  rank  tier
-Quảng Ninh    Đồng bằng sông Hồng   2024  5.87  7.99  3.94  47.82       1     Cao nhất
-Tây Ninh      Đông Nam Bộ           2024  5.37  8.20  3.88  47.35       2     Cao nhất
-Bình Thuận    BTB & DH miền Trung   2024  5.63  7.71  3.66  47.13       3     Cao nhất
+province_vi   region                year   D1    D4    D8   total_papi  rank_year  tier
+Quảng Ninh    Đồng bằng sông Hồng   2024  5.87  7.99  3.94  47.82       1          Cao nhất
+Tây Ninh      Đông Nam Bộ           2024  5.37  8.20  3.88  47.35       2          Cao nhất
+Bình Thuận    BTB & DH miền Trung   2024  5.63  7.71  3.66  47.13       3          Cao nhất
 ```
 
 ### `agg_national_year` — xu hướng cả nước (grain: năm × trục)
@@ -88,6 +89,8 @@ D["prov_year"].query("year == 2024").nsmallest(10, "rank_year")   # top 10 tỉn
 - **2024:** Vĩnh Phúc & Tiền Giang bị zero-hoá do file 2024 tổ chức theo 34 tỉnh mới (hai tỉnh này bị sáp nhập).
 - **v0 chỉ ở cấp 8 trục** — chưa có trục thành phần (sẽ thêm nếu EDA cần).
 - **Dữ liệu chủ quan** (cảm nhận của dân) + **cấp tỉnh tổng hợp** → không phân tích được khác biệt nam/nữ, dân tộc.
+- **GeoJSON có 64 feature record nhưng 63 ID duy nhất; `province_id=49` lặp hai lần.** Cần xác minh
+  đây là geometry tách mảnh hợp lệ hay bản ghi trùng trước khi sửa và bổ sung QC tương ứng.
 
 ## 6. Đối chiếu ràng buộc đề
 | Yêu cầu | Kết quả |
@@ -96,10 +99,10 @@ D["prov_year"].query("year == 2024").nsmallest(10, "rank_year")   # top 10 tỉn
 | ≥7 biến độc lập | ✅ ~12 cột |
 | >50% Việt Nam | ✅ 100% |
 | Nguồn minh bạch | ✅ UNDP+CECODES+RTA |
-| Ghi rõ bước xử lý | ✅ data_processing_log.md |
+| Ghi rõ bước xử lý | ✅ `docs/data/processing-log.md` |
 
 ## 7. Tái lập
 ```bash
-python3 src/build_dataset.py     # đọc data/raw/ → ghi data/processed/ + docs/data_processing_log.md
+python3 src/build_dataset.py     # đọc data/raw/ → ghi data/processed/ + docs/data/processing-log.md
 ```
 `data/raw/` không bị chỉnh sửa. Chạy lại cho kết quả y hệt (deterministic).

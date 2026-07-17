@@ -1,115 +1,102 @@
-# PAPI Dashboard — Trực quan hóa và phân tích dữ liệu quản trị cấp tỉnh
+# PAPI Dashboard
 
-Đồ án cuối kỳ môn Trực quan hóa Dữ liệu (CSC10108). Dashboard Streamlit trực quan hóa Chỉ số PAPI
-(Hiệu quả Quản trị và Hành chính công cấp tỉnh) tại 63 tỉnh giai đoạn 2011-2024, kèm một AI module
-phân tích theo cơ chế con người phê duyệt (human-in-the-loop).
+Đồ án cuối kỳ môn Trực quan hóa Dữ liệu (CSC10108), trực quan hóa Chỉ số Hiệu quả Quản trị và
+Hành chính công cấp tỉnh (PAPI) của Việt Nam giai đoạn 2011–2024. Sản phẩm gồm dashboard Streamlit,
+pipeline dữ liệu có thể tái lập và module AI human-in-the-loop: AI đề xuất code, người dùng xem/sửa/
+phê duyệt, sau đó code mới được chạy tại máy.
 
-## 1. Yêu cầu
+## Trạng thái hiện tại
 
-- Python 3.11 trở lên.
-- Dữ liệu thô PAPI (14 tệp Excel) đặt sẵn trong `data/raw/`.
+- Đã hoàn thiện pipeline dữ liệu, EDA, trang Tổng quan và trang Diễn biến theo thời gian.
+- Ba trang So sánh tỉnh, Phân tích theo lĩnh vực và Động lực/phân nhóm vẫn là trang chờ.
+- AI Assistant đã có luồng sinh code → duyệt → chạy local, bốn plugin phân tích và test offline.
+- Báo cáo LaTeX mới ở mức khung ban đầu.
+- Lần rà soát gần nhất: 17/07/2026, toàn bộ 45 test offline đạt.
 
-## 2. Cài đặt với venv
+Chi tiết và các khoảng trống đã xác minh: [Trạng thái dự án](docs/project-status.md).
 
-macOS / Linux:
+## Chạy nhanh
+
+Yêu cầu Python 3.11 trở lên. Từ thư mục gốc dự án:
 
 ```bash
-cd final-project
 python3 -m venv .venv
 source .venv/bin/activate
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-Windows (PowerShell):
-
-```powershell
-python -m venv .venv
-.venv\Scripts\Activate.ps1
-pip install --upgrade pip
-pip install -r requirements.txt
-```
-
-Các lần làm việc sau chỉ cần kích hoạt lại: `source .venv/bin/activate`.
-
-## 3. Chuẩn bị dữ liệu
-
-Bộ dữ liệu đã xử lý nằm sẵn trong `data/processed/`. Để build lại từ dữ liệu thô, chọn một trong hai
-cách (cho kết quả y hệt nhau, đã được cross-check):
-
-```bash
-python src/build_dataset.py        # cách 1: chạy pipeline
-# hoặc mở notebooks/preprocessing.ipynb và Run All  (cách 2: bản trình bày)
-```
-
-Đầu ra trong `data/processed/`: `fact_papi_long` (long), `agg_province_year` (wide panel 63x14),
-`agg_national_year`, `dim_province`, `dim_indicator`, `vietnam_provinces.geojson`. Nhật ký xử lý ghi
-tại `docs/data_processing_log.md`.
-
-## 4. Chạy dashboard
-
-```bash
+python -m pip install --upgrade pip
+python -m pip install -r requirements-dev.txt
 streamlit run app/main.py
 ```
 
-App mở ở trình duyệt với trang Tổng quan và bốn trang phân tích.
+Trên Windows PowerShell, kích hoạt môi trường bằng `.venv\Scripts\Activate.ps1`.
 
-## 5. Cấu hình AI module
-
-AI module dùng Groq. Lấy API key tại https://console.groq.com/keys rồi tạo tệp
-`.streamlit/secrets.toml` (đã được `.gitignore` loại trừ, không commit):
+Dashboard không cần API key để xem các trang trực quan. Để dùng AI Assistant:
 
 ```bash
 cp .streamlit/secrets.toml.example .streamlit/secrets.toml
-# rồi sửa GROQ_API_KEY bằng key thật
 ```
 
-Không có key, các trang trực quan vẫn chạy bình thường; chỉ chức năng sinh code của trang AI Assistant
-là cần key.
+Sau đó điền `GROQ_API_KEY` vào file vừa tạo. Không commit file secrets.
 
-## 6. Notebooks
+## Dữ liệu
 
-Ba notebook trình bày quy trình dữ liệu, chạy theo thứ tự:
+- Nguồn chính: PAPI, do UNDP Việt Nam, CECODES và RTA công bố tại [papi.org.vn](https://papi.org.vn/).
+- Phạm vi: 63 tỉnh/thành, 14 năm (2011–2024), 8 lĩnh vực PAPI; D7–D8 chỉ có từ 2018.
+- Bảng long đã xử lý có 6.094 dòng; panel tỉnh-năm có 882 dòng.
+- Dữ liệu thiếu tại nguồn được giữ là thiếu, không nội suy hay bịa số.
+
+Build lại dữ liệu:
 
 ```bash
-jupyter notebook   # rồi mở notebooks/
+python src/build_dataset.py
 ```
 
-1. `data_understanding.ipynb` — nguồn và cấu trúc dữ liệu thô.
-2. `preprocessing.ipynb` — gộp và làm sạch, tự chứa logic, có ô cross-check với `src/`.
-3. `eda.ipynb` — phân tích khám phá và biểu đồ.
+Lệnh này đọc `data/raw/`, ghi `data/processed/` và cập nhật
+[`docs/data/processing-log.md`](docs/data/processing-log.md). Không chỉnh sửa dữ liệu raw.
 
-## 7. Cấu trúc dự án
+## Kiểm thử
 
-```
-data/raw/            14 tệp Excel gốc (chỉ đọc)
-data/processed/      dữ liệu đã xử lý + geojson
-notebooks/           bản trình bày quy trình dữ liệu
-src/                 bản kỹ thuật: papi_lib, build_dataset, analysis/
-app/
-  main.py            entry point, multipage navigation
-  pages/             Overview + 4 trang phân tích + AI Assistant
-  lib/               config, data, charts, filters (dùng chung)
-  ai/                api_ai, api_exec, api_logs, registry, techniques/
-docs/                tài liệu thiết kế, kế hoạch, kết quả
+`requirements-dev.txt` bao gồm dependency runtime và `pytest` cho môi trường phát triển:
+
+```bash
+python -m pytest -q
 ```
 
-Kiến trúc chi tiết: `docs/architecture.md`.
+Các test hiện tại tập trung vào AI API/executor, trạng thái AI Assistant và phân tích xu hướng.
 
-## 8. Hướng dẫn cho thành viên phát triển
+## Tài liệu
 
-Mỗi thành viên sở hữu một vertical slice độc lập (xem `docs/work_assignment.md`): một trang trong
-`app/pages/`, một analysis module trong `src/analysis/`, một AI technique plugin trong
-`app/ai/techniques/`. Không sửa các tệp hạ tầng đã freeze trong `app/lib/`, `app/main.py`, khung
-`app/ai/`.
+Bắt đầu tại [docs/README.md](docs/README.md). Đây là chỉ mục phân biệt tài liệu nguồn sự thật, hướng
+dẫn đang dùng và tài liệu lịch sử. Không dùng trực tiếp nội dung trong `docs/archive/` để quyết định
+trạng thái hiện tại.
 
-Quy ước import trong app: `from lib import config, data, charts, filters`; `from ai import ...`;
-`from analysis import <module>` (thư mục `src/` đã được thêm vào path qua `app/lib/config.py`).
+Các điểm vào chính:
 
-Tài liệu định hướng: `docs/dashboard_plan.md` (bốn hướng và câu hỏi), `docs/foundation_checklist.md`
-(tiến độ đợt nền), `docs/eda_findings.md` (phát hiện chính).
+- [Trạng thái dự án](docs/project-status.md)
+- [Kiến trúc thực tế](docs/architecture.md)
+- [Hướng dẫn cài đặt và phát triển](docs/guides/getting-started.md)
+- [Roadmap còn lại](docs/roadmap.md)
+- [Dữ liệu và EDA](docs/data/README.md)
+- [AI human-in-the-loop](docs/ai/README.md)
+- [Quy ước thiết kế](docs/guides/design-system.md)
 
-## 9. Nguồn dữ liệu
+## Cấu trúc chính
 
-- PAPI: UNDP, CECODES, RTA. https://papi.org.vn
-- Ranh giới hành chính: geoBoundaries (VNM ADM1).
+```text
+app/                 Streamlit dashboard và AI Assistant
+src/                 pipeline dữ liệu và hàm phân tích thuần
+data/raw/            14 file Excel nguồn, chỉ đọc
+data/processed/      các bảng đã xử lý và GeoJSON
+notebooks/           data understanding, preprocessing, EDA
+tests/               test offline
+docs/                tài liệu dự án đang dùng và archive
+report/              khung báo cáo LaTeX HCMUS
+reports/figures/      biểu đồ EDA đã xuất
+logs/                log JSONL của AI Assistant, không commit dữ liệu phiên
+```
+
+## Nhóm thực hiện
+
+- 23120199 — Lê Xuân Trí
+- 23120208 — Dương Tuấn Anh
+- 23122038 — Nguyễn Trần Trung Kiên
+- 23122045 — Lê Đức Phúc
