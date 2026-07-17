@@ -144,17 +144,18 @@ with mean_col:
             orientation="h",
             marker_color=[config.REGION_COLORS[item] for item in plot_summary.region.astype(str)],
             text=plot_summary.mean_score,
-            texttemplate="%{text:.2f}", textposition="outside",
+            texttemplate="%{text:.1f}", textposition="outside",
             hovertemplate="%{y}: %{x:.2f} điểm<extra></extra>",
         ))
         charts.apply_owid(
             fig_means, title="Trung bình từng vùng",
             subtitle=f"{metric_label.capitalize()} · {year}", source=None, height=470,
         )
-        lo = max(0, float(plot_summary.mean_score.min()) - 1.1)
         hi = float(plot_summary.mean_score.max()) + 1.5
-        fig_means.update_layout(margin=dict(l=16, r=70, t=82, b=78), showlegend=False)
-        fig_means.update_xaxes(range=[lo, hi])
+        fig_means.update_layout(margin=dict(l=16, r=88, t=82, b=78), showlegend=False)
+        fig_means.update_traces(cliponaxis=False)
+        # Biểu đồ cột phải có baseline 0 để không phóng đại chênh lệch vùng.
+        fig_means.update_xaxes(range=[0, hi])
         fig_means.update_yaxes(
             ticktext=[REGION_TICK_LABELS[item] for item in plot_summary.region.astype(str)],
             tickvals=plot_summary.region.astype(str), tickfont=dict(size=10.5),
