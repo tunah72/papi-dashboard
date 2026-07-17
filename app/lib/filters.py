@@ -36,6 +36,13 @@ def select_year(data, label="Năm", default=config.YEAR_MAX):
     return st.sidebar.select_slider(label, options=years, value=default)
 
 
+def year_inline(data, label="Năm", default=config.YEAR_MAX, year_min=None):
+    """Chọn một năm tại vị trí gọi, có thể giới hạn theo thước đo đang dùng."""
+    years = sorted(y for y in data["prov_year"].year.unique() if year_min is None or y >= year_min)
+    default = default if default in years else years[-1]
+    return st.select_slider(label, options=years, value=default)
+
+
 def select_year_range(data, label="Khoảng năm", year_min=None):
     years = sorted(y for y in data["prov_year"].year.unique() if year_min is None or y >= year_min)
     return st.sidebar.select_slider(label, options=years, value=(years[0], years[-1]))

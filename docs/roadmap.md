@@ -9,7 +9,8 @@ trong `archive/` và không dùng để theo dõi tiến độ mới.
 - [x] Viết lại trạng thái và kiến trúc dựa trên code.
 - [x] Thêm `pytest` vào `requirements-dev.txt` cho môi trường phát triển.
 - [ ] Chạy notebook preprocessing từ đầu và lưu bằng chứng cross-check với pipeline.
-- [ ] Điều tra feature GeoJSON lặp `province_id=49`, sửa nguồn/build step và thêm QC uniqueness.
+- [x] Chuẩn hoá GeoJSON khi nạp app: gộp hai phần ID `49`, rewind vòng cho Plotly/D3 và test 63 ID;
+  giữ nguyên file nguồn.
 
 ## P1 — Hoàn thiện ba hướng dashboard còn thiếu
 
