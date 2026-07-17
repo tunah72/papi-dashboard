@@ -3,10 +3,10 @@
 [theme]
 base = "light"
 primaryColor = "#B13507"              # accent vermillion (link, widget active, nút)
-backgroundColor = "#FFFFFF"
-secondaryBackgroundColor = "#F7F5F2"  # nền phụ ấm (sidebar, card)
-textColor = "#1D1D1D"
+backgroundColor = "#F8F5EF"
+secondaryBackgroundColor = "#F1ECE4"  # nền phụ ấm (sidebar, card)
+textColor = "#18212D"
 font = "sans-serif"                    # body và biểu đồ dùng sans
 headingFont = "serif"                 # tiêu đề dùng serif (editorial OWID)
-baseRadius = "0.4rem"
-borderColor = "#E7E5E0"
+baseRadius = "0.55rem"
+borderColor = "#DED8CE"
