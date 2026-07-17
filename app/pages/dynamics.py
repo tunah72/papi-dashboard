@@ -6,6 +6,7 @@ from analysis import dynamics
 
 d=data.load_data()
 layout.page_header("Tỉnh nào thay đổi, và thay đổi theo kiểu nào?", "Theo dõi mức thay đổi đầu-cuối, sau đó gom tỉnh có profile lĩnh vực tương đồng để đọc các kiểu quản trị.", eyebrow="Hướng 4 · Động lực và phân nhóm")
+layout.story_route(4)
 with st.container(border=True):
     a,b=st.columns([1.35,1])
     with a: mode=filters.scale_segmented("Phạm vi so sánh")

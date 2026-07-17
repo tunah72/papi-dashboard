@@ -142,6 +142,9 @@ def inject_global_styles():
           .papi-story-title { color: var(--papi-ink); font-family: Iowan Old Style, Palatino Linotype, Book Antiqua, Georgia, serif; font-size: 1.25rem; font-weight: 700; line-height: 1.16; margin: .45rem 0; }
           .papi-story-desc { color: var(--papi-muted); font-size: .92rem; line-height: 1.5; margin-bottom: .55rem; }
           .papi-story-status { color: var(--papi-accent); font-size: .78rem; font-weight: 700; }
+          .papi-story-route { display:flex; flex-wrap:wrap; gap:.45rem; margin:0 0 1.35rem; }
+          .papi-story-route span { border:1px solid var(--papi-border); color:var(--papi-muted); font-size:.78rem; font-weight:700; padding:.32rem .55rem; }
+          .papi-story-route span.active { background:var(--papi-ink); border-color:var(--papi-ink); color:var(--papi-surface); }
           @media (max-width: 56rem) {
             [data-testid="stMainBlockContainer"] { padding: 1.4rem 1.05rem 3.2rem; }
             .papi-page-title { font-size: 2.2rem; }
@@ -286,6 +289,16 @@ def story_card(index, title, desc, status):
         f"<div class='papi-story-status'>{escape(status)}</div></article>",
         unsafe_allow_html=True,
     )
+
+
+def story_route(current):
+    """Hiển thị mạch kể chuyện chung giữa bốn hướng dashboard."""
+    steps = ["1. Xu hướng", "2. Vùng & tỉnh", "3. Lĩnh vực", "4. Động lực"]
+    html = "".join(
+        f"<span class='active'>{escape(step)}</span>" if i == current else f"<span>{escape(step)}</span>"
+        for i, step in enumerate(steps, start=1)
+    )
+    st.markdown(f"<nav class='papi-story-route' aria-label='Mạch kể chuyện'>{html}</nav>", unsafe_allow_html=True)
 
 
 def chart(fig, note_text=None):
