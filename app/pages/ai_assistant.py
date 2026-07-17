@@ -135,6 +135,15 @@ if btn_gen:
         st.session_state["ai_explanation"] = out["explanation"]
         st.session_state["ai_request"] = request
         st.session_state["ai_last_run_status"] = "pending"
+        # Log ngay khi AI đề xuất để cả code chưa được duyệt cũng truy xuất được.
+        api_logs.log({
+            "event": "generated_pending_approval",
+            "request": request,
+            "code_ai": st.session_state["ai_code"], "code_run": "",
+            "explanation": out["explanation"],
+            "context": st.session_state.get("dash_context"),
+            "error": None, "has_result": False, "has_fig": False,
+        })
         # Reset trạng thái chỉnh sửa cũ
         if "ai_edit" in st.session_state:
             del st.session_state["ai_edit"]
@@ -178,6 +187,7 @@ if "ai_code" in st.session_state:
         elif isinstance(result, pd.Series):
             result_shape = [int(result.shape[0])]
         api_logs.log({
+            "event": "executed_after_approval",
             "request": st.session_state.get("ai_request", ""),
             "code_ai": code_ai, "code_run": edited_to_run,
             "explanation": st.session_state.get("ai_explanation", ""),
