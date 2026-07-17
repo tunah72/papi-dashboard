@@ -163,12 +163,36 @@ def diverging_bar(df, cat_col, value_col, title=None, subtitle=None,
 
 
 def boxplot(df, x, y, color=None, title=None, subtitle=None, source=config.SOURCE_DEFAULT,
-            category_order=None, color_map=None, height=360):
+            category_order=None, color_map=None, points=False, height=360):
     """Boxplot phân phối. category_order là thứ tự nhóm trên trục x."""
     orders = {x: category_order} if category_order else None
     fig = px.box(df, x=x, y=y, color=color, category_orders=orders,
-                 color_discrete_map=color_map)
+                 color_discrete_map=color_map, points=points)
     apply_owid(fig, title, subtitle, source, height=height)
+    return fig
+
+
+def radar_comparison(categories, series, title=None, subtitle=None,
+                     source=config.SOURCE_DEFAULT, rng=(0, 10), height=410):
+    """Radar nhiều profile để đối chiếu tỉnh với benchmark.
+
+    ``series`` là list dict gồm ``name``, ``values`` và ``color``; mỗi profile
+    được khép vòng tự động để không phụ thuộc code page vào Plotly polar.
+    """
+    cats = list(categories)
+    fig = go.Figure()
+    for item in series:
+        values = list(item["values"])
+        fig.add_trace(go.Scatterpolar(
+            r=values + values[:1], theta=cats + cats[:1], name=item["name"],
+            fill=item.get("fill", None), opacity=item.get("opacity", 1),
+            line=dict(color=item.get("color", config.ACCENT), width=item.get("width", 2.4)),
+        ))
+    apply_owid(fig, title, subtitle, source, cartesian=False, height=height)
+    fig.update_layout(
+        polar=dict(radialaxis=dict(range=list(rng), tickfont=dict(size=11), gridcolor=config.GRID_COLOR)),
+        legend=dict(orientation="h", y=-0.18, x=0, xanchor="left"),
+    )
     return fig
 
 

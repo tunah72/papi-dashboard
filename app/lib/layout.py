@@ -194,7 +194,11 @@ def kpi_strip(items):
 
 
 _KPI_TONE = {"neutral": "var(--color-text-primary)", "pos": "#2F7D4F", "neg": "#B13507"}
-_KPI_PILL = {"pos": ("#E6F1EA", "#2F7D4F", "↑"), "neg": ("#FBEAEA", "#B13507", "↓")}
+_KPI_PILL = {
+    "pos": ("#E6F1EA", "#2F7D4F", "↑"),
+    "neg": ("#FBEAEA", "#B13507", "↓"),
+    "neutral": ("#EDF0F4", "#5B6572", "•"),
+}
 
 
 def _spark_svg(values):
@@ -226,7 +230,7 @@ def kpi_cards(items):
       value: giá trị (số hoặc tên lĩnh vực).
       tone:  'neutral' | 'pos' | 'neg' — màu của value (mặc định neutral).
       big:   True = value cỡ lớn (số); False = cỡ vừa, xuống dòng được (tên dài).
-      delta: tuple (text, 'pos'|'neg') — pill màu dưới value, hoặc None.
+      delta: tuple (text, 'pos'|'neg'|'neutral') — pill màu dưới value, hoặc None.
       spark: list số — nếu có, render sparkline SVG nhỏ thay cho ô trống delta.
     """
     cols = st.columns(len(items))
