@@ -87,17 +87,18 @@ def line_trend(df, x="year", y="mean_score", color="code", color_map=None, label
 
 
 def choropleth(df, geojson, value_col, name_col="province_vi", title=None, subtitle=None,
-               source=config.SOURCE_DEFAULT, color_scale=None, height=420):
+               source=config.SOURCE_DEFAULT, color_scale=None, range_color=None, height=420):
     """Choropleth 63 tỉnh. df cần `province_id` và `value_col`; join theo properties.province_id."""
     fig = px.choropleth(
         df, geojson=geojson, locations="province_id",
         featureidkey="properties.province_id", color=value_col,
         hover_name=name_col, color_continuous_scale=color_scale or config.SEQ_SCALE,
+        range_color=range_color,
     )
     fig.update_geos(fitbounds="locations", visible=False)
     apply_owid(fig, title, subtitle, source, cartesian=False, height=height)
     fig.update_layout(margin=dict(l=0, r=0, t=48 if title else 8, b=40 if source else 0),
-                      coloraxis_colorbar=dict(title=None, thickness=12, len=0.7))
+                      coloraxis_colorbar=dict(title="Điểm", thickness=12, len=0.7))
     return fig
 
 

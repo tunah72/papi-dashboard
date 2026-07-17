@@ -18,7 +18,7 @@ kế hoạch cũ làm bằng chứng.
 | H3 — Phân tích theo lĩnh vực | Stub | `app/pages/dimension.py` chỉ hiển thị thông báo |
 | H4 — Động lực và phân nhóm | Stub | `app/pages/dynamics.py` chỉ hiển thị thông báo |
 | AI Assistant | Đã có luồng chính, còn gap tuân thủ/log | `app/pages/ai_assistant.py`, `app/ai/` |
-| Test offline | 45 test đạt | `.venv/bin/python -m pytest -q` |
+| Test offline | 46 test đạt | `.venv/bin/python -m pytest -q` |
 | Báo cáo LaTeX | Khung ban đầu | `report/main.tex`, nội dung ngắn trong `report/content/` |
 | Chuẩn bị vấn đáp | Chưa có bộ bằng chứng hoàn chỉnh | chưa có log/ảnh demo được tuyển chọn trong repo |
 
@@ -29,15 +29,18 @@ kế hoạch cũ làm bằng chứng.
 - `national`: 112 dòng (14 năm × 8 lĩnh vực) × 6 cột.
 - 63 `province_id` duy nhất, năm từ 2011 đến 2024.
 - 13 tỉnh-năm thiếu `total_papi`, được giữ là `NaN`.
-- GeoJSON có 64 feature record nhưng chỉ 63 `province_id` duy nhất; ID `49` xuất hiện hai lần.
+- GeoJSON nguồn có 64 feature record nhưng chỉ 63 `province_id` duy nhất; ID `49` là phần đất liền
+  Bà Rịa–Vũng Tàu và Côn Đảo.
 
-Số liệu xử lý chi tiết nằm trong [processing-log.md](data/processing-log.md). Việc lặp feature
-GeoJSON chưa được sửa trong đợt tài liệu này vì đó là thay đổi dữ liệu cần được kiểm tra riêng.
+Số liệu xử lý chi tiết nằm trong [processing-log.md](data/processing-log.md). Khi nạp app,
+GeoJSON được chuẩn hoá thành 63 feature hiển thị: hai phần của ID `49` được gộp thành MultiPolygon và
+hướng vòng được đổi theo quy ước Plotly/D3. File nguồn không bị thay đổi.
 
 ## Dashboard đang chạy thật
 
-Trang Tổng quan có bộ chọn năm, KPI, choropleth và top/bottom 10. Trang H1 có hai chế độ 6/8 lĩnh
-vực, chọn khoảng năm, KPI, xu hướng tổng, so sánh trước/sau COVID, heatmap và click-to-drill.
+Trang Tổng quan có hai chế độ tổng 6/8 lĩnh vực, tự giới hạn năm hợp lệ, KPI, choropleth và
+top/bottom 10 theo đúng thước đo đang chọn. Trang H1 có hai chế độ 6/8 lĩnh vực, chọn khoảng năm,
+KPI, xu hướng tổng, so sánh trước/sau COVID, heatmap và click-to-drill.
 
 H2–H4 vẫn được đăng ký trong menu nhưng mỗi file chỉ có 13 dòng, publish context `status: stub` và
 hiển thị “Trang đang được phát triển”. Không nên trình bày đây là dashboard bốn hướng hoàn chỉnh.
@@ -68,6 +71,5 @@ Chưa đạt đầy đủ yêu cầu đề bài:
 
 1. **Phạm vi sản phẩm chưa đủ:** ba trong bốn hướng phân tích vẫn là stub.
 2. **Bằng chứng human-in-the-loop chưa đủ:** log chưa bao phủ toàn bộ vòng đời và output đầy đủ.
-3. **Dữ liệu bản đồ cần kiểm tra:** GeoJSON có một ID feature bị lặp.
-4. **Báo cáo chưa theo kịp code:** nội dung LaTeX hiện quá ngắn và chưa mô tả quá trình dùng AI.
+3. **Báo cáo chưa theo kịp code:** nội dung LaTeX hiện quá ngắn và chưa mô tả quá trình dùng AI.
 Thứ tự giải quyết và tiêu chí hoàn thành nằm trong [roadmap.md](roadmap.md).

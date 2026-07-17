@@ -42,16 +42,18 @@ App không đọc Excel trực tiếp. `app/lib/data.py` chỉ nạp các file t
 | `national` | `agg_national_year.parquet` | thống kê theo năm và lĩnh vực |
 | `dim_prov` | `dim_province.csv` | tên tỉnh, vùng và metadata |
 | `dim_ind` | `dim_indicator.csv` | tên/màu/thứ tự 8 lĩnh vực |
-| `geojson` | `vietnam_provinces.geojson` | hình học dùng cho bản đồ |
+| `geojson` | `vietnam_provinces.geojson` | bản sao đã chuẩn hoá để vẽ bản đồ |
 
-Notebook là bản trình bày có thể chạy lại; pipeline trong `src/` là đường chạy kỹ thuật của dự án.
+GeoJSON nguồn có hai feature của Bà Rịa–Vũng Tàu cùng ID `49` (đất liền và Côn Đảo). Khi nạp app,
+`app/lib/data.py` gộp chúng thành MultiPolygon và rewind vòng theo quy ước Plotly/D3; source GeoJSON
+trên đĩa vẫn giữ nguyên. Notebook là bản trình bày có thể chạy lại; pipeline trong `src/` là đường chạy kỹ thuật của dự án.
 Không nên giả định hai bản luôn đồng bộ nếu chưa chạy cross-check trong notebook preprocessing.
 
 ## Dashboard layer
 
 `app/main.py` khai báo sáu trang qua `st.navigation`:
 
-- `overview.py`: KPI, bản đồ và xếp hạng; đã có nội dung thật.
+- `overview.py`: chọn tổng 6/8 lĩnh vực, KPI, bản đồ và xếp hạng; đã có nội dung thật.
 - `time_trend.py`: phân tích xu hướng, COVID, heatmap và drill-down; đã có nội dung thật.
 - `provincial.py`, `dimension.py`, `dynamics.py`: hiện chỉ publish context tối thiểu và hiển thị thông
   báo đang phát triển.
