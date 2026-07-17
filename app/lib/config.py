@@ -57,7 +57,12 @@ def scale_config(mode):
 # Hệ màu dùng chung (phong cách OWID). Màu 8 trục lấy từ dim_indicator.csv; phần dưới
 # bổ sung màu vùng, tier, và các thang liên tục/phân kỳ để mọi trang dùng nhất quán.
 # --------------------------------------------------------------------------------------
-ACCENT = "#B13507"   # vermillion — accent thương hiệu
+ACCENT = "#A8431F"   # vermillion trầm — accent thương hiệu
+PAGE_BG = "#F8F5EF"
+SURFACE = "#FFFDFC"
+INK = "#18212D"
+MUTED = "#5B6572"
+BORDER = "#DED8CE"
 
 # Màu 6 vùng kinh tế - xã hội (khớp REGION_ORDER)
 REGION_COLORS = {
@@ -75,15 +80,15 @@ TIER_COLORS = {
 }
 
 # Thang liên tục cho choropleth/bar tổng (điểm thấp -> cao)
-SEQ_SCALE = ["#EAF0F6", "#9DB4D2", "#4C6A9C", "#2A3F66"]
+SEQ_SCALE = ["#E8EEF4", "#A6BAD2", "#58759C", "#263E61"]
 # Thang phân kỳ cho biến động (giảm <-> tăng), trung tính ở giữa
 DIV_SCALE = ["#B13507", "#E7C9B8", "#F2EDE6", "#A9CBC9", "#2C8C99"]
 
 # Hằng số style biểu đồ (charts.py dùng)
-FONT_FAMILY = "Helvetica Neue, Helvetica, Arial, sans-serif"
-GRID_COLOR = "#ECECEC"
-AXIS_COLOR = "#9CA3AF"
-TITLE_COLOR = "#1F2937"
-SUBTITLE_COLOR = "#6B7280"
-SOURCE_COLOR = "#9CA3AF"
+FONT_FAMILY = "Aptos, Avenir Next, Segoe UI, sans-serif"
+GRID_COLOR = "#E3DED5"
+AXIS_COLOR = "#66717F"
+TITLE_COLOR = INK
+SUBTITLE_COLOR = MUTED
+SOURCE_COLOR = "#727C88"
 SOURCE_DEFAULT = "Nguồn: PAPI — UNDP, CECODES, RTA"

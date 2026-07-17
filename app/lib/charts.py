@@ -16,35 +16,35 @@ TEMPLATE = "plotly_white"
 
 
 def apply_owid(fig, title=None, subtitle=None, source=config.SOURCE_DEFAULT,
-               cartesian=True, height=360):
+               cartesian=True, height=390):
     """Áp toàn bộ style OWID lên một figure: font, lề, tiêu đề + phụ đề, nguồn, lưới.
     cartesian=False cho biểu đồ không có trục x/y thường (choropleth, radar)."""
     title_obj = None
     if title:
-        title_obj = dict(text=title, x=0, xanchor="left", y=0.97, yanchor="top",
-                         font=dict(size=16, color=config.TITLE_COLOR))
+        title_obj = dict(text=title, x=0, xanchor="left", y=0.98, yanchor="top",
+                         font=dict(size=19, color=config.TITLE_COLOR, family="Iowan Old Style, Palatino Linotype, Georgia, serif"))
         if subtitle:
             title_obj["subtitle"] = dict(text=subtitle,
-                                         font=dict(size=12.5, color=config.SUBTITLE_COLOR))
-    top = (66 if subtitle else 48) if title else 16
-    bottom = 54 if source else 16
+                                         font=dict(size=14, color=config.SUBTITLE_COLOR))
+    top = (82 if subtitle else 58) if title else 16
+    bottom = 62 if source else 16
     fig.update_layout(
         template=TEMPLATE, height=height,
-        font=dict(family=config.FONT_FAMILY, size=13, color="#1D1D1D"),
+        font=dict(family=config.FONT_FAMILY, size=14, color=config.INK),
         title=title_obj, paper_bgcolor="white", plot_bgcolor="white",
-        margin=dict(l=8, r=70, t=top, b=bottom),
+        margin=dict(l=16, r=78, t=top, b=bottom),
     )
     if cartesian:
         fig.update_xaxes(showgrid=False, showline=False, zeroline=False, ticks="outside",
                          ticklen=4, tickcolor=config.GRID_COLOR,
-                         tickfont=dict(color=config.AXIS_COLOR, size=11), title=None)
+                         tickfont=dict(color=config.AXIS_COLOR, size=12.5), title=None)
         fig.update_yaxes(showgrid=True, gridcolor=config.GRID_COLOR, gridwidth=1,
                          showline=False, zeroline=False,
-                         tickfont=dict(color=config.AXIS_COLOR, size=11), title=None)
+                         tickfont=dict(color=config.AXIS_COLOR, size=12.5), title=None)
     if source:
         fig.add_annotation(text=source, xref="paper", yref="paper", x=0, y=-0.16,
                            showarrow=False, xanchor="left", yanchor="top",
-                           font=dict(size=10.5, color=config.SOURCE_COLOR))
+                           font=dict(size=12, color=config.SOURCE_COLOR))
     return fig
 
 
@@ -60,7 +60,7 @@ def _add_end_labels(fig, color_map=None):
             or (color_map or {}).get(tr.name)
         fig.add_annotation(x=xs[idx], y=ys[idx], text=f"  {tr.name}", showarrow=False,
                            xanchor="left", yanchor="middle",
-                           font=dict(size=11, color=col))
+                           font=dict(size=12.5, color=col))
     fig.update_layout(showlegend=False)
 
 
@@ -73,7 +73,7 @@ def line_trend(df, x="year", y="mean_score", color="code", color_map=None, label
     hovertemplate=None áp mẫu gọn mặc định; truyền chuỗi để ghi đè."""
     fig = px.line(df, x=x, y=y, color=color, color_discrete_map=color_map,
                   markers=True, labels=labels)
-    fig.update_traces(line=dict(width=2.4), marker=dict(size=5))
+    fig.update_traces(line=dict(width=2.8), marker=dict(size=6))
     apply_owid(fig, title, subtitle, source, height=height)
     fig.update_layout(hovermode="x unified")
     # Áp hovertemplate mặc định gọn

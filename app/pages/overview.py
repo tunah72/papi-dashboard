@@ -8,6 +8,7 @@ layout.page_header(
     "Tổng quan PAPI theo tỉnh",
     "Chỉ số Hiệu quả Quản trị và Hành chính công cấp tỉnh. "
     "Điểm cao thể hiện người dân hài lòng hơn với quản trị địa phương.",
+    eyebrow="Bức tranh quản trị cấp tỉnh · 2011–2024",
 )
 
 d = data.load_data()
@@ -58,38 +59,64 @@ layout.kpi_cards([
     {"label": "Xếp cuối", "value": f"{bot.province_vi} ({bot[total_col]:.1f})", "big": False},
 ])
 
-st.divider()
+gap = top[total_col] - bot[total_col]
+layout.insight(
+    f"{top.province_vi} dẫn đầu, {bot.province_vi} xếp cuối trong năm {year}",
+    f"Khoảng cách giữa hai tỉnh là {gap:.1f} điểm theo {measure_label}. "
+    "Chọn năm và phạm vi so sánh để kiểm tra mức độ phân hoá theo thời gian.",
+    label=f"Snapshot {year}",
+)
 
-left, right = st.columns([3, 2])
+layout.section_header(
+    "Bức tranh theo tỉnh",
+    "Bản đồ cho biết vị trí phân bố; xếp hạng giúp đọc nhanh các cực trị của cùng một thước đo.",
+)
+
+left, right = st.columns([1.55, 1])
 with left:
-    layout.chart(charts.choropleth(
-        wy, d["geojson"], total_col,
-        title=f"Bản đồ {map_measure_label} năm {year}",
-        subtitle=scale_subtitle,
-        range_color=score_range,
-    ))
-    layout.ai_explain_button(
-        f"Bản đồ {map_measure_label} năm {year}",
-        context={"data_scope": {"table": "prov_year", "score_column": total_col, "chart": "choropleth"}},
-        disabled=wy.empty,
-    )
+    with st.container(border=True):
+        layout.chart(charts.choropleth(
+            wy, d["geojson"], total_col,
+            title=f"Bản đồ {map_measure_label} năm {year}",
+            subtitle=scale_subtitle,
+            range_color=score_range,
+        ))
+        layout.ai_explain_button(
+            f"Bản đồ {map_measure_label} năm {year}",
+            context={"data_scope": {"table": "prov_year", "score_column": total_col, "chart": "choropleth"}},
+            disabled=wy.empty,
+        )
 with right:
-    layout.section_header(f"Xếp hạng theo {map_measure_label}")
-    tab_top, tab_bot = st.tabs(["Top 10", "Bottom 10"])
-    with tab_top:
-        st.plotly_chart(charts.bar_ranking(
-            wy.nlargest(10, total_col), total_col, "province_vi",
-            color=config.TIER_COLORS["Cao nhất"], source=None), width="stretch")
-    with tab_bot:
-        st.plotly_chart(charts.bar_ranking(
-            wy.nsmallest(10, total_col), total_col, "province_vi",
-            color=config.ACCENT, source=None), width="stretch")
+    with st.container(border=True):
+        layout.panel_heading(
+            f"Xếp hạng theo {map_measure_label}",
+            "Chuyển tab để xem hai đầu của phân phối điểm.",
+        )
+        tab_top, tab_bot = st.tabs(["Top 10", "Bottom 10"])
+        with tab_top:
+            st.plotly_chart(charts.bar_ranking(
+                wy.nlargest(10, total_col), total_col, "province_vi",
+                title="Mười tỉnh có điểm cao nhất", source=None, height=445,
+                color=config.TIER_COLORS["Cao nhất"]), width="stretch")
+        with tab_bot:
+            st.plotly_chart(charts.bar_ranking(
+                wy.nsmallest(10, total_col), total_col, "province_vi",
+                title="Mười tỉnh có điểm thấp nhất", source=None, height=445,
+                color=config.ACCENT), width="stretch")
 
-st.divider()
-
-layout.section_header("Bốn hướng phân tích")
-cols = st.columns(4)
-cols[0].page_link("pages/time_trend.py", label="Diễn biến theo thời gian")
-cols[1].page_link("pages/provincial.py", label="So sánh giữa các tỉnh")
-cols[2].page_link("pages/dimension.py", label="Phân tích theo trục")
-cols[3].page_link("pages/dynamics.py", label="Động lực thay đổi và phân nhóm")
+layout.section_header(
+    "Đi từ toàn cảnh đến lời giải thích",
+    "Bốn hướng dưới đây nối các phát hiện theo thời gian, tỉnh, lĩnh vực và động lực thay đổi.",
+)
+stories = [
+    ("HƯỚNG 1", "Diễn biến theo thời gian", "Theo dõi các lĩnh vực cải thiện, suy giảm và mốc COVID-19.", "Đã có nội dung", "pages/time_trend.py"),
+    ("HƯỚNG 2", "So sánh giữa các tỉnh", "Đặt khác biệt tỉnh và vùng cạnh nhau.", "Đang xây dựng", "pages/provincial.py"),
+    ("HƯỚNG 3", "Phân tích theo lĩnh vực", "Kiểm tra mối liên hệ và phân hoá giữa các lĩnh vực.", "Đang xây dựng", "pages/dimension.py"),
+    ("HƯỚNG 4", "Động lực thay đổi và phân nhóm", "Xem tỉnh nào thay đổi và các hồ sơ PAPI nổi bật.", "Đang xây dựng", "pages/dynamics.py"),
+]
+for row in (stories[:2], stories[2:]):
+    cols = st.columns(2)
+    for col, (index, title, desc, status, page) in zip(cols, row):
+        with col:
+            layout.story_card(index, title, desc, status)
+            st.page_link(page, label="Mở hướng phân tích")

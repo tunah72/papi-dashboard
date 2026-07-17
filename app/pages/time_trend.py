@@ -20,6 +20,7 @@ layout.page_header(
     "Diễn biến chỉ số PAPI cấp tỉnh, 2011–2024",
     "Đánh giá của người dân về hiệu quả quản trị và hành chính công, "
     "tổng hợp từ tám lĩnh vực nội dung.",
+    eyebrow="Hướng 1 · Xu hướng quốc gia",
 )
 
 # ── Control bar ────────────────────────────────────────────────────────────────────────
@@ -88,8 +89,20 @@ layout.kpi_cards([
      "delta": (f"{delta[down]:+.2f}", "pos" if delta[down] >= 0 else "neg")},
 ])
 
+layout.insight(
+    f"{L[up]} tăng mạnh nhất, trong khi {L[down]} giảm mạnh nhất giai đoạn {first}–{latest}",
+    f"Mức thay đổi lần lượt là {delta[up]:+.2f} và {delta[down]:+.2f} điểm. "
+    "Các biểu đồ bên dưới cho phép kiểm tra xu hướng tổng, thời điểm và lĩnh vực cụ thể.",
+    label="Tóm tắt theo dữ liệu đang chọn",
+)
+
 # ── Hàng A: đường tổng (trái) | cột COVID (phải) ──────────────────────────────────────
-col_left, col_right = st.columns([1.5, 1])
+layout.section_header(
+    "Xu hướng tổng thể",
+    "Đọc đường tổng trước, sau đó đối chiếu thay đổi của các lĩnh vực liên quan đến giai đoạn COVID-19.",
+)
+
+col_left, col_right = st.columns([1.65, 1])
 
 with col_left:
     with st.container(border=True):
@@ -128,7 +141,7 @@ with col_left:
             showarrow=False,
             xanchor="left", yanchor="middle",
             xshift=10,
-            font=dict(size=12, color=config.TITLE_COLOR),
+            font=dict(size=14, color=config.TITLE_COLOR),
         )
         layout.chart(fig1)
         layout.ai_explain_button(
@@ -176,6 +189,10 @@ with col_right:
             st.caption("Không đủ dữ liệu để vẽ biểu đồ COVID.")
 
 # ── Heatmap toàn cảnh (full width) ────────────────────────────────────────────────────
+layout.section_header(
+    "Toàn cảnh các lĩnh vực",
+    "Màu sắc và số trong ô giúp đối chiếu từng lĩnh vực trên cùng một chuỗi thời gian.",
+)
 with st.container(border=True):
     nat_filt = nat[nat.code.isin(cfg["dims"]) & nat.year.between(y0, y1)].copy()
     nat_filt["Lĩnh vực"] = nat_filt["code"].map(L)
@@ -205,6 +222,10 @@ with st.container(border=True):
 
 # ── Hàng C: diverging bar tương tác (trái) | đường chi tiết (phải) ───────────────────
 # Chuẩn bị dữ liệu diverging bar
+layout.section_header(
+    "Đi sâu vào thay đổi",
+    "Chọn một thanh để xem đường đi của lĩnh vực đó trong đúng khoảng năm đang xét.",
+)
 color_map = dict(zip(d["dim_ind"].code, d["dim_ind"].color))
 div_rows = []
 for code in cfg["dims"]:

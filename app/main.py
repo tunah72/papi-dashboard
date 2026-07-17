@@ -2,9 +2,10 @@
 Khai báo multipage navigation. Các trang nằm trong app/pages/."""
 import streamlit as st
 
-from lib import config
+from lib import config, layout
 
 st.set_page_config(page_title=config.APP_TITLE, layout="wide")
+layout.inject_global_styles()
 
 pages = [
     st.Page("pages/overview.py", title="Tổng quan", default=True),
