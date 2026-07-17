@@ -22,6 +22,7 @@ layout.page_header(
     "tổng hợp từ tám lĩnh vực nội dung.",
     eyebrow="Hướng 1 · Xu hướng quốc gia",
 )
+layout.story_route(1)
 
 # ── Control bar ────────────────────────────────────────────────────────────────────────
 with st.container(border=True):

@@ -29,6 +29,7 @@ layout.page_header(
     "So sánh mức điểm, độ phân tán trong vùng và vị trí của một tỉnh so với hai benchmark phù hợp.",
     eyebrow="Hướng 2 · So sánh không gian",
 )
+layout.story_route(2)
 
 # ── Control bar ────────────────────────────────────────────────────────────────────────
 with st.container(border=True):

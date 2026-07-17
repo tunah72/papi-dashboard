@@ -10,6 +10,7 @@ d = data.load_data()
 layout.page_header("Các lĩnh vực PAPI có đi cùng nhau?",
     "Đọc tương quan giữa các tỉnh trong cùng năm, sau đó kiểm tra từng cặp lĩnh vực thay vì suy diễn từ điểm tổng.",
     eyebrow="Hướng 3 · Mối liên hệ giữa lĩnh vực")
+layout.story_route(3)
 
 with st.container(border=True):
     c1, c2 = st.columns([1.35, 1])
