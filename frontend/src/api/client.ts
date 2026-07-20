@@ -39,8 +39,8 @@ export const api = {
   metadata: () => getJson<MetadataResponse>('/api/v1/metadata'),
   geojson: () => getJson<GeojsonResponse>('/api/v1/geojson'),
   overview: (scale: Scale, year: number) => getJson<OverviewResponse>(`/api/v1/overview?scale=${scale}&year=${year}`),
-  trends: (scale: Scale, from: number, to: number) => getJson<TrendsResponse>(`/api/v1/trends?scale=${scale}&from=${from}&to=${to}`),
+  trends: (scale: Scale, from: number, to: number, region?: string, province?: string) => getJson<TrendsResponse>(`/api/v1/trends?scale=${scale}&from=${from}&to=${to}${region ? `&region=${encodeURIComponent(region)}` : ''}${province ? `&province=${encodeURIComponent(province)}` : ''}`),
   provinces: (scale: Scale, year: number, region?: string, province?: string) => getJson<ProvincesResponse>(`/api/v1/provinces?scale=${scale}&year=${year}${region ? `&region=${encodeURIComponent(region)}` : ''}${province ? `&province=${encodeURIComponent(province)}` : ''}`),
   dimensions: (scale: Scale, year: number, x: string, y: string) => getJson<DimensionsResponse>(`/api/v1/dimensions?scale=${scale}&year=${year}&x=${encodeURIComponent(x)}&y=${encodeURIComponent(y)}`),
-  dynamics: (scale: Scale, from: number, to: number) => getJson<DynamicsResponse>(`/api/v1/dynamics?scale=${scale}&from=${from}&to=${to}`),
+  dynamics: (scale: Scale, from: number, to: number, k?: number) => getJson<DynamicsResponse>(`/api/v1/dynamics?scale=${scale}&from=${from}&to=${to}${k ? `&k=${k}` : ''}`),
 }

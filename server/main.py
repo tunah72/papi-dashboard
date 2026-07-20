@@ -43,27 +43,30 @@ def create_app() -> FastAPI:
     def get_geojson(): return services.geojson()
 
     @app.get("/api/v1/overview", response_model=OverviewResponse, responses={422: {"model": ErrorResponse}}, tags=["dashboard"])
-    def get_overview(scale: Scale = "six", year: int | None = None): return services.overview(scale, year)
+    def get_overview(scale: Scale = "eight", year: int | None = None): return services.overview(scale, year)
 
     @app.get("/api/v1/trends", response_model=TrendsResponse, responses={422: {"model": ErrorResponse}}, tags=["dashboard"])
     def get_trends(
         scale: Scale = "six",
         from_: Annotated[int | None, Query(alias="from")] = None,
         to: int | None = None,
-    ): return services.trends(scale, from_, to)
+        region: str | None = None,
+        province: str | None = None,
+    ): return services.trends(scale, from_, to, region, province)
 
     @app.get("/api/v1/provinces", response_model=ProvincesResponse, responses={422: {"model": ErrorResponse}}, tags=["dashboard"])
-    def get_provinces(scale: Scale = "six", year: int | None = None, region: str | None = None, province: str | None = None): return services.provinces(scale, year, region, province)
+    def get_provinces(scale: Scale = "eight", year: int | None = None, region: str | None = None, province: str | None = None): return services.provinces(scale, year, region, province)
 
     @app.get("/api/v1/dimensions", response_model=DimensionsResponse, responses={422: {"model": ErrorResponse}}, tags=["dashboard"])
-    def get_dimensions(scale: Scale = "six", year: int | None = None, x: str | None = None, y: str | None = None): return services.dimensions_view(scale, year, x, y)
+    def get_dimensions(scale: Scale = "eight", year: int | None = None, x: str | None = None, y: str | None = None): return services.dimensions_view(scale, year, x, y)
 
     @app.get("/api/v1/dynamics", response_model=DynamicsResponse, responses={422: {"model": ErrorResponse}}, tags=["dashboard"])
     def get_dynamics(
-        scale: Scale = "six",
+        scale: Scale = "eight",
         from_: Annotated[int | None, Query(alias="from")] = None,
         to: int | None = None,
-    ): return services.dynamics_view(scale, from_, to)
+        k: Annotated[int | None, Query(ge=2, le=6)] = None,
+    ): return services.dynamics_view(scale, from_, to, k)
 
     return app
 

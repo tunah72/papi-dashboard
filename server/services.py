@@ -91,6 +91,20 @@ def _indicator_rows(codes=None):
     return records(indicators)
 
 
+def _focus(region=None, province=None):
+    """Xác thực focus vùng/tỉnh dùng cho chuỗi linked-selection."""
+    provinces = data()["dim_prov"].set_index("province_vi").region.astype(str).to_dict()
+    regions = set(data()["dim_prov"].region.astype(str))
+    if province is not None and province not in provinces:
+        raise ContractError("Tỉnh được chọn không tồn tại trong danh mục PAPI.")
+    inferred_region = provinces.get(province) if province is not None else None
+    if region is not None and region not in regions:
+        raise ContractError("Vùng được chọn không tồn tại trong danh mục PAPI.")
+    if region is not None and inferred_region is not None and region != inferred_region:
+        raise ContractError("Tỉnh được chọn không thuộc vùng đã chọn.")
+    return inferred_region or region, province
+
+
 def metadata():
     d = data()
     return response({
@@ -106,7 +120,7 @@ def geojson():
     return response({"geojson": data()["geojson"]}, n=len(features), filters={}, unit="địa giới tỉnh", caveats=["GeoJSON được chuẩn hoá trong bộ nhớ; file nguồn không bị sửa."])
 
 
-def overview(scale="six", year=None):
+def overview(scale="eight", year=None):
     cfg = _scale(scale)
     year = _year(cfg, year)
     total = cfg["total_col"]
@@ -120,6 +134,26 @@ def overview(scale="six", year=None):
         "mean": float(snapshot[total].mean()), "min": float(snapshot[total].min()), "max": float(snapshot[total].max()),
         "leader": ranking.iloc[0]["province_vi"], "last": ranking.iloc[-1]["province_vi"], "gap": float(ranking.iloc[0][total] - ranking.iloc[-1][total]),
     }
+    start = cfg["year_min"]
+    trend_rows = trend.total_by_year(data()["prov_year"], total, start, year).rename(columns={total: "score"})
+    trend_rows["contributor_n"] = trend_rows.year.map(lambda item: _contributors(item, total))
+    regions = provincial.region_summary(snapshot, total, REGION_ORDER).rename(columns={"n_provinces": "n"})
+    dimension_snapshot = dimensions.snapshot_for_year(data()["prov_year"], year, cfg["dims"])
+    x_code, y_code, _ = dimensions.strongest_pair(dimension_snapshot, cfg["dims"])
+    if x_code is None or y_code is None:
+        pair_rows = pd.DataFrame(columns=["province_vi", "region", "x", "y", "quadrant"])
+        x_mean = y_mean = corr = float("nan")
+        x_code = y_code = ""
+    else:
+        pair_rows, x_mean, y_mean, corr = dimensions.pair_snapshot(dimension_snapshot, x_code, y_code)
+        pair_rows = pair_rows.rename(columns={x_code: "x", y_code: "y"})
+    if year > start:
+        highlight_rows = dynamics.changes(data()["prov_year"], total, start, year).rename(
+            columns={start: "from_score", year: "to_score"}
+        )
+    else:
+        highlight_rows = pd.DataFrame(columns=["province_vi", "region", "from_score", "to_score", "change"])
+    highlight_n = len(highlight_rows)
     return response({
         "measure": {"id": total, "label": cfg["label"], "unit": cfg["unit"]}, "metrics": metrics,
         "map": _artifact(map_rows, cfg["unit"]),
@@ -128,13 +162,30 @@ def overview(scale="six", year=None):
             top10=records(ranking.head(10).rename(columns={total: "score"})),
             bottom10=records(ranking.tail(10).sort_values([total, "province_vi"]).rename(columns={total: "score"})),
         ),
+        "storyCards": {
+            "trend": _artifact(trend_rows, cfg["unit"]),
+            "regions": _artifact(regions, cfg["unit"]),
+            "strongestPair": _artifact(
+                pair_rows, "điểm lĩnh vực PAPI", n=len(pair_rows), x=x_code, y=y_code,
+                xMean=x_mean, yMean=y_mean, pearsonR=corr,
+                caveats=["Pearson r là mối liên hệ quan sát, không chứng minh quan hệ nhân quả."],
+            ),
+            "changeHighlights": _artifact(
+                highlight_rows, "chênh lệch điểm PAPI", n=highlight_n,
+                median=float(highlight_rows.change.median()) if highlight_n else None,
+                top8=records(highlight_rows.head(8)),
+                bottom8=records(highlight_rows.tail(8).sort_values("change")) if highlight_n else [],
+                caveats=["Chỉ tỉnh đủ dữ liệu ở cả hai mốc mới có delta."],
+            ),
+        },
     }, n=len(snapshot), filters={"scale": scale, "year": year}, unit=cfg["unit"],
        caveats=["Chỉ tính các tỉnh có dữ liệu ở năm đã chọn; không giả định cố định 63 tỉnh."])
 
 
-def trends(scale="six", from_year=None, to_year=None):
+def trends(scale="six", from_year=None, to_year=None, region=None, province=None):
     cfg = _scale(scale)
     start, end = _range(cfg, from_year, to_year)
+    region, province = _focus(region, province)
     total = cfg["total_col"]
     totals = trend.total_by_year(data()["prov_year"], total, start, end)
     if totals.empty:
@@ -170,6 +221,10 @@ def trends(scale="six", from_year=None, to_year=None):
     primary_n = int(data()["prov_year"].loc[
         data()["prov_year"].year.between(start, end), total
     ].notna().sum())
+    regional_rows = trend.regional_total_series(data()["prov_year"], total, start, end)
+    regional_yoy = trend.regional_year_over_year(data()["prov_year"], total, start, end)
+    selected_rows = trend.focus_total_series(data()["prov_year"], total, start, end, region, province)
+    turning_rows = trend.turning_points(totals, total)
     return response({
         "measure": {"id": total, "label": cfg["label"], "unit": cfg["unit"]},
         "summary": trend.summarize_total(totals, total),
@@ -178,11 +233,15 @@ def trends(scale="six", from_year=None, to_year=None):
         "dimensionDeltas": _artifact(delta_rows, "chênh lệch điểm lĩnh vực PAPI", caveats=["Dùng điểm đầu/cuối có dữ liệu trong khoảng."]),
         "covid": _artifact(covid_rows, "chênh lệch điểm lĩnh vực PAPI", available=bool(start <= 2019 and end >= 2021)),
         "heatmap": _artifact(heat, "điểm lĩnh vực PAPI"),
-    }, n=primary_n, filters={"scale": scale, "from": start, "to": end}, unit=cfg["unit"],
+        "regionalSeries": _artifact(regional_rows, cfg["unit"]),
+        "regionalYearOverYear": _artifact(regional_yoy, f"chênh lệch {cfg['unit']}"),
+        "selectedSeries": _artifact(selected_rows, cfg["unit"]),
+        "turningPoints": _artifact(turning_rows, f"chênh lệch {cfg['unit']}"),
+    }, n=primary_n, filters={"scale": scale, "from": start, "to": end, "region": region, "province": province}, unit=cfg["unit"],
        caveats=["D7 và D8 chưa có trước 2018.", "Các thay đổi lĩnh vực dùng năm đầu/cuối có dữ liệu trong khoảng."])
 
 
-def provinces(scale="six", year=None, region=None, province=None):
+def provinces(scale="eight", year=None, region=None, province=None):
     cfg = _scale(scale)
     year = _year(cfg, year)
     total = cfg["total_col"]
@@ -218,6 +277,8 @@ def provinces(scale="six", year=None, region=None, province=None):
         "unit": cfg["unit"], "source": SOURCE, "caveats": ["So sánh cùng năm và cùng phạm vi scale."],
         "region_n": int(snapshot.loc[snapshot.region.eq(chosen_region), total].notna().sum()),
         "national_n": int(snapshot[total].notna().sum()),
+        "rank_region": int(ranking.loc[ranking.province_vi.eq(chosen_province), "rank_region"].iloc[0]),
+        "region_total": len(ranking),
     })
     return response({
         "measure": {"id": total, "label": cfg["label"], "unit": cfg["unit"]},
@@ -231,7 +292,7 @@ def provinces(scale="six", year=None, region=None, province=None):
        caveats=["Benchmark toàn quốc chỉ dùng các tỉnh có dữ liệu của snapshot; profile dùng cùng năm."])
 
 
-def dimensions_view(scale="six", year=None, x=None, y=None):
+def dimensions_view(scale="eight", year=None, x=None, y=None):
     cfg = _scale(scale)
     year = _year(cfg, year)
     dims = cfg["dims"]
@@ -250,9 +311,15 @@ def dimensions_view(scale="six", year=None, x=None, y=None):
         raise ContractError("Không đủ dữ liệu lĩnh vực cho năm đã chọn.")
     matrix = dimensions.correlation_matrix(snapshot, dims)
     pair, x_mean, y_mean, corr = dimensions.pair_snapshot(snapshot, x, y)
+    regression, slope, intercept, r_squared = dimensions.regression_snapshot(snapshot, x, y)
     summary = dimensions.summaries(snapshot, dims)
     labels = _labels()
     pair_rows = pair.rename(columns={"province_vi": "province_vi", x: "x", y: "y"})
+    regression_rows = regression.rename(columns={x: "x", y: "y"})
+    valid_residuals = regression_rows.dropna(subset=["residual"])
+    largest_residual = "" if valid_residuals.empty else str(
+        valid_residuals.loc[valid_residuals.residual.abs().idxmax(), "province_vi"]
+    )
     summary["n"] = len(snapshot)
     return response({
         "availability": {"dimensions": dims},
@@ -262,17 +329,27 @@ def dimensions_view(scale="six", year=None, x=None, y=None):
         },
         "pair": _artifact(pair_rows, "điểm lĩnh vực PAPI", n=len(pair), x=x, y=y, xMean=x_mean, yMean=y_mean, pearsonR=corr),
         "standardDeviation": _artifact(summary, "điểm lĩnh vực PAPI"),
+        "regression": _artifact(
+            regression_rows, "điểm lĩnh vực PAPI", n=len(regression_rows), x=x, y=y,
+            slope=slope, intercept=intercept, rSquared=r_squared,
+            strength=dimensions.correlation_strength(corr),
+            largestResidualProvince=largest_residual,
+            caveats=["Hồi quy chỉ mô tả xu hướng quan sát, không chứng minh quan hệ nhân quả."],
+        ),
         "labels": _indicator_rows(dims),
     }, n=len(snapshot), filters={"scale": scale, "year": year, "x": x, "y": y}, unit="điểm lĩnh vực PAPI",
        caveats=["Pearson r là mối liên hệ quan sát, không chứng minh quan hệ nhân quả."])
 
 
-def dynamics_view(scale="six", from_year=None, to_year=None):
+def dynamics_view(scale="eight", from_year=None, to_year=None, k=None):
     cfg = _scale(scale)
     start, end = _range(cfg, from_year, to_year)
+    if k is not None and k not in range(2, 7):
+        raise ContractError("Số cụm K phải nằm trong khoảng 2–6 hoặc để tự động.")
     total = cfg["total_col"]
     changes = dynamics.changes(data()["prov_year"], total, start, end)
     clusters = dynamics.cluster_profiles(data()["prov_year"], end, cfg["dims"], 4)
+    stable = dynamics.cluster_transitions(data()["prov_year"], start, end, cfg["dims"], requested_k=k)
     if changes.empty or clusters.empty:
         raise ContractError("Không đủ dữ liệu cho so sánh thay đổi hoặc phân nhóm.")
     change_rows = changes.rename(columns={start: "from_score", end: "to_score"})
@@ -285,6 +362,7 @@ def dynamics_view(scale="six", from_year=None, to_year=None):
         "measure": {"id": total, "label": cfg["label"], "unit": cfg["unit"]},
         "changes": _artifact(
             change_rows, "chênh lệch điểm PAPI", n=len(change_rows),
+            median=float(change_rows.change.median()),
             top8=records(change_rows.head(8)), bottom8=records(change_rows.tail(8).sort_values("change")),
         ),
         "clusters": {
@@ -293,5 +371,19 @@ def dynamics_view(scale="six", from_year=None, to_year=None):
             "n": len(clusters), "count": int(clusters.cluster.nunique()), "randomState": 42,
             "rows": records(clusters), "centroids": records(centroids), "profiles": profiles,
         },
-    }, n=len(changes), filters={"scale": scale, "from": start, "to": end}, unit=cfg["unit"],
+        "clusterModel": {
+            "rowCount": len(stable["assignments"]), "unit": "profile lĩnh vực chuẩn hoá",
+            "source": SOURCE,
+            "caveats": [
+                "Chuẩn hoá z-score riêng trong từng năm trước khi pool hai mốc.",
+                "Nhãn cụm chỉ ổn định trong truy vấn hiện tại và không phải xếp hạng.",
+            ],
+            "n": len(stable["assignments"]), "selectedK": stable["selected_k"],
+            "selectionMode": stable["selection_mode"], "silhouette": stable["silhouette"],
+            "randomState": 42, "candidateScores": stable["candidates"],
+            "pcaVariance": stable["pca_variance"],
+            "assignments": records(stable["assignments"]),
+            "centroids": stable["centroids"], "transitions": stable["transitions"],
+        },
+    }, n=len(changes), filters={"scale": scale, "from": start, "to": end, "k": "auto" if k is None else k}, unit=cfg["unit"],
        caveats=["KMeans chuẩn hoá các lĩnh vực và dùng random_state=42; cụm không phải xếp hạng.", "Chỉ tỉnh đủ dữ liệu ở cả hai mốc mới có delta."])

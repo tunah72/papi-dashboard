@@ -97,3 +97,78 @@ def classify_change(value, eps=0.03):
     if value < -eps:
         return "giảm"
     return "gần như không đổi"
+
+
+def regional_total_series(prov_year, total_col, y0, y1):
+    """Trung bình điểm tổng theo vùng và năm trong khoảng được chọn."""
+    return (
+        prov_year.loc[
+            prov_year.year.between(y0, y1),
+            ["year", "region", total_col],
+        ]
+        .groupby(["year", "region"], observed=True)[total_col]
+        .agg(score="mean", contributor_n="count")
+        .reset_index()
+        .sort_values(["region", "year"])
+        .reset_index(drop=True)
+    )
+
+
+def regional_year_over_year(prov_year, total_col, y0, y1):
+    """Mức thay đổi trung bình vùng so với năm liền trước trong range."""
+    series = regional_total_series(prov_year, total_col, y0, y1)
+    series["previous_score"] = series.groupby("region", observed=True)["score"].shift()
+    series["change"] = series["score"] - series["previous_score"]
+    return series.dropna(subset=["previous_score"]).reset_index(drop=True)
+
+
+def focus_total_series(prov_year, total_col, y0, y1, region=None, province=None):
+    """Chuỗi overlay cho vùng/tỉnh được chọn; không thay đổi chuỗi quốc gia."""
+    years = pd.DataFrame({"year": list(range(y0, y1 + 1))})
+    frames = []
+    if region is not None:
+        region_rows = (
+            prov_year.loc[
+                prov_year.year.between(y0, y1) & prov_year.region.eq(region),
+                ["year", total_col],
+            ]
+            .groupby("year")[total_col]
+            .agg(score="mean", contributor_n="count")
+            .reset_index()
+        )
+        region_rows = years.merge(region_rows, on="year", how="left")
+        region_rows["scope"] = "region"
+        region_rows["label"] = region
+        frames.append(region_rows)
+    if province is not None:
+        province_rows = prov_year.loc[
+            prov_year.year.between(y0, y1) & prov_year.province_vi.eq(province),
+            ["year", total_col],
+        ].rename(columns={total_col: "score"})
+        province_rows = years.merge(province_rows, on="year", how="left")
+        province_rows["contributor_n"] = province_rows.score.notna().astype(int)
+        province_rows["scope"] = "province"
+        province_rows["label"] = province
+        frames.append(province_rows)
+    if not frames:
+        return pd.DataFrame(columns=["year", "score", "contributor_n", "scope", "label"])
+    return pd.concat(frames, ignore_index=True)[
+        ["year", "score", "contributor_n", "scope", "label"]
+    ]
+
+
+def turning_points(total_series, total_col, limit=3):
+    """Các biến động YoY lớn nhất theo trị tuyệt đối của chuỗi tổng quốc gia."""
+    out = total_series[["year", total_col]].sort_values("year").copy()
+    out["previous_score"] = out[total_col].shift()
+    out["change"] = out[total_col] - out["previous_score"]
+    out["from_year"] = out.year.shift().astype("Int64")
+    return (
+        out.dropna(subset=["change"])
+        .assign(abs_change=lambda frame: frame.change.abs())
+        .sort_values(["abs_change", "year"], ascending=[False, True])
+        .head(limit)
+        .drop(columns="abs_change")
+        .rename(columns={total_col: "score"})
+        .reset_index(drop=True)
+    )

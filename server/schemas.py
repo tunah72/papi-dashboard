@@ -25,6 +25,15 @@ class RangeFilters(ApiModel):
     to: int
 
 
+class TrendFilters(RangeFilters):
+    region: str | None = None
+    province: str | None = None
+
+
+class DynamicsFilters(RangeFilters):
+    k: int | Literal["auto"]
+
+
 class ProvinceFilters(ScaleYearFilters):
     region: str
     province: str
@@ -52,7 +61,7 @@ class OverviewMeta(ResponseMeta):
 
 
 class TrendsMeta(ResponseMeta):
-    filters: RangeFilters
+    filters: TrendFilters
 
 
 class ProvincesMeta(ResponseMeta):
@@ -64,7 +73,7 @@ class DimensionsMeta(ResponseMeta):
 
 
 class DynamicsMeta(ResponseMeta):
-    filters: RangeFilters
+    filters: DynamicsFilters
 
 
 class Artifact(ApiModel):
@@ -186,18 +195,6 @@ class RegionalRankingRow(ScoreRow):
     rank_region: int = Field(alias="rankRegion")
 
 
-class OverviewData(ApiModel):
-    measure: Measure
-    metrics: OverviewMetrics
-    map: ScoreRowsArtifact
-    ranking: RankingArtifact
-
-
-class OverviewResponse(ApiModel):
-    meta: OverviewMeta
-    data: OverviewData
-
-
 class TotalSummary(ApiModel):
     first: int | None
     latest: int | None
@@ -260,6 +257,50 @@ class CovidArtifact(Artifact):
     rows: list[CovidComparison]
 
 
+class RegionalPoint(ApiModel):
+    year: int
+    region: str
+    score: float | None
+    contributor_n: int = Field(alias="contributorN", ge=0)
+
+
+class RegionalSeriesArtifact(Artifact):
+    rows: list[RegionalPoint]
+
+
+class RegionalYearOverYearPoint(RegionalPoint):
+    previous_score: float | None = Field(alias="previousScore")
+    change: float | None
+
+
+class RegionalYearOverYearArtifact(Artifact):
+    rows: list[RegionalYearOverYearPoint]
+
+
+class FocusPoint(ApiModel):
+    year: int
+    scope: Literal["region", "province"]
+    label: str
+    score: float | None
+    contributor_n: int = Field(alias="contributorN", ge=0)
+
+
+class FocusSeriesArtifact(Artifact):
+    rows: list[FocusPoint]
+
+
+class TurningPoint(ApiModel):
+    year: int
+    from_year: int = Field(alias="fromYear")
+    score: float | None
+    previous_score: float | None = Field(alias="previousScore")
+    change: float | None
+
+
+class TurningPointArtifact(Artifact):
+    rows: list[TurningPoint]
+
+
 class TrendsData(ApiModel):
     measure: Measure
     summary: TotalSummary
@@ -268,6 +309,10 @@ class TrendsData(ApiModel):
     dimension_deltas: DeltaArtifact = Field(alias="dimensionDeltas")
     covid: CovidArtifact
     heatmap: DimensionSeriesArtifact
+    regional_series: RegionalSeriesArtifact = Field(alias="regionalSeries")
+    regional_year_over_year: RegionalYearOverYearArtifact = Field(alias="regionalYearOverYear")
+    selected_series: FocusSeriesArtifact = Field(alias="selectedSeries")
+    turning_points: TurningPointArtifact = Field(alias="turningPoints")
 
 
 class TrendsResponse(ApiModel):
@@ -300,6 +345,8 @@ class Benchmark(ApiModel):
     vs_national: float | None = Field(alias="vsNational")
     region_n: int = Field(alias="regionN")
     national_n: int = Field(alias="nationalN")
+    rank_region: int = Field(alias="rankRegion", ge=1)
+    region_total: int = Field(alias="regionTotal", ge=1)
 
 
 class ProfileRow(ApiModel):
@@ -382,6 +429,27 @@ class StdArtifact(Artifact):
     rows: list[StdRow]
 
 
+class RegressionRow(ApiModel):
+    province_vi: str = Field(alias="provinceVi")
+    region: str
+    x: float | None
+    y: float | None
+    predicted: float | None
+    residual: float | None
+
+
+class RegressionArtifact(Artifact):
+    n: int
+    x: str
+    y: str
+    slope: float | None
+    intercept: float | None
+    r_squared: float | None = Field(alias="rSquared")
+    strength: str
+    largest_residual_province: str = Field(alias="largestResidualProvince")
+    rows: list[RegressionRow]
+
+
 class DimensionAvailability(ApiModel):
     dimensions: list[str]
 
@@ -391,6 +459,7 @@ class DimensionsData(ApiModel):
     correlation: CorrelationArtifact
     pair: PairArtifact
     standard_deviation: StdArtifact = Field(alias="standardDeviation")
+    regression: RegressionArtifact
     labels: list[Indicator]
 
 
@@ -409,6 +478,7 @@ class ChangeRow(ApiModel):
 
 class ChangesArtifact(Artifact):
     n: int
+    median: float | None
     rows: list[ChangeRow]
     top8: list[ChangeRow]
     bottom8: list[ChangeRow]
@@ -461,15 +531,87 @@ class ClusterArtifact(Artifact):
     profiles: list[ClusterProfile]
 
 
+class ClusterCandidate(ApiModel):
+    k: int = Field(ge=2, le=6)
+    silhouette: float | None
+
+
+class ClusterAssignment(ApiModel):
+    province_vi: str = Field(alias="provinceVi")
+    region: str
+    start_cluster: str = Field(alias="startCluster")
+    end_cluster: str = Field(alias="endCluster")
+    changed: bool
+    start_pc1: float | None = Field(alias="startPc1")
+    start_pc2: float | None = Field(alias="startPc2")
+    end_pc1: float | None = Field(alias="endPc1")
+    end_pc2: float | None = Field(alias="endPc2")
+
+
+class ClusterCentroidValue(ApiModel):
+    code: str
+    z_score: float | None = Field(alias="zScore")
+    raw_score: float | None = Field(alias="rawScore")
+
+
+class StableClusterCentroid(ApiModel):
+    cluster: str
+    n_start: int = Field(alias="nStart", ge=0)
+    n_end: int = Field(alias="nEnd", ge=0)
+    descriptor: str
+    values: list[ClusterCentroidValue]
+
+
+class ClusterTransition(ApiModel):
+    from_cluster: str = Field(alias="fromCluster")
+    to_cluster: str = Field(alias="toCluster")
+    n: int = Field(ge=1)
+    provinces: list[str]
+
+
+class StableClusterArtifact(Artifact):
+    n: int
+    selected_k: int = Field(alias="selectedK", ge=2, le=6)
+    selection_mode: Literal["auto", "manual"] = Field(alias="selectionMode")
+    silhouette: float | None
+    random_state: Literal[42] = Field(alias="randomState")
+    candidate_scores: list[ClusterCandidate] = Field(alias="candidateScores")
+    pca_variance: list[float] = Field(alias="pcaVariance")
+    assignments: list[ClusterAssignment]
+    centroids: list[StableClusterCentroid]
+    transitions: list[ClusterTransition]
+
+
 class DynamicsData(ApiModel):
     measure: Measure
     changes: ChangesArtifact
     clusters: ClusterArtifact
+    cluster_model: StableClusterArtifact = Field(alias="clusterModel")
 
 
 class DynamicsResponse(ApiModel):
     meta: DynamicsMeta
     data: DynamicsData
+
+
+class OverviewStoryCards(ApiModel):
+    trend: TotalSeriesArtifact
+    regions: RegionMeanArtifact
+    strongest_pair: PairArtifact = Field(alias="strongestPair")
+    change_highlights: ChangesArtifact = Field(alias="changeHighlights")
+
+
+class OverviewData(ApiModel):
+    measure: Measure
+    metrics: OverviewMetrics
+    map: ScoreRowsArtifact
+    ranking: RankingArtifact
+    story_cards: OverviewStoryCards = Field(alias="storyCards")
+
+
+class OverviewResponse(ApiModel):
+    meta: OverviewMeta
+    data: OverviewData
 
 
 class ErrorResponse(ApiModel):

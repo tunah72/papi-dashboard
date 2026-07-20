@@ -166,6 +166,10 @@ export interface components {
             regionN: number;
             /** Nationaln */
             nationalN: number;
+            /** Rankregion */
+            rankRegion: number;
+            /** Regiontotal */
+            regionTotal: number;
         };
         /** CentroidRow */
         CentroidRow: {
@@ -215,6 +219,8 @@ export interface components {
             caveats?: string[];
             /** N */
             n: number;
+            /** Median */
+            median: number | null;
             /** Rows */
             rows: components["schemas"]["ChangeRow"][];
             /** Top8 */
@@ -247,6 +253,43 @@ export interface components {
             centroids: components["schemas"]["CentroidRow"][];
             /** Profiles */
             profiles: components["schemas"]["ClusterProfile"][];
+        };
+        /** ClusterAssignment */
+        ClusterAssignment: {
+            /** Provincevi */
+            provinceVi: string;
+            /** Region */
+            region: string;
+            /** Startcluster */
+            startCluster: string;
+            /** Endcluster */
+            endCluster: string;
+            /** Changed */
+            changed: boolean;
+            /** Startpc1 */
+            startPc1: number | null;
+            /** Startpc2 */
+            startPc2: number | null;
+            /** Endpc1 */
+            endPc1: number | null;
+            /** Endpc2 */
+            endPc2: number | null;
+        };
+        /** ClusterCandidate */
+        ClusterCandidate: {
+            /** K */
+            k: number;
+            /** Silhouette */
+            silhouette: number | null;
+        };
+        /** ClusterCentroidValue */
+        ClusterCentroidValue: {
+            /** Code */
+            code: string;
+            /** Zscore */
+            zScore: number | null;
+            /** Rawscore */
+            rawScore: number | null;
         };
         /** ClusterProfile */
         ClusterProfile: {
@@ -288,6 +331,17 @@ export interface components {
             D7?: number | null;
             /** D8 */
             D8?: number | null;
+        };
+        /** ClusterTransition */
+        ClusterTransition: {
+            /** Fromcluster */
+            fromCluster: string;
+            /** Tocluster */
+            toCluster: string;
+            /** N */
+            n: number;
+            /** Provinces */
+            provinces: string[];
         };
         /** CorrelationArtifact */
         CorrelationArtifact: {
@@ -419,6 +473,7 @@ export interface components {
             correlation: components["schemas"]["CorrelationArtifact"];
             pair: components["schemas"]["PairArtifact"];
             standardDeviation: components["schemas"]["StdArtifact"];
+            regression: components["schemas"]["RegressionArtifact"];
             /** Labels */
             labels: components["schemas"]["Indicator"][];
         };
@@ -478,6 +533,21 @@ export interface components {
             measure: components["schemas"]["Measure"];
             changes: components["schemas"]["ChangesArtifact"];
             clusters: components["schemas"]["ClusterArtifact"];
+            clusterModel: components["schemas"]["StableClusterArtifact"];
+        };
+        /** DynamicsFilters */
+        DynamicsFilters: {
+            /**
+             * Scale
+             * @enum {string}
+             */
+            scale: "six" | "eight";
+            /** From */
+            from: number;
+            /** To */
+            to: number;
+            /** K */
+            k: number | "auto";
         };
         /** DynamicsMeta */
         DynamicsMeta: {
@@ -497,7 +567,7 @@ export interface components {
             n: number;
             /** Caveats */
             caveats?: string[];
-            filters: components["schemas"]["RangeFilters"];
+            filters: components["schemas"]["DynamicsFilters"];
         };
         /** DynamicsResponse */
         DynamicsResponse: {
@@ -524,6 +594,35 @@ export interface components {
             type: "FeatureCollection";
             /** Features */
             features: components["schemas"]["GeoFeature"][];
+        };
+        /** FocusPoint */
+        FocusPoint: {
+            /** Year */
+            year: number;
+            /**
+             * Scope
+             * @enum {string}
+             */
+            scope: "region" | "province";
+            /** Label */
+            label: string;
+            /** Score */
+            score: number | null;
+            /** Contributorn */
+            contributorN: number;
+        };
+        /** FocusSeriesArtifact */
+        FocusSeriesArtifact: {
+            /** Rowcount */
+            rowCount: number;
+            /** Unit */
+            unit: string;
+            /** Source */
+            source: string;
+            /** Caveats */
+            caveats?: string[];
+            /** Rows */
+            rows: components["schemas"]["FocusPoint"][];
         };
         /** GeoFeature */
         GeoFeature: {
@@ -631,6 +730,7 @@ export interface components {
             metrics: components["schemas"]["OverviewMetrics"];
             map: components["schemas"]["ScoreRowsArtifact"];
             ranking: components["schemas"]["RankingArtifact"];
+            storyCards: components["schemas"]["OverviewStoryCards"];
         };
         /** OverviewMeta */
         OverviewMeta: {
@@ -671,6 +771,13 @@ export interface components {
         OverviewResponse: {
             meta: components["schemas"]["OverviewMeta"];
             data: components["schemas"]["OverviewData"];
+        };
+        /** OverviewStoryCards */
+        OverviewStoryCards: {
+            trend: components["schemas"]["TotalSeriesArtifact"];
+            regions: components["schemas"]["RegionMeanArtifact"];
+            strongestPair: components["schemas"]["PairArtifact"];
+            changeHighlights: components["schemas"]["ChangesArtifact"];
         };
         /** PairArtifact */
         PairArtifact: {
@@ -810,18 +917,6 @@ export interface components {
             meta: components["schemas"]["ProvincesMeta"];
             data: components["schemas"]["ProvincesData"];
         };
-        /** RangeFilters */
-        RangeFilters: {
-            /**
-             * Scale
-             * @enum {string}
-             */
-            scale: "six" | "eight";
-            /** From */
-            from: number;
-            /** To */
-            to: number;
-        };
         /** RankingArtifact */
         RankingArtifact: {
             /** Rowcount */
@@ -895,6 +990,17 @@ export interface components {
             /** Spread */
             spread: number | null;
         };
+        /** RegionalPoint */
+        RegionalPoint: {
+            /** Year */
+            year: number;
+            /** Region */
+            region: string;
+            /** Score */
+            score: number | null;
+            /** Contributorn */
+            contributorN: number;
+        };
         /** RegionalRankingRow */
         RegionalRankingRow: {
             /** Provinceid */
@@ -907,6 +1013,91 @@ export interface components {
             score: number | null;
             /** Rankregion */
             rankRegion: number;
+        };
+        /** RegionalSeriesArtifact */
+        RegionalSeriesArtifact: {
+            /** Rowcount */
+            rowCount: number;
+            /** Unit */
+            unit: string;
+            /** Source */
+            source: string;
+            /** Caveats */
+            caveats?: string[];
+            /** Rows */
+            rows: components["schemas"]["RegionalPoint"][];
+        };
+        /** RegionalYearOverYearArtifact */
+        RegionalYearOverYearArtifact: {
+            /** Rowcount */
+            rowCount: number;
+            /** Unit */
+            unit: string;
+            /** Source */
+            source: string;
+            /** Caveats */
+            caveats?: string[];
+            /** Rows */
+            rows: components["schemas"]["RegionalYearOverYearPoint"][];
+        };
+        /** RegionalYearOverYearPoint */
+        RegionalYearOverYearPoint: {
+            /** Year */
+            year: number;
+            /** Region */
+            region: string;
+            /** Score */
+            score: number | null;
+            /** Contributorn */
+            contributorN: number;
+            /** Previousscore */
+            previousScore: number | null;
+            /** Change */
+            change: number | null;
+        };
+        /** RegressionArtifact */
+        RegressionArtifact: {
+            /** Rowcount */
+            rowCount: number;
+            /** Unit */
+            unit: string;
+            /** Source */
+            source: string;
+            /** Caveats */
+            caveats?: string[];
+            /** N */
+            n: number;
+            /** X */
+            x: string;
+            /** Y */
+            y: string;
+            /** Slope */
+            slope: number | null;
+            /** Intercept */
+            intercept: number | null;
+            /** Rsquared */
+            rSquared: number | null;
+            /** Strength */
+            strength: string;
+            /** Largestresidualprovince */
+            largestResidualProvince: string;
+            /** Rows */
+            rows: components["schemas"]["RegressionRow"][];
+        };
+        /** RegressionRow */
+        RegressionRow: {
+            /** Provincevi */
+            provinceVi: string;
+            /** Region */
+            region: string;
+            /** X */
+            x: number | null;
+            /** Y */
+            y: number | null;
+            /** Predicted */
+            predicted: number | null;
+            /** Residual */
+            residual: number | null;
         };
         /** ScaleAvailability */
         ScaleAvailability: {
@@ -957,6 +1148,56 @@ export interface components {
             caveats?: string[];
             /** Rows */
             rows: components["schemas"]["ScoreRow"][];
+        };
+        /** StableClusterArtifact */
+        StableClusterArtifact: {
+            /** Rowcount */
+            rowCount: number;
+            /** Unit */
+            unit: string;
+            /** Source */
+            source: string;
+            /** Caveats */
+            caveats?: string[];
+            /** N */
+            n: number;
+            /** Selectedk */
+            selectedK: number;
+            /**
+             * Selectionmode
+             * @enum {string}
+             */
+            selectionMode: "auto" | "manual";
+            /** Silhouette */
+            silhouette: number | null;
+            /**
+             * Randomstate
+             * @constant
+             */
+            randomState: 42;
+            /** Candidatescores */
+            candidateScores: components["schemas"]["ClusterCandidate"][];
+            /** Pcavariance */
+            pcaVariance: number[];
+            /** Assignments */
+            assignments: components["schemas"]["ClusterAssignment"][];
+            /** Centroids */
+            centroids: components["schemas"]["StableClusterCentroid"][];
+            /** Transitions */
+            transitions: components["schemas"]["ClusterTransition"][];
+        };
+        /** StableClusterCentroid */
+        StableClusterCentroid: {
+            /** Cluster */
+            cluster: string;
+            /** Nstart */
+            nStart: number;
+            /** Nend */
+            nEnd: number;
+            /** Descriptor */
+            descriptor: string;
+            /** Values */
+            values: components["schemas"]["ClusterCentroidValue"][];
         };
         /** StdArtifact */
         StdArtifact: {
@@ -1023,6 +1264,22 @@ export interface components {
             /** Dipvalue */
             dipValue: number | null;
         };
+        /** TrendFilters */
+        TrendFilters: {
+            /**
+             * Scale
+             * @enum {string}
+             */
+            scale: "six" | "eight";
+            /** From */
+            from: number;
+            /** To */
+            to: number;
+            /** Region */
+            region?: string | null;
+            /** Province */
+            province?: string | null;
+        };
         /** TrendsData */
         TrendsData: {
             measure: components["schemas"]["Measure"];
@@ -1032,6 +1289,10 @@ export interface components {
             dimensionDeltas: components["schemas"]["DeltaArtifact"];
             covid: components["schemas"]["CovidArtifact"];
             heatmap: components["schemas"]["DimensionSeriesArtifact"];
+            regionalSeries: components["schemas"]["RegionalSeriesArtifact"];
+            regionalYearOverYear: components["schemas"]["RegionalYearOverYearArtifact"];
+            selectedSeries: components["schemas"]["FocusSeriesArtifact"];
+            turningPoints: components["schemas"]["TurningPointArtifact"];
         };
         /** TrendsMeta */
         TrendsMeta: {
@@ -1051,12 +1312,38 @@ export interface components {
             n: number;
             /** Caveats */
             caveats?: string[];
-            filters: components["schemas"]["RangeFilters"];
+            filters: components["schemas"]["TrendFilters"];
         };
         /** TrendsResponse */
         TrendsResponse: {
             meta: components["schemas"]["TrendsMeta"];
             data: components["schemas"]["TrendsData"];
+        };
+        /** TurningPoint */
+        TurningPoint: {
+            /** Year */
+            year: number;
+            /** Fromyear */
+            fromYear: number;
+            /** Score */
+            score: number | null;
+            /** Previousscore */
+            previousScore: number | null;
+            /** Change */
+            change: number | null;
+        };
+        /** TurningPointArtifact */
+        TurningPointArtifact: {
+            /** Rowcount */
+            rowCount: number;
+            /** Unit */
+            unit: string;
+            /** Source */
+            source: string;
+            /** Caveats */
+            caveats?: string[];
+            /** Rows */
+            rows: components["schemas"]["TurningPoint"][];
         };
     };
     responses: never;
@@ -1183,6 +1470,8 @@ export interface operations {
                 scale?: "six" | "eight";
                 from?: number | null;
                 to?: number | null;
+                region?: string | null;
+                province?: string | null;
             };
             header?: never;
             path?: never;
@@ -1284,6 +1573,7 @@ export interface operations {
                 scale?: "six" | "eight";
                 from?: number | null;
                 to?: number | null;
+                k?: number | null;
             };
             header?: never;
             path?: never;

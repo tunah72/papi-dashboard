@@ -55,6 +55,7 @@ def test_openapi_uses_concrete_response_models_not_generic_free_form_data(client
     assert schemas["OverviewData"]["properties"]["map"]["$ref"].endswith("/ScoreRowsArtifact")
     assert schemas["TrendsData"]["properties"]["covid"]["$ref"].endswith("/CovidArtifact")
     assert schemas["DynamicsData"]["properties"]["clusters"]["$ref"].endswith("/ClusterArtifact")
+    assert schemas["DynamicsData"]["properties"]["clusterModel"]["$ref"].endswith("/StableClusterArtifact")
 
 
 @pytest.mark.parametrize("scale,year", [(scale, year) for scale, years in SCALE_YEARS.items() for year in years])
@@ -77,19 +78,26 @@ def test_representative_valid_ranges_work_for_trends_and_dynamics(client, scale,
     for endpoint in ("trends", "dynamics"):
         response = client.get(f"/api/v1/{endpoint}?scale={scale}&from={start}&to={end}")
         assert response.status_code == 200
-        assert response.json()["meta"]["filters"] == {"scale": scale, "from": start, "to": end}
+        expected = {"scale": scale, "from": start, "to": end}
+        expected.update({"region": None, "province": None} if endpoint == "trends" else {"k": "auto"})
+        assert response.json()["meta"]["filters"] == expected
 
 
 def test_every_valid_range_is_accepted_by_the_service_contract():
     for scale, years in SCALE_YEARS.items():
         for start, end in itertools.combinations(years, 2):
-            assert services.trends(scale, start, end)["meta"]["filters"] == {"scale": scale, "from": start, "to": end}
+            assert services.trends(scale, start, end)["meta"]["filters"] == {
+                "scale": scale, "from": start, "to": end, "region": None, "province": None,
+            }
 
 
 def test_semantic_artifacts_contributors_and_bool_are_typed(client):
     payload = client.get("/api/v1/trends?scale=eight&from=2018&to=2024").json()
     assert payload["meta"]["n"] == 430  # valid province-year total observations, not seven annual rows
-    for key in ("totalSeries", "dimensionSeries", "dimensionDeltas", "covid", "heatmap"):
+    for key in (
+        "totalSeries", "dimensionSeries", "dimensionDeltas", "covid", "heatmap",
+        "regionalSeries", "regionalYearOverYear", "selectedSeries", "turningPoints",
+    ):
         _artifact(payload["data"][key])
     assert payload["data"]["totalSeries"]["rowCount"] == 7
     assert all(point["contributorN"] > 0 for point in payload["data"]["totalSeries"]["rows"])
@@ -104,6 +112,9 @@ def test_overview_trends_and_geojson_numeric_parity(client):
     assert overview["meta"]["n"] == len(snapshot)
     assert overview["data"]["metrics"]["mean"] == pytest.approx(snapshot.total_papi_6dim.mean(), abs=1e-9)
     assert overview["data"]["ranking"]["rowCount"] == len(snapshot)
+    assert overview["data"]["storyCards"]["trend"]["rowCount"] == 14
+    assert overview["data"]["storyCards"]["regions"]["rowCount"] == 6
+    assert overview["data"]["storyCards"]["strongestPair"]["pearsonR"] is not None
 
     api_trends = client.get("/api/v1/trends?scale=eight&from=2018&to=2024").json()
     reference = trend.total_by_year(d["prov_year"], "total_papi", 2018, 2024)
@@ -129,6 +140,8 @@ def test_h2_benchmark_and_profile_parity_and_province_only_filter(client):
     profile = provincial.dimension_benchmarks(d["prov_year"], 2024, region, province, services.SCALES["six"]["dims"])
     assert province_only["data"]["profile"]["rows"][0]["nationalMean"] == pytest.approx(profile.iloc[0].national_mean, abs=1e-9)
     assert all(row["regionN"] > 0 and row["nationalN"] > 0 for row in province_only["data"]["profile"]["rows"])
+    assert province_only["data"]["benchmark"]["rankRegion"] >= 1
+    assert province_only["data"]["benchmark"]["regionTotal"] == len(region_only["data"]["ranking"]["rows"])
     _artifact(province_only["data"]["distribution"])
     _artifact(province_only["data"]["regionMeans"])
     _artifact(province_only["data"]["ranking"])
@@ -150,6 +163,11 @@ def test_h3_matrix_quadrant_std_parity_and_partial_dimension_filters(client):
     assert payload["data"]["correlation"]["matrix"][0][1] == pytest.approx(matrix.iloc[0, 1], abs=1e-9)
     assert payload["data"]["pair"]["rows"][0]["quadrant"] == pair.iloc[0].quadrant
     assert payload["data"]["standardDeviation"]["rows"][0]["stdScore"] == pytest.approx(std.iloc[0].std_score, abs=1e-9)
+    regression, slope, intercept, r_squared = dimensions.regression_snapshot(snap, "D1", "D2")
+    assert payload["data"]["regression"]["slope"] == pytest.approx(slope, abs=1e-9)
+    assert payload["data"]["regression"]["intercept"] == pytest.approx(intercept, abs=1e-9)
+    assert payload["data"]["regression"]["rSquared"] == pytest.approx(r_squared, abs=1e-9)
+    assert payload["data"]["regression"]["rowCount"] == len(regression)
 
 
 def test_h4_delta_centroid_profile_parity_and_no_dynamic_year_keys(client):
@@ -165,14 +183,38 @@ def test_h4_delta_centroid_profile_parity_and_no_dynamic_year_keys(client):
     assert payload["data"]["clusters"]["centroids"][0]["n"] == int((reference_clusters.cluster == centroid.iloc[0].cluster).sum())
     assert sum(profile["n"] for profile in payload["data"]["clusters"]["profiles"]) == len(reference_clusters)
     assert payload["data"]["clusters"]["randomState"] == 42
+    stable = payload["data"]["clusterModel"]
+    assert stable["selectionMode"] == "auto"
+    assert 2 <= stable["selectedK"] <= 6
+    assert sum(item["n"] for item in stable["transitions"]) == stable["n"]
+    assert len(stable["pcaVariance"]) == 2
+
+
+def test_focus_series_manual_k_and_product_defaults(client):
+    default_overview = client.get("/api/v1/overview").json()
+    default_provinces = client.get("/api/v1/provinces").json()
+    default_dimensions = client.get("/api/v1/dimensions").json()
+    assert default_overview["meta"]["filters"] == {"scale": "eight", "year": 2024}
+    assert default_provinces["meta"]["filters"]["scale"] == "eight"
+    assert default_dimensions["meta"]["filters"]["scale"] == "eight"
+    focused = client.get(
+        "/api/v1/trends?scale=eight&from=2018&to=2024&province=Quảng%20Ninh"
+    ).json()
+    assert focused["meta"]["filters"]["region"] == "Đồng bằng sông Hồng"
+    assert {row["scope"] for row in focused["data"]["selectedSeries"]["rows"]} == {"region", "province"}
+    manual = client.get("/api/v1/dynamics?scale=eight&from=2018&to=2024&k=3").json()
+    assert manual["meta"]["filters"]["k"] == 3
+    assert manual["data"]["clusterModel"]["selectedK"] == 3
+    assert manual["data"]["clusterModel"]["selectionMode"] == "manual"
 
 
 def test_partial_range_filters_resolve_deterministically(client):
     for endpoint in ("trends", "dynamics"):
         from_only = client.get(f"/api/v1/{endpoint}?scale=eight&from=2020").json()
         to_only = client.get(f"/api/v1/{endpoint}?scale=eight&to=2022").json()
-        assert from_only["meta"]["filters"] == {"scale": "eight", "from": 2020, "to": 2024}
-        assert to_only["meta"]["filters"] == {"scale": "eight", "from": 2018, "to": 2022}
+        extra = {"region": None, "province": None} if endpoint == "trends" else {"k": "auto"}
+        assert from_only["meta"]["filters"] == {"scale": "eight", "from": 2020, "to": 2024, **extra}
+        assert to_only["meta"]["filters"] == {"scale": "eight", "from": 2018, "to": 2022, **extra}
 
 
 @pytest.mark.parametrize("path", [
@@ -181,6 +223,8 @@ def test_partial_range_filters_resolve_deterministically(client):
     "/api/v1/dimensions?scale=six&year=2024&x=D8&y=D1",
     "/api/v1/provinces?scale=six&year=1999",
     "/api/v1/provinces?scale=six&year=2024&region=Tây%20Nguyên&province=Quảng%20Ninh",
+    "/api/v1/trends?scale=eight&from=2018&to=2024&region=Tây%20Nguyên&province=Quảng%20Ninh",
+    "/api/v1/dynamics?scale=eight&from=2018&to=2024&k=7",
 ])
 def test_invalid_filter_combinations_return_vietnamese_422(client, path):
     response = client.get(path)

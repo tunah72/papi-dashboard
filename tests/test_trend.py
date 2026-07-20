@@ -9,6 +9,7 @@ from pathlib import Path
 
 import numpy as np
 import pandas as pd
+import pytest
 
 sys.path.insert(0, str(Path(__file__).resolve().parents[1] / "src"))
 from analysis import trend  # noqa: E402
@@ -88,3 +89,22 @@ def test_classify_change():
     assert trend.classify_change(0.0) == "gần như không đổi"
     assert trend.classify_change(0.02) == "gần như không đổi"   # trong ngưỡng eps
     assert trend.classify_change(float("nan")) == "không đủ dữ liệu"
+
+
+def test_regional_series_yoy_focus_and_turning_points():
+    panel = pd.DataFrame({
+        "province_vi": ["A", "B"] * 3,
+        "region": ["Bắc", "Nam"] * 3,
+        "year": [2020, 2020, 2021, 2021, 2022, 2022],
+        "total": [8.0, 12.0, 10.0, 16.0, 14.0, 18.0],
+    })
+    regional = trend.regional_total_series(panel, "total", 2020, 2022)
+    assert regional.query("region == 'Bắc'").score.tolist() == [8.0, 10.0, 14.0]
+    yoy = trend.regional_year_over_year(panel, "total", 2020, 2022)
+    assert yoy.query("region == 'Bắc'").change.tolist() == [2.0, 4.0]
+    focus = trend.focus_total_series(panel, "total", 2020, 2022, "Bắc", "A")
+    assert set(focus.scope) == {"region", "province"}
+    totals = trend.total_by_year(panel, "total", 2020, 2022)
+    points = trend.turning_points(totals, "total", limit=1)
+    assert points.iloc[0].year == 2021
+    assert points.iloc[0].change == pytest.approx(3.0)
