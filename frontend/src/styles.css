@@ -298,7 +298,7 @@ a { color: inherit; }
   gap: 1.25rem;
   align-items: stretch;
 }
-.overview-story-grid, .provincial-grid { margin-top: 1.25rem; }
+.overview-story-grid, .provincial-grid, .time-story-grid, .dimension-story-grid { margin-top: 1.25rem; }
 .chart-wide { grid-column: span 7; }
 .chart-medium { grid-column: span 5; }
 .chart-full { grid-column: 1 / -1; }
@@ -527,9 +527,10 @@ a { color: inherit; }
 
 @media (max-width: 1199px) {
   .analysis-grid { grid-template-columns: 1fr; }
-  .overview-story-grid, .provincial-grid { grid-template-columns: 1fr; }
+  .overview-story-grid, .provincial-grid, .time-story-grid, .dimension-story-grid { grid-template-columns: 1fr; }
   .chart-wide, .chart-medium, .chart-full { grid-column: auto; }
   .filter-bar { flex-wrap: wrap; }
+  .filter-controls { max-width: 100%; flex-wrap: wrap; }
   .filter-bar > label, .filter-controls label { flex: 1 1 12rem; }
 }
 
