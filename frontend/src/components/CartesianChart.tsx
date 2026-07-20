@@ -1,6 +1,7 @@
 import { lazy, Suspense } from 'react'
 import type { ReactNode } from 'react'
 import type { Config, Data, Layout } from 'plotly.js'
+import { basePlotLayout } from '../theme/chartTheme'
 
 const Plot = lazy(async () => {
   const [{ default: factory }, { default: plotly }] = await Promise.all([
@@ -24,17 +25,12 @@ type Props = {
 /** Biểu đồ 2D dùng bundle Plotly Cartesian, tách khỏi bundle bản đồ địa lý. */
 export function CartesianChart({ title, summary, data, layout = {}, height = 360, children, onClick, className }: Props) {
   const baseLayout: Partial<Layout> = {
-    autosize: true,
-    paper_bgcolor: 'rgba(0,0,0,0)',
-    plot_bgcolor: 'rgba(0,0,0,0)',
-    margin: { t: 28, r: 44, b: 62, l: 160 },
-    font: { color: '#22201d' },
-    hoverlabel: { bgcolor: '#2b2824', font: { color: '#fffdf8' } },
-    xaxis: { automargin: true, gridcolor: '#e7dfd3', zerolinecolor: '#bcae9e' },
-    yaxis: { automargin: true, gridcolor: '#e7dfd3', zerolinecolor: '#bcae9e' },
+    ...basePlotLayout,
     ...layout,
+    xaxis: { ...basePlotLayout.xaxis, ...layout.xaxis },
+    yaxis: { ...basePlotLayout.yaxis, ...layout.yaxis },
   }
-  const config: Partial<Config> = { displayModeBar: false, responsive: true }
+  const config: Partial<Config> = { displayModeBar: false, responsive: true, showTips: false }
   return <figure className={`cartesian-chart${className ? ` ${className}` : ''}`} aria-label={title}>
     <figcaption><strong>{title}</strong><p>{summary}</p></figcaption>
     <div role="img" aria-label={`${title}. ${summary}`}>

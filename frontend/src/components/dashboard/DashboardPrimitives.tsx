@@ -1,0 +1,78 @@
+import type { ReactNode } from 'react'
+
+export function DashboardPageHeader({ eyebrow, title, description, aside }: {
+  eyebrow: string
+  title: string
+  description: string
+  aside?: ReactNode
+}) {
+  return <header className="dashboard-title">
+    <div><p className="eyebrow">{eyebrow}</p><h1>{title}</h1><p className="lede">{description}</p></div>
+    {aside && <div className="dashboard-title-aside">{aside}</div>}
+  </header>
+}
+
+export function FilterBar({ children, summary, onReset }: {
+  children: ReactNode
+  summary?: ReactNode
+  onReset?: () => void
+}) {
+  return <section className="filter-bar" aria-label="Bộ lọc dữ liệu">
+    <div className="filter-controls">{children}</div>
+    <div className="filter-summary">{summary}{onReset && <button className="filter-reset" type="button" onClick={onReset}>Đặt lại</button>}</div>
+  </section>
+}
+
+export function KpiGrid({ children, label = 'Chỉ số tóm tắt' }: { children: ReactNode; label?: string }) {
+  return <section className="kpi-grid" aria-label={label}>{children}</section>
+}
+
+export function KpiCard({ label, value, detail, tone = 'default' }: {
+  label: string
+  value: ReactNode
+  detail?: ReactNode
+  tone?: 'default' | 'positive' | 'negative' | 'accent'
+}) {
+  return <article className={`kpi-card kpi-${tone}`}><p>{label}</p><strong>{value}</strong>{detail && <small>{detail}</small>}</article>
+}
+
+export function ChartCard({ eyebrow, title, description, action, children, footer, className = '' }: {
+  eyebrow?: string
+  title: string
+  description?: string
+  action?: ReactNode
+  children: ReactNode
+  footer?: ReactNode
+  className?: string
+}) {
+  return <section className={`chart-card ${className}`.trim()}>
+    <header className="chart-card-header"><div>{eyebrow && <p className="eyebrow">{eyebrow}</p>}<h2>{title}</h2>{description && <p>{description}</p>}</div>{action && <div className="chart-card-action">{action}</div>}</header>
+    <div className="chart-card-body">{children}</div>
+    {footer && <footer className="chart-card-footer">{footer}</footer>}
+  </section>
+}
+
+export function InsightCard({ label, value, children }: { label: string; value?: ReactNode; children: ReactNode }) {
+  return <article className="insight-card"><p className="eyebrow">{label}</p>{value && <strong>{value}</strong>}<div>{children}</div></article>
+}
+
+export function ChartMeta({ source, unit, n, caveats = [] }: {
+  source: string
+  unit: string
+  n: number | string
+  caveats?: string[]
+}) {
+  return <div className="chart-meta"><span>Nguồn: {source}</span><span>Đơn vị: {unit}</span><span>n = {n}</span>{caveats.map((note) => <small key={note}>{note}</small>)}</div>
+}
+
+export function LoadingSkeleton({ label, cards = 4 }: { label: string; cards?: number }) {
+  return <section className="dashboard-loading" role="status" aria-live="polite" aria-label={label}>{Array.from({ length: cards }, (_, index) => <div key={index} />)}</section>
+}
+
+export function EmptyState({ title, description, action }: { title: string; description: string; action?: ReactNode }) {
+  return <section className="dashboard-state"><span aria-hidden="true">○</span><h1>{title}</h1><p>{description}</p>{action}</section>
+}
+
+export function ErrorState({ title, description, action }: { title: string; description: string; action?: ReactNode }) {
+  return <section className="dashboard-state dashboard-state-error" role="alert"><span aria-hidden="true">×</span><h1>{title}</h1><p>{description}</p>{action}</section>
+}

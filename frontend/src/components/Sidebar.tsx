@@ -26,10 +26,10 @@ export function Sidebar({ drawerOpen, closeDrawer, onOpenDrawer }: SidebarProps)
   return <>
     <button ref={trigger} className="menu-trigger" aria-label="Mở điều hướng" aria-expanded={drawerOpen} onClick={onOpenDrawer}>Mục lục</button>
     <aside ref={panel} className={`sidebar ${collapsed ? 'is-collapsed' : ''} ${drawerOpen ? 'is-open' : ''}`} aria-label="Điều hướng chính" aria-hidden={compact && !drawerOpen} aria-modal={compact && drawerOpen || undefined} role={compact && drawerOpen ? 'dialog' : undefined}>
-      <div className="brand"><span className="brand-mark">P</span><span className="sidebar-copy"><strong>PAPI Việt Nam</strong><small>Dữ liệu công dân</small></span></div>
+      <div className="brand"><span className="brand-mark" aria-hidden="true">P</span><span className="sidebar-copy"><strong>PAPI Việt Nam</strong><small>Góc nhìn từ người dân</small></span></div>
       <button className="collapse" aria-label={collapsed ? 'Mở rộng thanh điều hướng' : 'Thu gọn thanh điều hướng'} onClick={() => setCollapsed(!collapsed)}><span aria-hidden="true">{collapsed ? '›' : '‹'}</span><span className="sidebar-copy">Thu gọn</span></button>
       <nav><p className="nav-label sidebar-copy">Khám phá dữ liệu</p>{navigation.map(([label, to, no]) => <NavLink key={to} to={to} onClick={close} className={({ isActive }) => `nav-link ${isActive ? 'is-active' : ''}`}><span className="nav-no">{no}</span><span className="sidebar-copy">{label}</span></NavLink>)}</nav>
-      <div className="sidebar-footer sidebar-copy"><span>2011–2024</span><small>Nguồn: PAPI · UNDP</small></div>
+      <div className="sidebar-footer sidebar-copy"><span><i aria-hidden="true" />Dữ liệu local đã xử lý</span><small>Nguồn: UNDP · CECODES · RTA</small></div>
       <button className="drawer-close" onClick={close}>Đóng điều hướng</button>
     </aside>
     {drawerOpen && <button className="scrim" aria-label="Đóng điều hướng" onClick={close} />}

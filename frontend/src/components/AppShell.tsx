@@ -17,6 +17,6 @@ export function AppShell() {
   return <div className={`app-frame ${collapsed ? 'sidebar-collapsed' : ''}`}>
     <a className="skip-link" href="#noi-dung">Bỏ qua điều hướng</a>
     <Sidebar drawerOpen={drawerOpen} closeDrawer={() => setDrawerOpen(false)} onOpenDrawer={() => setDrawerOpen(true)} />
-    <main id="noi-dung" className="main"><header className="page-header"><p className="eyebrow">PAPI · Việt Nam · dữ liệu theo tỉnh</p><p className="breadcrumb">Khám phá dữ liệu <span aria-hidden="true">/</span> {active}</p></header><Outlet /></main>
+    <main id="noi-dung" className="main"><header className="page-header"><p className="product-context"><span aria-hidden="true" />PAPI Việt Nam · 2011–2024</p><p className="breadcrumb">Khám phá dữ liệu <span aria-hidden="true">/</span> <strong>{active}</strong></p></header><Outlet /></main>
   </div>
 }
