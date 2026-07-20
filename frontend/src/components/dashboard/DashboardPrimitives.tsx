@@ -12,12 +12,13 @@ export function DashboardPageHeader({ eyebrow, title, description, aside }: {
   </header>
 }
 
-export function FilterBar({ children, summary, onReset }: {
+export function FilterBar({ children, summary, onReset, label = 'Bộ lọc dữ liệu' }: {
   children: ReactNode
   summary?: ReactNode
   onReset?: () => void
+  label?: string
 }) {
-  return <section className="filter-bar" aria-label="Bộ lọc dữ liệu">
+  return <section className="filter-bar" aria-label={label}>
     <div className="filter-controls">{children}</div>
     <div className="filter-summary">{summary}{onReset && <button className="filter-reset" type="button" onClick={onReset}>Đặt lại</button>}</div>
   </section>

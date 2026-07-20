@@ -31,6 +31,15 @@ export const regionColors: Record<string, string> = {
   'Đồng bằng sông Cửu Long': '#C87368',
 }
 
+const regionShortLabels: Record<string, string> = {
+  'Trung du và miền núi phía Bắc': 'Trung du phía Bắc',
+  'Đồng bằng sông Hồng': 'ĐBSH',
+  'Bắc Trung Bộ và Duyên hải miền Trung': 'Bắc Trung Bộ',
+  'Tây Nguyên': 'Tây Nguyên',
+  'Đông Nam Bộ': 'Đông Nam Bộ',
+  'Đồng bằng sông Cửu Long': 'ĐBSCL',
+}
+
 export const sequentialScale: [number, string][] = [
   [0, '#E2F0ED'], [0.5, '#78B7AE'], [1, '#1E6F68'],
 ]
@@ -53,3 +62,4 @@ export const basePlotLayout: Partial<Layout> = {
 
 export function colorForDimension(code: string) { return dimensionColors[code] ?? uiColors.primary }
 export function colorForRegion(region: string) { return regionColors[region] ?? uiColors.muted }
+export function shortRegionLabel(region: string) { return regionShortLabels[region] ?? region }

@@ -298,6 +298,10 @@ a { color: inherit; }
   gap: 1.25rem;
   align-items: stretch;
 }
+.overview-story-grid, .provincial-grid { margin-top: 1.25rem; }
+.chart-wide { grid-column: span 7; }
+.chart-medium { grid-column: span 5; }
+.chart-full { grid-column: 1 / -1; }
 .overview-grid { grid-template-columns: minmax(0, 2fr) minmax(18rem, 0.8fr); }
 .analysis-grid { grid-template-columns: repeat(2, minmax(0, 1fr)); margin-top: 1.25rem; }
 .map-surface, .chart-card {
@@ -329,6 +333,9 @@ a { color: inherit; }
 .chart-card-action { flex: 0 0 auto; }
 .chart-card-body { flex: 1 1 auto; min-height: 0; }
 .chart-card-footer { margin-top: auto; }
+.chart-card-footer > .chart-meta { padding-top: 0; border-top: 0; }
+.province-map { min-width: 0; margin: 0; }
+.province-map .js-plotly-plot { min-width: 0; }
 
 .meta, .chart-meta, .chart-card-footer {
   padding-top: 0.72rem;
@@ -520,6 +527,8 @@ a { color: inherit; }
 
 @media (max-width: 1199px) {
   .analysis-grid { grid-template-columns: 1fr; }
+  .overview-story-grid, .provincial-grid { grid-template-columns: 1fr; }
+  .chart-wide, .chart-medium, .chart-full { grid-column: auto; }
   .filter-bar { flex-wrap: wrap; }
   .filter-bar > label, .filter-controls label { flex: 1 1 12rem; }
 }
@@ -559,6 +568,7 @@ a { color: inherit; }
   .dashboard-title h1, .title-row h1, .analysis-page > h1 { max-width: 15ch; font-size: clamp(2rem, 10vw, 2.75rem); }
   .status { display: inline-block; margin-top: 0.8rem; }
   .filter-bar, .filter-controls { display: grid; grid-template-columns: 1fr 1fr; width: 100%; }
+  .filter-controls { grid-column: 1 / -1; }
   .filter-bar select, .filter-bar input { min-width: 0; width: 100%; }
   .filter-summary, .filter-bar > p { grid-column: 1 / -1; margin: 0.2rem 0 0; }
   .kpis, .kpi-grid { grid-template-columns: 1fr 1fr; }
@@ -566,6 +576,7 @@ a { color: inherit; }
   .dimension-list { grid-template-columns: 1fr; }
   .map-surface, .chart-card { padding: 0.9rem 0.7rem; }
   .map-surface .js-plotly-plot { min-height: 22rem !important; }
+  .province-map .js-plotly-plot, .province-map .plot-container, .province-map .svg-container { height: 24rem !important; min-height: 0 !important; }
   .selection { grid-template-columns: 1fr; }
   .story { margin-left: 0; }
   .story-links { grid-template-columns: 1fr; }
