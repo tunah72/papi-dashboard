@@ -38,8 +38,8 @@ phải đọc code và kiểm tra biến, filter, phương pháp trước khi ph
 6. Bấm **Phê duyệt và thực thi**.
 7. Kiểm tra result/figure/error và nhật ký; diff thể hiện phần người dùng đã sửa.
 
-Overview và H1 có thể seed yêu cầu từ một biểu đồ. Context gồm page/filter/data scope/chart được đưa
-vào prompt. H2–H4 vẫn là stub nên chưa có context thật.
+Các trang phân tích có thể seed yêu cầu từ biểu đồ. Context gồm page/filter/data scope/chart được đưa
+vào prompt để AI Assistant nhận đúng phạm vi đang xem.
 
 ## Guard thực thi
 
@@ -57,9 +57,8 @@ hành. Không triển khai công khai để chạy code không tin cậy. Object
 
 ## Khoảng trống so với yêu cầu lưu trữ
 
-Log hiện được tạo khi chạy code hoặc reset. Nếu người dùng sinh code rồi rời trang mà không chạy,
-request/code/explanation đó không được lưu. Khi thực thi, log giữ code, context, stdout preview,
-error, shape kết quả và loại figure; nó chưa lưu đầy đủ bảng kết quả hay artifact biểu đồ.
+Log được tạo khi AI sinh code, khi thực thi và khi reset. Khi thực thi, log giữ code, context, stdout
+preview, error, shape kết quả và loại figure; nó chưa lưu đầy đủ bảng kết quả hay artifact biểu đồ.
 
 Roadmap ưu tiên chuyển log sang event lifecycle và lưu artifact có thể truy xuất. Cho đến khi hoàn
 thiện, không mô tả hệ thống là đã “lưu toàn bộ yêu cầu, code, kết quả và giải thích”.

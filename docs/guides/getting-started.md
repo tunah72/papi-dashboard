@@ -48,6 +48,18 @@ python -m pytest tests/test_ai_assistant.py -q
 Test offline không gọi Groq và không cần API key. Live AI test phải do người dùng chủ động thực hiện
 vì có sử dụng quota/API bên ngoài.
 
+## 3.1 Chạy FastAPI local (Phase 1)
+
+Sau khi kích hoạt môi trường đã cài bằng `requirements-dev.txt`, dùng đúng interpreter của môi trường đó:
+
+```bash
+python -m uvicorn server.main:app --host 127.0.0.1 --port 8000
+curl http://127.0.0.1:8000/health
+```
+
+OpenAPI ở `http://127.0.0.1:8000/docs`. Không suy ra rằng một thư mục `.venv` có sẵn đã chứa dependency
+mới; luôn cài lại theo bước 1 trước khi chạy API/test trong môi trường đó.
+
 ## 4. Build lại dữ liệu
 
 Chỉ chạy khi cần kiểm tra hoặc thay đổi pipeline:

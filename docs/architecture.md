@@ -1,7 +1,8 @@
 # Kiến trúc thực tế của PAPI Dashboard
 
-Tài liệu này mô tả code đang có trên `main` tại ngày 17/07/2026. Nội dung kế hoạch ban đầu đã được
-chuyển vào `docs/archive/` và không còn là căn cứ để kết luận một tính năng đã hoàn thiện.
+Tài liệu này mô tả code Streamlit legacy dùng làm baseline migration tại `main` `697f5b2`. Khi có mâu
+thuẫn, code/runtime/test hiện tại có authority cao hơn tài liệu này; ADR/parity matrix quyết định target
+React + FastAPI, còn `docs/archive/` không là căn cứ để kết luận một tính năng đã hoàn thiện.
 
 ## Sơ đồ tổng thể
 
@@ -14,7 +15,7 @@ src/papi_lib.py + src/build_dataset.py
           ├── data/processed/*.parquet, *.csv
           └── docs/data/processing-log.md
                      │
-                     ▼
+          ▼
           app/lib/data.py (cache và nạp dữ liệu)
                      │
           ┌──────────┴──────────┐
@@ -26,14 +27,54 @@ src/papi_lib.py + src/build_dataset.py
           └───────────────────────────────┴→ api_logs → logs/*.jsonl
 ```
 
+## FastAPI local (Phase 1)
+
+`server/` là ranh giới HTTP local cho UI target. Server được chạy độc lập với fallback bằng:
+
+```bash
+python3 -m uvicorn server.main:app --host 127.0.0.1 --port 8000
+```
+
+`server.main:create_app()` chỉ cho phép CORS từ các origin dev localhost đã liệt kê và target bind là
+`127.0.0.1`. Phase 1 có `GET /health` và bảy endpoint dashboard dưới `/api/v1`: `metadata`,
+`geojson`, `overview`, `trends`, `provinces`, `dimensions`, `dynamics`. Không có HTTP API AI,
+executor hay logs ở phase này; chúng vẫn thuộc Phase 5 để không làm mờ luồng phê duyệt của con người.
+
+View-model trả JSON (không trả DataFrame hay Plotly Python object) với `meta.schemaVersion`, `source`,
+`unit`, `n` là số quan sát hợp lệ của input chính, `caveats` và filter đã resolve. `rowCount` của từng
+artifact chỉ là số hàng hiển thị, không thay cho `n`. Series trung bình theo năm/lĩnh vực có `contributorN`
+ở từng điểm; benchmark/profile nêu rõ mẫu vùng và toàn quốc. `NaN`/`Infinity` được đổi thành `null`;
+filter không hợp lệ trả `422` tiếng Việt. Các use case ở `server/services.py` gọi lại `src/analysis/`,
+không sao chép công thức nghiệp vụ sang UI.
+
+Contract query: `scale=six|eight`; route snapshot dùng `year`; `trends` và `dynamics` dùng `from`/`to`;
+`provinces` nhận thêm `region`/`province`; `dimensions` nhận `x`/`y`. Giá trị optional được resolve
+deterministic từ metadata (mốc mới nhất, hoặc toàn khoảng hợp lệ); `province` đơn lẻ tự suy ra vùng,
+và `x`/`y` đơn lẻ tự chọn lĩnh vực còn lại. API trả availability để UI không tự đoán lựa chọn hợp lệ.
+
+Mỗi endpoint có response model Pydantic cụ thể trong OpenAPI, gồm typed row/metric/artifact cho H1–H4;
+không dùng envelope `data: dict[str, Any]`. H4 trả `fromScore`/`toScore`, không dùng key năm động.
+
+`src/data_loader.py` là data layer thuần mới: đọc snapshot processed và normalise GeoJSON trong bộ nhớ.
+`app/lib/data.py` chỉ còn adapter `st.cache_data` và re-export các helper để Streamlit fallback giữ nguyên
+hành vi. GeoJSON trên file, raw và processed data không bị ghi.
+
+OpenAPI luôn có tại `/openapi.json`. Khi Phase 2 tạo frontend, hook sinh type được chốt là:
+
+```bash
+npx openapi-typescript http://127.0.0.1:8000/openapi.json -o frontend/src/api/schema.ts
+```
+
+Lệnh trên chỉ là contract hook cho Phase 2, chưa tạo thư mục hay scaffold React trong Phase 1.
+
 ## Data layer
 
 `src/papi_lib.py` chứa bảng tra cứu, chuẩn hóa tên tỉnh và parser cho các cấu trúc Excel khác nhau.
 `src/build_dataset.py` chọn một nguồn canonical cho từng năm, làm sạch, kiểm tra chất lượng rồi ghi
 các bảng đã xử lý. `data/raw/` phải được xem là bất biến.
 
-App không đọc Excel trực tiếp. `app/lib/data.py` chỉ nạp các file trong `data/processed/` và cache qua
-`st.cache_data`. Các tên biến được dùng trong app và AI executor:
+App/API không đọc Excel trực tiếp. `src/data_loader.py` nạp các file trong `data/processed/`; fallback
+cache kết quả qua `app/lib/data.py`. Các tên biến được dùng trong app và AI executor:
 
 | Tên | Nguồn | Vai trò |
 |---|---|---|
@@ -53,15 +94,16 @@ Không nên giả định hai bản luôn đồng bộ nếu chưa chạy cross-
 
 `app/main.py` khai báo sáu trang qua `st.navigation`:
 
-- `overview.py`: chọn tổng 6/8 lĩnh vực, KPI, bản đồ và xếp hạng; đã có nội dung thật.
-- `time_trend.py`: phân tích xu hướng, COVID, heatmap và drill-down; đã có nội dung thật.
-- `provincial.py`, `dimension.py`, `dynamics.py`: hiện chỉ publish context tối thiểu và hiển thị thông
-  báo đang phát triển.
+- `overview.py`: chọn tổng 6/8 lĩnh vực, KPI, bản đồ và xếp hạng.
+- `time_trend.py`: phân tích xu hướng, COVID, heatmap và drill-down.
+- `provincial.py`: phân phối/ranking vùng, benchmark và profile tỉnh.
+- `dimension.py`: correlation, scatter theo cặp lĩnh vực và phân tán.
+- `dynamics.py`: thay đổi đầu-cuối và phân nhóm KMeans profile.
 - `ai_assistant.py`: giao diện tạo, xem, sửa, duyệt, chạy và xem log code AI.
 
 `app/lib/config.py` giữ đường dẫn, nhãn và token màu. `charts.py`, `filters.py`, `layout.py` là các
-primitive dùng chung. Các phép tính riêng của H1 đã được tách sang `src/analysis/trend.py`; ba module
-phân tích tương ứng H2–H4 chưa tồn tại.
+primitive dùng chung. Phép tính theo route nằm trong `src/analysis/`: `trend.py`, `provincial.py`,
+`dimensions.py` và `dynamics.py` tương ứng H1–H4.
 
 ## AI human-in-the-loop
 
@@ -73,8 +115,8 @@ service độc lập:
 3. `api_logs.py` ghi JSON Lines vào `logs/ai_sessions.jsonl`.
 
 Registry tự discover năm lựa chọn: một ví dụ thống kê mô tả và bốn technique thật (`trend`,
-`anomaly`, `insight`, `clustering`). Overview và H1 có nút chuyển chart context sang AI Assistant;
-ba trang stub chưa có context phân tích thật.
+`anomaly`, `insight`, `clustering`). Các trang phân tích publish context để AI Assistant nhận câu hỏi
+theo filter/chart đang xem.
 
 ### Giới hạn an toàn cần hiểu đúng
 
@@ -105,9 +147,10 @@ Người dùng bấm Phê duyệt và thực thi
 Process local chạy code → result/fig/stdout/error → log metadata
 ```
 
-Hiện log được ghi khi thực thi hoặc reset. Code chỉ được sinh nhưng chưa chạy chưa tạo bản ghi; kết
-quả bảng/biểu đồ đầy đủ cũng chưa được lưu, chỉ có metadata như shape, loại figure và stdout preview.
-Đây là khoảng trống so với yêu cầu lưu toàn bộ quá trình.
+Ngay khi AI sinh đề xuất, UI ghi event `generated_pending_approval` với request, code, explanation và
+context; reset cũng được log. Sau phê duyệt, event `executed_after_approval` ghi `code_run`, stdout,
+error, shape kết quả và loại figure (cùng metadata liên quan). Kết quả bảng/biểu đồ đầy đủ vẫn chưa được
+lưu thành artifact truy xuất được, nên đây còn là khoảng trống so với yêu cầu lưu toàn bộ quá trình.
 
 ## Ranh giới và quy tắc phụ thuộc
 
@@ -121,7 +164,7 @@ quả bảng/biểu đồ đầy đủ cũng chưa được lưu, chỉ có meta
 
 ## Các artifact khác
 
-- `tests/`: 45 test offline tại lần rà soát 17/07/2026.
+- `tests/`: 62 test offline pass tại baseline `697f5b2`; migration hiện có 95 test Python pass, chạy bằng `python3 -m pytest -q`.
 - `report/`: template và nội dung LaTeX ban đầu, chưa phải báo cáo hoàn chỉnh.
 - `reports/figures/`: năm hình EDA sinh từ notebook.
 - `logs/`: dữ liệu runtime local; `.gitkeep` được theo dõi, log phiên bị ignore.

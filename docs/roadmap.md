@@ -1,62 +1,82 @@
-# Roadmap đến bản demo hoàn chỉnh
+# Roadmap migration React + FastAPI
 
-Roadmap này chỉ chứa công việc chưa hoàn tất tại ngày 17/07/2026. Các kế hoạch tháng 06 đã được lưu
-trong `archive/` và không dùng để theo dõi tiến độ mới.
+Roadmap này điều phối migration theo ADR và parity matrix. Khi có mâu thuẫn, ưu tiên
+**code/runtime/test** → ADR/parity → status docs → archive. Không dùng roadmap để hạ cấp capability
+legacy đã có code thành backlog chưa làm.
 
-## P0 — Nền tài liệu và tính tái lập
+## Baseline legacy đã triển khai
 
-- [x] Tạo chỉ mục tài liệu và phân loại current/archive.
-- [x] Viết lại trạng thái và kiến trúc dựa trên code.
-- [x] Thêm `pytest` vào `requirements-dev.txt` cho môi trường phát triển.
-- [ ] Chạy notebook preprocessing từ đầu và lưu bằng chứng cross-check với pipeline.
-- [x] Chuẩn hoá GeoJSON khi nạp app: gộp hai phần ID `49`, rewind vòng cho Plotly/D3 và test 63 ID;
-  giữ nguyên file nguồn.
+Streamlit có sáu route: Tổng quan, H1 diễn biến, H2 vùng/tỉnh, H3 mối quan hệ lĩnh vực, H4 thay đổi/
+phân nhóm và AI Assistant. H2–H4 đã có page + analysis; storytelling route/context AI, event pending
+log và execution/reset log cũng đã có. Đây là baseline để đối chiếu content, không phải hạng mục lặp lại
+trong các phase bên dưới.
 
-## P1 — Hoàn thiện ba hướng dashboard còn thiếu
+## Phase 0 — Docs baseline và gate
 
-Thứ tự khuyến nghị: H2 → H3 → H4, mỗi hướng là một PR nhỏ có page, analysis module và test.
+**Trạng thái:** implementation hoàn tất; chỉ được gọi hoàn tất chính thức sau review gate.
 
-- [ ] H2: bản đồ/xếp hạng/so sánh vùng và drill-down tỉnh.
-- [ ] H3: hồ sơ lĩnh vực, correlation và so sánh vùng/tỉnh.
-- [ ] H4: mức thay đổi, clustering và chuyển dịch nhóm/tier.
-- [ ] Thêm context thật và nút “Giải thích biểu đồ” cho từng trang.
-- [ ] Review nhất quán design, dữ liệu thiếu và cách dùng tổng 6/8 lĩnh vực.
+- Chốt ADR React TypeScript strict + FastAPI local, sidebar trái và fallback Streamlit frozen.
+- Chốt matrix sáu route, numeric/content parity tách với UX improvements, semantic view-model và cutover/rollback.
+- Đồng bộ current docs theo code/test baseline, xóa bốn artifact untracked bị bác bỏ.
+- Gate: python3 -m pytest -q, git diff --check, audit vùng cấm và review độc lập.
 
-## P2 — Khép kín AI human-in-the-loop
+## Phase 1 — FastAPI local
 
-- [ ] Log ngay khi AI sinh đề xuất, kể cả người dùng chưa thực thi.
-- [ ] Ghi event rõ ràng cho generate/edit/approve/execute/error thay vì một record tổng hợp mơ hồ.
-- [ ] Lưu kết quả đủ để truy xuất: bảng nhỏ hoặc artifact có checksum/path; không chỉ shape/type.
-- [ ] Copy/deep-copy hoặc loại khỏi namespace các object không phải DataFrame như GeoJSON.
-- [ ] Xác định rõ threat model; giữ demo local và không gọi executor là sandbox bảo mật.
-- [ ] Chạy live smoke test Groq và bốn plugin bằng dữ liệu thật, lưu log/ảnh có kiểm soát.
-- [ ] Cập nhật manual test theo đúng label và hành vi UI tại thời điểm nghiệm thu.
+**Trạng thái:** implementation hoàn tất, chờ review gate cùng bằng chứng runtime.
 
-## P3 — Storytelling và chất lượng trực quan
+- Tạo API local bind 127.0.0.1 cho metadata, dashboard data/view-model và lỗi chuẩn hoá.
+- Tái sử dụng/đối chiếu analysis Python; không cho API/UI đọc raw data hoặc secrets.
+- Chốt OpenAPI semantic view-model: source, unit, n, caveats; chuẩn hoá NaN/Infinity thành null.
+- Thêm contract/unit test cho response, numeric parity, lỗi filter, null/GeoJSON và KMeans deterministic.
+- Giữ scope data/dashboard: API AI, API thực thi và API logs qua HTTP là Phase 5; không có React scaffold
+  trong phase này. Contract OpenAPI có tại `/openapi.json`; Phase 2 sẽ sinh TypeScript types từ đó.
 
-- [ ] Chốt một câu chuyện xuyên suốt từ Tổng quan đến bốn hướng.
-- [ ] Kiểm tra mọi tiêu đề kết luận bằng số liệu; tránh suy diễn nhân quả từ tương quan.
-- [ ] Rà accessibility: tương phản, palette, keyboard, nội dung thay thế và kích thước màn hình.
-- [ ] Kiểm tra trực quan trên viewport trình chiếu và máy dùng trong vấn đáp.
+## Phase 2 — React shell và Tổng quan
 
-## P4 — Báo cáo
+**Trạng thái:** implementation hoàn tất, chờ review gate.
 
-- [ ] Viết nguồn/phương pháp dữ liệu và toàn bộ bước xử lý.
-- [ ] Viết thiết kế dashboard, bốn câu hỏi phân tích và kết luận có giới hạn phương pháp.
-- [ ] Viết kiến trúc AI, human-in-the-loop, guard local và hạn chế bảo mật.
-- [ ] Bổ sung bảng tóm tắt quá trình dùng AI: yêu cầu, kết quả, chỉnh sửa của người, nhận xét.
-- [ ] Chèn hình, nguồn và tài liệu tham khảo; build LaTeX sạch.
+- Tạo React TypeScript strict shell, sidebar trái sáu route với nhãn target tiếng Việt.
+- Implement /overview với content/numeric parity và map-linked ranking.
+- Bổ sung loading/empty/error/retry, metadata semantic, keyboard/focus và responsive theo matrix.
+- Giữ Streamlit Overview làm fallback độc lập.
 
-## P5 — Vấn đáp và phát hành
+## Phase 3 — H1 và H2
 
-- [ ] Chốt ít nhất bốn câu hỏi demo, mỗi thành viên sở hữu một câu.
-- [ ] Chuẩn bị kịch bản khi Groq/API không hoạt động: dùng log/artifact đã lưu, không giả lập số liệu.
-- [ ] Rehearsal toàn luồng: filter → chart → AI đề xuất → sửa → duyệt → kết quả → log.
-- [ ] Chạy test, build dữ liệu/notebook cần thiết, build report và smoke test app.
-- [ ] Gắn tag/commit demo sau khi mọi bằng chứng đã được kiểm tra.
+**Trạng thái:** implementation và local gate hoàn tất; chưa cutover.
 
-## Tiêu chí hoàn tất toàn dự án
+- Implement /time-trend: trend/COVID/heatmap parity, dumbbell và linked selection.
+- Implement /provincial: distribution/ranking/benchmark parity, dot plot thay radar.
+- Kiểm fixture numeric, source/unit/n/caveats, viewport và interaction cho hai route.
 
-Dự án chỉ được gọi là hoàn chỉnh khi bốn hướng dashboard có nội dung thật; AI log chứng minh được vai
-trò của con người; dữ liệu/map qua QC; báo cáo khớp code; và một máy mới có thể cài, chạy test, mở app
-theo tài liệu mà không cần kiến thức truyền miệng.
+## Phase 4 — H3 và H4
+
+**Trạng thái:** implementation và local gate hoàn tất; chưa cutover.
+
+- Implement /dimension: lower-triangle correlation heatmap click sang scatter, cặp X/Y hợp lệ.
+- Implement /dynamics: delta/KMeans parity, top/bottom 8, full table và hồ sơ A–D/profile view.
+- Kiểm deterministic clustering (random_state=42), missing endpoint và full responsive/accessibility cases.
+
+## Phase 5 — AI qua HTTP
+
+**Trạng thái:** chưa triển khai. Route React chỉ công bố boundary và hướng người dùng về Streamlit fallback;
+không sinh hoặc thực thi code.
+
+- Chuyển API AI, API Thực thi và API Logs sang FastAPI local mà không bỏ human approval.
+- Hiển thị bốn bước: yêu cầu sinh; code + giải thích; diff + hash-reset; phê duyệt rồi mới có kết quả/log.
+- Executor vẫn là process con timeout/stdout guard local, không được mô tả là sandbox public.
+- Log pending có request/code/explanation/context; execution có code_run/stdout/error/shape/fig type; không
+  hiển thị internal reasoning. Chỉ bổ sung full result artifact khi contract/path/checksum được chốt.
+
+## Phase 6 — QA, one-command demo và cutover
+
+- Tạo script/lệnh local production-like: FastAPI phục vụ React dist; development dùng Vite + Uvicorn.
+- Chạy browser QA ở 1440/1280/1024/900/768/390, sidebar/keyboard/focus/no-horizontal-scroll và state lỗi.
+- Đính kèm evidence numeric/content parity, semantic response, UX improvements và AI pending/approved log.
+- Cutover chỉ sau toàn bộ matrix pass; rollback quay về Streamlit fallback, không migration data hoặc xóa log.
+
+## Ngoài scope migration nhưng chưa hoàn tất
+
+- Full result artifact cho AI logs và hardening executor sâu hơn vẫn là việc thật sự còn lại.
+- Browser QA/cutover evidence chỉ được tạo ở Phase 6.
+- Notebook cross-check, live Groq smoke test, rehearsal vấn đáp và báo cáo thuộc công việc dự án rộng hơn;
+  không được sửa report/ trong migration này.

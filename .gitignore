@@ -22,3 +22,12 @@ venv/
 # Logs sinh ra lúc chạy AI module (giữ thư mục, bỏ nội dung)
 logs/*
 !logs/.gitkeep
+
+# Frontend generated dependencies and verification artifacts
+frontend/node_modules/
+frontend/dist/
+frontend/test-results/
+frontend/playwright-report/
+frontend/.vitest-localstorage*
+frontend/node_modules/.tmp/
+frontend/*.tsbuildinfo
