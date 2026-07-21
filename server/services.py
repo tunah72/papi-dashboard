@@ -343,11 +343,52 @@ def trends(scale="six", from_year=None, to_year=None, region=None, province=None
     ].notna().sum())
     regional_rows = trend.regional_total_series(data()["prov_year"], total, start, end)
     regional_yoy = trend.regional_year_over_year(data()["prov_year"], total, start, end)
+    regional_ranks = trend.regional_ranks(data()["prov_year"], total, start, end)
     selected_rows = trend.focus_total_series(data()["prov_year"], total, start, end, region, province)
     turning_rows = trend.turning_points(totals, total)
+    summary = trend.summarize_total(totals, total)
+    net = summary["net"]
+    total_insight = (
+        f"Điểm {'tăng' if net >= 0 else 'giảm'} {_vi_number(abs(net))} từ {start} đến {end}; "
+        f"mức cao nhất {_vi_number(summary['peak_val'])} xuất hiện năm {summary['peak_year']}."
+        if net is not None and not pd.isna(net) else "Không đủ dữ liệu để so sánh đầu và cuối kỳ."
+    )
+    if regional_yoy.empty:
+        yoy_insight = "Không đủ hai năm liên tiếp để so sánh nhịp thay đổi theo vùng."
+    else:
+        grouped = regional_yoy.groupby("year", observed=True).change
+        direction = grouped.apply(lambda values: "tăng" if (values > 0).sum() >= (values < 0).sum() else "giảm")
+        counts = grouped.apply(lambda values: max(int((values > 0).sum()), int((values < 0).sum())))
+        year = int(counts.idxmax())
+        candidates = regional_yoy.loc[regional_yoy.year.eq(year)]
+        strongest = candidates.loc[candidates.change.abs().idxmax()]
+        yoy_insight = f"Năm {year} có {int(counts.loc[year])}/6 vùng cùng {direction.loc[year]}; {strongest.region} biến động mạnh nhất với {_vi_number(strongest.change, 2)} điểm."
+    if regional_ranks.empty:
+        rank_insight = "Không đủ dữ liệu để so sánh thứ hạng vùng."
+    else:
+        pivot = regional_ranks.pivot(index="region", columns="year", values="rank").dropna()
+        moves = (pivot[end] - pivot[start]).astype(float)
+        up_region, down_region = moves.idxmin(), moves.idxmax()
+        up, down = int(-moves.loc[up_region]), int(moves.loc[down_region])
+        rank_insight = (
+            f"{up_region} tăng {up} bậc từ đầu kỳ; {down_region} giảm nhiều nhất với {down} bậc."
+            if up > 0 or down > 0 else "Thứ tự vùng ổn định; không vùng nào thay đổi bậc trong khoảng đã chọn."
+        )
+    valid_deltas = [row for row in delta_rows if row["delta"] is not None]
+    best = max(valid_deltas, key=lambda row: row["delta"], default=None)
+    worst = min(valid_deltas, key=lambda row: row["delta"], default=None)
+    if best and worst:
+        best_phrase = "tăng mạnh nhất" if best["delta"] >= 0 else "giảm ít nhất"
+        worst_phrase = "giảm mạnh nhất" if worst["delta"] < 0 else "tăng ít nhất"
+        dimension_insight = (
+            f"{best['label']} {best_phrase} ({_vi_number(best['delta'])}); "
+            f"{worst['label']} {worst_phrase} ({_vi_number(worst['delta'])})."
+        )
+    else:
+        dimension_insight = "Không đủ dữ liệu lĩnh vực ở cả hai mốc để tính thay đổi."
     return response({
         "measure": {"id": total, "label": cfg["label"], "unit": cfg["unit"]},
-        "summary": trend.summarize_total(totals, total),
+        "summary": summary,
         "totalSeries": _artifact(total_rows, cfg["unit"], caveats=["Mỗi điểm là trung bình tỉnh và contributorN là số tỉnh có dữ liệu."]),
         "dimensionSeries": _artifact(heat, "điểm lĩnh vực PAPI"),
         "dimensionDeltas": _artifact(delta_rows, "chênh lệch điểm lĩnh vực PAPI", caveats=["Dùng điểm đầu/cuối có dữ liệu trong khoảng."]),
@@ -355,8 +396,10 @@ def trends(scale="six", from_year=None, to_year=None, region=None, province=None
         "heatmap": _artifact(heat, "điểm lĩnh vực PAPI"),
         "regionalSeries": _artifact(regional_rows, cfg["unit"]),
         "regionalYearOverYear": _artifact(regional_yoy, f"chênh lệch {cfg['unit']}"),
+        "regionalRanks": _artifact(regional_ranks, "hạng vùng", caveats=["Hạng 1 là cao nhất; đồng hạng dùng rank(method='min')."]),
         "selectedSeries": _artifact(selected_rows, cfg["unit"]),
         "turningPoints": _artifact(turning_rows, f"chênh lệch {cfg['unit']}"),
+        "insights": {"total": total_insight, "regionalYearOverYear": yoy_insight, "regionalRank": rank_insight, "dimensions": dimension_insight},
     }, n=primary_n, filters={"scale": scale, "from": start, "to": end, "region": region, "province": province}, unit=cfg["unit"],
        caveats=["D7 và D8 chưa có trước 2018.", "Các thay đổi lĩnh vực dùng năm đầu/cuối có dữ liệu trong khoảng."])
 

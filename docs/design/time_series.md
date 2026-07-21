@@ -17,6 +17,8 @@ khác biệt đầu–cuối?
 - Từ năm / đến năm: hai mốc hợp lệ, ít nhất cách nhau một năm.
 - Focus tùy chọn: một vùng hoặc một tỉnh kế thừa từ trang khác.
 - Trạng thái rõ: `Đang xem: 6 lĩnh vực · 2011–2024 · Toàn quốc`.
+- Trạng thái này chỉ xuất hiện trong filter bar; không lặp lại `6 lĩnh vực · 2011–2024 · n tỉnh–năm`
+  cạnh tiêu đề trang.
 
 ### KPI
 
@@ -45,6 +47,10 @@ Line chart không chiếm toàn hàng. Card 01 và 02 dùng chung chiều cao 52
 Cả bốn card có button phóng to ở góc phải header và dùng chung popup theo
 [`chart_focus_mode.md`](chart_focus_mode.md). Chế độ mở rộng phải giữ unified hover, năm đang hover,
 legend vùng và khoảng thời gian hiện tại.
+
+Chart card chỉ hiển thị nhãn nhóm và câu hỏi phân tích. Không đặt thêm câu hướng dẫn kiểu “đường đậm
+là toàn quốc”, “màu xanh là tăng” hoặc “click để…” phía trên biểu đồ; các tín hiệu này nằm trong
+legend, tooltip, trạng thái control và bảng dữ liệu thay thế.
 
 ## 4. Biểu đồ 01 — Line chart mức điểm theo năm
 

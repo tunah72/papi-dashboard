@@ -57,6 +57,7 @@ def test_openapi_uses_concrete_response_models_not_generic_free_form_data(client
     assert schemas["OverviewStoryCards"]["properties"]["quadrants"]["$ref"].endswith("/QuadrantSummaryArtifact")
     assert schemas["OverviewStoryCards"]["properties"]["changeDistribution"]["$ref"].endswith("/ChangeDistributionArtifact")
     assert schemas["TrendsData"]["properties"]["covid"]["$ref"].endswith("/CovidArtifact")
+    assert schemas["TrendsData"]["properties"]["regionalRanks"]["$ref"].endswith("/RegionalRankArtifact")
     assert schemas["DynamicsData"]["properties"]["clusters"]["$ref"].endswith("/ClusterArtifact")
     assert schemas["DynamicsData"]["properties"]["clusterModel"]["$ref"].endswith("/StableClusterArtifact")
 
@@ -99,10 +100,12 @@ def test_semantic_artifacts_contributors_and_bool_are_typed(client):
     assert payload["meta"]["n"] == 430  # valid province-year total observations, not seven annual rows
     for key in (
         "totalSeries", "dimensionSeries", "dimensionDeltas", "covid", "heatmap",
-        "regionalSeries", "regionalYearOverYear", "selectedSeries", "turningPoints",
+        "regionalSeries", "regionalYearOverYear", "regionalRanks", "selectedSeries", "turningPoints",
     ):
         _artifact(payload["data"][key])
     assert payload["data"]["totalSeries"]["rowCount"] == 7
+    assert set(payload["data"]["insights"]) == {"total", "regionalYearOverYear", "regionalRank", "dimensions"}
+    assert all(1 <= row["rank"] <= 6 for row in payload["data"]["regionalRanks"]["rows"])
     assert all(point["contributorN"] > 0 for point in payload["data"]["totalSeries"]["rows"])
     assert isinstance(payload["data"]["covid"]["available"], bool)
     assert payload["data"]["covid"]["available"] is True

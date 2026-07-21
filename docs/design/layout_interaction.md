@@ -41,7 +41,7 @@ khối mô tả dài hoặc bộ lọc cao hơn 100 px.
 
 ```text
 ┌───────────────────────────────────────────────────────────────────────┐
-│ Tên trang + mô tả ngắn                         Phạm vi · n quan sát    │
+│ Tên trang + mô tả ngắn                                             │
 ├───────────────────────────────────────────────────────────────────────┤
 │ Filter 1  Filter 2  Filter 3              Đang xem: ...   Đặt lại    │
 ├──────────────┬──────────────┬──────────────┬─────────────────────────┤
@@ -83,8 +83,6 @@ khối mô tả dài hoặc bộ lọc cao hơn 100 px.
 ```text
 01 · Nhóm câu hỏi
 Tiêu đề dưới dạng câu hỏi phân tích
-Phụ đề: thước đo, phạm vi và cách đọc cần thiết
-
 [plot]
 
 Insight  Câu trả lời động ngắn, có số liệu và đối tượng cụ thể.
@@ -94,7 +92,10 @@ Nguồn: PAPI · Đơn vị: ... · n = ... · Lưu ý phương pháp
 ### Header
 
 - Tiêu đề là câu hỏi mà chart trả lời, không phải tên kỹ thuật như “Biểu đồ cột”.
-- Phụ đề tối đa hai dòng; không mô tả lại mọi encoding đã thể hiện rõ.
+- Không hiển thị dòng hướng dẫn cách đọc hoặc diễn giải encoding trong chart card. Tooltip, nhãn trục,
+  legend và bảng dữ liệu thay thế phải tự cung cấp ngữ cảnh cần thiết.
+- Không lặp phạm vi, năm và `n` cạnh tiêu đề trang khi các giá trị này đã hiện rõ trong filter; `n`
+  vẫn phải xuất hiện ở metadata của biểu đồ vì đó là thông tin phương pháp.
 - Control của chart căn góc phải, vùng bấm tối thiểu 44 × 44 px.
 - Mỗi card luôn có button `Phóng to biểu đồ` ở góc phải header. Button mở chế độ xem riêng theo
   [`chart_focus_mode.md`](chart_focus_mode.md), không đặt đè lên plot hoặc modebar.

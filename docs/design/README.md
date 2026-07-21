@@ -62,13 +62,13 @@ Toàn bộ Dashboard dùng 16 hình thức trực quan khác nhau. Hai nhóm đ�
 ## 5. Luồng đọc thống nhất của mỗi trang
 
 ```text
-Tên trang + mô tả một câu
+Tên trang + mô tả một câu, không kèm lại phạm vi/năm/n đã có trong filter
     → bộ lọc gọn và trạng thái đang xem
     → bốn KPI cùng chiều cao
     → grid 2 × 2 gồm đúng bốn chart card
          ├── câu hỏi phân tích
          ├── nút phóng to mở chart trong popup xem riêng
-         ├── biểu đồ
+         ├── biểu đồ, không thêm dòng hướng dẫn cách đọc
          ├── Insight động trả lời câu hỏi
          └── nguồn, đơn vị, n và lưu ý
     → bảng dữ liệu/progressive disclosure nếu cần

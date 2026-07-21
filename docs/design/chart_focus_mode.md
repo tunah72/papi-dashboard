@@ -20,7 +20,6 @@ Mỗi chart card có một icon button ở góc trên bên phải của header:
 ┌────────────────────────────────────────────────────────────┐
 │ 01 · Nhóm câu hỏi                         [⛶ Phóng to]     │
 │ Tiêu đề dưới dạng câu hỏi phân tích                        │
-│ Phụ đề                                                     │
 ├────────────────────────────────────────────────────────────┤
 │                         plot                               │
 ├────────────────────────────────────────────────────────────┤
@@ -77,8 +76,10 @@ giữ được navigation của Dashboard.
 
 Popup không chỉ hiển thị hình vẽ. Nó phải giữ đủ ngữ cảnh để người dùng hiểu biểu đồ độc lập:
 
-- số thứ tự, câu hỏi phân tích và phụ đề;
-- trạng thái filter hiện tại, ví dụ `2018–2024 · 8 lĩnh vực · 61 tỉnh`;
+- số thứ tự và câu hỏi phân tích;
+- đối tượng tỉnh/vùng đang được chọn, nếu có;
+- không lặp lại phạm vi, năm và cỡ mẫu ở header popup; các giá trị này đã nằm trong URL, trục và
+  metadata của biểu đồ;
 - cùng trace, màu, legend, selection, tooltip và guide line với chart card;
 - `ChartInsight` động ngay cạnh hoặc ngay dưới plot;
 - nguồn PAPI, đơn vị, `n` thực tế, caveat và bảng dữ liệu thay thế.
@@ -147,9 +148,8 @@ Nên triển khai một contract dùng chung thay vì tạo popup riêng ở t�
 type ChartFocusProps = {
   chartId: string;
   title: string;
-  subtitle?: string;
   insight: string;
-  activeContext: string;
+  activeContext?: string;
   metadata: ChartMetadata;
   children: React.ReactNode;
 };

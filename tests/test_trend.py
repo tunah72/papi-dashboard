@@ -108,3 +108,15 @@ def test_regional_series_yoy_focus_and_turning_points():
     points = trend.turning_points(totals, "total", limit=1)
     assert points.iloc[0].year == 2021
     assert points.iloc[0].change == pytest.approx(3.0)
+
+
+def test_regional_ranks_use_min_rank_for_ties():
+    panel = pd.DataFrame({
+        "region": ["A", "B", "C", "A", "B", "C"],
+        "year": [2020, 2020, 2020, 2021, 2021, 2021],
+        "total": [10.0, 10.0, 8.0, 9.0, 11.0, 8.0],
+    })
+    ranks = trend.regional_ranks(panel, "total", 2020, 2022)
+    assert set(ranks.columns) >= {"year", "region", "score", "contributor_n", "rank"}
+    assert ranks["rank"].min() == 1
+    assert ranks.query("year == 2020 and region in ['A', 'B']")['rank'].tolist() == [1, 1]

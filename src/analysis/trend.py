@@ -122,6 +122,21 @@ def regional_year_over_year(prov_year, total_col, y0, y1):
     return series.dropna(subset=["previous_score"]).reset_index(drop=True)
 
 
+def regional_ranks(prov_year, total_col, y0, y1):
+    """Hạng vùng theo từng năm, với tie dùng ``rank(method='min')``.
+
+    Hạng là artifact nghiệp vụ của backend để bump chart không tự suy diễn
+    thứ tự từ các trace ở frontend.
+    """
+    series = regional_total_series(prov_year, total_col, y0, y1)
+    series["rank"] = (
+        series.groupby("year", observed=True)["score"]
+        .rank(method="min", ascending=False)
+        .astype("Int64")
+    )
+    return series.sort_values(["region", "year"]).reset_index(drop=True)
+
+
 def focus_total_series(prov_year, total_col, y0, y1, region=None, province=None):
     """Chuỗi overlay cho vùng/tỉnh được chọn; không thay đổi chuỗi quốc gia."""
     years = pd.DataFrame({"year": list(range(y0, y1 + 1))})

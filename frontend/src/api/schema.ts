@@ -1158,6 +1158,32 @@ export interface components {
             /** Contributorn */
             contributorN: number;
         };
+        /** RegionalRankArtifact */
+        RegionalRankArtifact: {
+            /** Rowcount */
+            rowCount: number;
+            /** Unit */
+            unit: string;
+            /** Source */
+            source: string;
+            /** Caveats */
+            caveats?: string[];
+            /** Rows */
+            rows: components["schemas"]["RegionalRankPoint"][];
+        };
+        /** RegionalRankPoint */
+        RegionalRankPoint: {
+            /** Year */
+            year: number;
+            /** Region */
+            region: string;
+            /** Score */
+            score: number | null;
+            /** Contributorn */
+            contributorN: number;
+            /** Rank */
+            rank: number;
+        };
         /** RegionalRankingRow */
         RegionalRankingRow: {
             /** Provinceid */
@@ -1413,6 +1439,17 @@ export interface components {
             /** Province */
             province?: string | null;
         };
+        /** TrendInsights */
+        TrendInsights: {
+            /** Total */
+            total: string;
+            /** Regionalyearoveryear */
+            regionalYearOverYear: string;
+            /** Regionalrank */
+            regionalRank: string;
+            /** Dimensions */
+            dimensions: string;
+        };
         /** TrendsData */
         TrendsData: {
             measure: components["schemas"]["Measure"];
@@ -1424,8 +1461,10 @@ export interface components {
             heatmap: components["schemas"]["DimensionSeriesArtifact"];
             regionalSeries: components["schemas"]["RegionalSeriesArtifact"];
             regionalYearOverYear: components["schemas"]["RegionalYearOverYearArtifact"];
+            regionalRanks: components["schemas"]["RegionalRankArtifact"];
             selectedSeries: components["schemas"]["FocusSeriesArtifact"];
             turningPoints: components["schemas"]["TurningPointArtifact"];
+            insights: components["schemas"]["TrendInsights"];
         };
         /** TrendsMeta */
         TrendsMeta: {

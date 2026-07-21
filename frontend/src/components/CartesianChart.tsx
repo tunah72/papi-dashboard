@@ -18,7 +18,7 @@ type Props = {
   layout?: Partial<Layout>
   height?: number
   children?: ReactNode
-  onClick?: (event: { points?: Array<{ pointIndex?: number | number[]; pointNumber?: number | number[]; x?: unknown; y?: unknown; customdata?: unknown }> }) => void
+  onClick?: (event: { points?: Array<{ curveNumber?: number; pointIndex?: number | number[]; pointNumber?: number | number[]; x?: unknown; y?: unknown; customdata?: unknown }> }) => void
   onHover?: (event: { points?: Array<{ curveNumber?: number; pointIndex?: number | number[]; pointNumber?: number | number[]; x?: unknown; y?: unknown; customdata?: unknown }> }) => void
   onUnhover?: () => void
   onSelected?: (event: { points?: Array<{ pointIndex?: number | number[]; pointNumber?: number | number[]; x?: unknown; y?: unknown; customdata?: unknown }> }) => void

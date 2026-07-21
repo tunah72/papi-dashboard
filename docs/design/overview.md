@@ -32,6 +32,10 @@ KPI dùng bề mặt trung tính. Tên tỉnh cao/thấp không tô xanh/đỏ n
 
 ## 3. Bố cục
 
+Phạm vi, năm và số tỉnh đang xem chỉ hiển thị trong filter/KPI/metadata phù hợp; không lặp cụm như
+`8 lĩnh vực · 2024 · 61 tỉnh` cạnh tiêu đề trang. Chart card không có dòng hướng dẫn cách đọc; giữ
+câu hỏi phân tích, biểu đồ, insight và metadata.
+
 ```text
 ┌──────────────────────────────┬──────────────────────────────┐
 │ 01. Choropleth               │ 02. Waterfall theo năm       │

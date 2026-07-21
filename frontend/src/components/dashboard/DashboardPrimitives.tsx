@@ -51,14 +51,14 @@ export function ChartCard({ eyebrow, title, description, action, children, foote
   className?: string
   focus?: {
     id: string
-    activeContext: string
+    activeContext?: string
     open: boolean
     onOpenChange: (open: boolean) => void
     content?: ReactNode
   }
 }) {
   return <section className={`chart-card ${className}`.trim()}>
-    <header className="chart-card-header"><div>{eyebrow && <p className="eyebrow">{eyebrow}</p>}<h2>{title}</h2>{description && <p>{description}</p>}</div>{(action || focus) && <div className="chart-card-action">{action}{focus && <ChartFocusDialog chartId={focus.id} title={title} subtitle={description} activeContext={focus.activeContext} insight={insight} footer={footer} open={focus.open} onOpenChange={focus.onOpenChange}>{focus.content ?? children}</ChartFocusDialog>}</div>}</header>
+    <header className="chart-card-header"><div>{eyebrow && <p className="eyebrow">{eyebrow}</p>}<h2>{title}</h2>{description && <p>{description}</p>}</div>{(action || focus) && <div className="chart-card-action">{action}{focus && <ChartFocusDialog chartId={focus.id} title={title} activeContext={focus.activeContext} insight={insight} footer={footer} open={focus.open} onOpenChange={focus.onOpenChange}>{focus.content ?? children}</ChartFocusDialog>}</div>}</header>
     <div className="chart-card-body">{children}</div>
     {insight}
     {footer && <footer className="chart-card-footer">{footer}</footer>}

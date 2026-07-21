@@ -48,7 +48,7 @@ for (const [width, height] of viewports) {
     await trigger.click()
     const dialog = page.getByRole('dialog', { name: 'Điểm PAPI cao và thấp tập trung ở đâu?' })
     await expectHorizontallyVisible(page, dialog)
-    if (width >= 768) await expect(dialog.getByText(/6 lĩnh vực · 2024/)).toBeVisible()
+    await expect(dialog.getByText(/6 lĩnh vực · 2024/)).toHaveCount(0)
     expect(await page.locator('body').evaluate((body) => body.style.overflow)).toBe('hidden')
     await dialog.getByRole('button', { name: /Thu nhỏ/ }).click()
     await expect(dialog).toBeHidden()

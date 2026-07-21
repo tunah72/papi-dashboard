@@ -5,7 +5,7 @@ type ChartFocusDialogProps = {
   chartId: string
   title: string
   subtitle?: string
-  activeContext: string
+  activeContext?: string
   insight?: ReactNode
   footer?: ReactNode
   open: boolean
@@ -76,7 +76,7 @@ export function ChartFocusDialog({
           <p id={descriptionId}>{subtitle}</p>
         </div>
         <div className="chart-focus-header-actions">
-          <span>{activeContext}</span>
+          {activeContext && <span>{activeContext}</span>}
           <button type="button" className="chart-focus-close" onClick={() => onOpenChange(false)}>
             Thu nhỏ <span aria-hidden="true">×</span>
           </button>

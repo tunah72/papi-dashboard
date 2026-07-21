@@ -303,6 +303,21 @@ class RegionalYearOverYearArtifact(Artifact):
     rows: list[RegionalYearOverYearPoint]
 
 
+class RegionalRankPoint(RegionalPoint):
+    rank: int
+
+
+class RegionalRankArtifact(Artifact):
+    rows: list[RegionalRankPoint]
+
+
+class TrendInsights(ApiModel):
+    total: str
+    regional_year_over_year: str = Field(alias="regionalYearOverYear")
+    regional_rank: str = Field(alias="regionalRank")
+    dimensions: str
+
+
 class FocusPoint(ApiModel):
     year: int
     scope: Literal["region", "province"]
@@ -337,8 +352,10 @@ class TrendsData(ApiModel):
     heatmap: DimensionSeriesArtifact
     regional_series: RegionalSeriesArtifact = Field(alias="regionalSeries")
     regional_year_over_year: RegionalYearOverYearArtifact = Field(alias="regionalYearOverYear")
+    regional_ranks: RegionalRankArtifact = Field(alias="regionalRanks")
     selected_series: FocusSeriesArtifact = Field(alias="selectedSeries")
     turning_points: TurningPointArtifact = Field(alias="turningPoints")
+    insights: TrendInsights
 
 
 class TrendsResponse(ApiModel):

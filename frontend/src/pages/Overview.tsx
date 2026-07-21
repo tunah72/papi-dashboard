@@ -243,14 +243,13 @@ export function Overview() {
   const pairLabel = `${labels.get(pair.x) ?? pair.x} × ${labels.get(pair.y) ?? pair.y}`
   const selectedProvince = rows.find((row) => row.provinceVi === params.get('province')) ?? null
   const selectedId = selectedProvince?.provinceId ?? -1
-  const context = `${scale === 'six' ? '6 lĩnh vực' : '8 lĩnh vực'} · ${year} · ${meta.n} tỉnh`
   const selectedMinRaw = params.get('deltaMin')
   const selectedMaxRaw = params.get('deltaMax')
   const selectedMin = selectedMinRaw === null ? Number.NaN : Number(selectedMinRaw)
   const selectedMax = selectedMaxRaw === null ? Number.NaN : Number(selectedMaxRaw)
   const selectedRange: [number, number] | null = Number.isFinite(selectedMin) && Number.isFinite(selectedMax) ? [selectedMin, selectedMax] : null
   const isDefault = scale === 'eight' && year === (metadata.data.data.scales.find((item) => item.id === 'eight')?.years.at(-1) ?? 2024) && !params.has('province') && !params.has('deltaMin') && !params.has('focus')
-  const focus = (id: string) => ({ id, activeContext: context, open: focusedChart === id, onOpenChange: (open: boolean) => updateParams({ focus: open ? id : null }) })
+  const focus = (id: string) => ({ id, activeContext: selectedProvince?.provinceVi, open: focusedChart === id, onOpenChange: (open: boolean) => updateParams({ focus: open ? id : null }) })
   const selectProvince = (provinceId: number) => {
     const province = rows.find((row) => row.provinceId === provinceId)
     if (province) updateParams({ province: province.provinceVi })
@@ -268,7 +267,7 @@ export function Overview() {
   const distributionInsight = <ChartInsight>{data.insights.changeDistribution}</ChartInsight>
 
   return <article className="overview overview-redesign">
-    <DashboardPageHeader eyebrow="Tổng quan" title="Bức tranh PAPI toàn quốc" description="Nhìn nhanh phân bố, nhịp thay đổi, cấu trúc lĩnh vực và mức dịch chuyển của các tỉnh." aside={<p className="overview-scope">{context}</p>} />
+    <DashboardPageHeader eyebrow="Tổng quan" title="Bức tranh PAPI toàn quốc" description="Nhìn nhanh phân bố, nhịp thay đổi, cấu trúc lĩnh vực và mức dịch chuyển của các tỉnh." />
     <FilterBar label="Bộ lọc Tổng quan" summary={<span aria-live="polite">Đang xem: <strong>{data.measure.label}</strong> · {year} · {meta.n} tỉnh có dữ liệu</span>} onReset={() => setParams({ scale: 'eight', year: '2024' })} resetDisabled={isDefault}>
       <label>Phạm vi so sánh<select value={scale} onChange={(event) => updateFilter(validScale(event.target.value), year)}><option value="six">6 lĩnh vực gốc</option><option value="eight">8 lĩnh vực</option></select></label>
       <label>Năm<select value={year} onChange={(event) => updateFilter(scale, Number(event.target.value))}>{available.years.map((item) => <option key={item} value={item}>{item}</option>)}</select></label>
@@ -281,16 +280,16 @@ export function Overview() {
     </KpiGrid>
 
     <section className="overview-chart-grid" aria-label="Bốn góc nhìn Tổng quan">
-      <ChartCard className="overview-chart-card" eyebrow="01 · Không gian" title="Điểm PAPI cao và thấp tập trung ở đâu?" description={`Phân bố ${data.measure.label} năm ${year}; click một tỉnh để giữ lựa chọn.`} insight={mapInsight} footer={<ChartMeta source={data.map.source} unit={data.map.unit} n={`${meta.n} tỉnh`} caveats={data.map.caveats} />} focus={{ ...focus('overview-map'), content: mapView(570) }}>
+      <ChartCard className="overview-chart-card" eyebrow="01 · Không gian" title="Điểm PAPI cao và thấp tập trung ở đâu?" insight={mapInsight} footer={<ChartMeta source={data.map.source} unit={data.map.unit} n={`${meta.n} tỉnh`} caveats={data.map.caveats} />} focus={{ ...focus('overview-map'), content: mapView(570) }}>
         {mapView(290)}
       </ChartCard>
-      <ChartCard className="overview-chart-card" eyebrow="02 · Thời gian" title="Mặt bằng điểm thay đổi chủ yếu vào năm nào?" description={`Mức năm-kề-năm từ ${available.years[0]} đến ${year}; click một thanh để mở trang Diễn biến.`} insight={annualInsight} footer={<ChartMeta source={data.storyCards.annualChanges.source} unit={data.storyCards.annualChanges.unit} n={`${data.storyCards.annualChanges.rowCount} mốc năm`} caveats={data.storyCards.annualChanges.caveats} />} focus={{ ...focus('overview-annual-change'), content: annualView(570) }}>
+      <ChartCard className="overview-chart-card" eyebrow="02 · Thời gian" title="Mặt bằng điểm thay đổi chủ yếu vào năm nào?" insight={annualInsight} footer={<ChartMeta source={data.storyCards.annualChanges.source} unit={data.storyCards.annualChanges.unit} n={`${data.storyCards.annualChanges.rowCount} mốc năm`} caveats={data.storyCards.annualChanges.caveats} />} focus={{ ...focus('overview-annual-change'), content: annualView(570) }}>
         {annualView(290)}
       </ChartCard>
-      <ChartCard className="overview-chart-card" eyebrow="03 · Quan hệ" title="Các tỉnh nằm trong bốn nhóm lĩnh vực nào?" description={`${pairLabel}; click một nhóm để xem quan hệ chi tiết.`} insight={quadrantInsight} footer={<ChartMeta source={pair.source} unit={pair.unit} n={`${pair.n} tỉnh`} caveats={pair.caveats} />} focus={{ ...focus('overview-quadrants'), content: quadrantView(520) }}>
+      <ChartCard className="overview-chart-card" eyebrow="03 · Quan hệ" title="Các tỉnh nằm trong bốn nhóm lĩnh vực nào?" insight={quadrantInsight} footer={<ChartMeta source={pair.source} unit={pair.unit} n={`${pair.n} tỉnh`} caveats={pair.caveats} />} focus={{ ...focus('overview-quadrants'), content: quadrantView(520) }}>
         {quadrantView(290)}
       </ChartCard>
-      <ChartCard className="overview-chart-card" eyebrow="04 · Thay đổi" title="Phần lớn tỉnh cải thiện hay suy giảm?" description={`Chênh lệch từ ${data.storyCards.changeDistribution.fromYear} đến ${year}; click một cột để giữ khoảng thay đổi.`} insight={distributionInsight} footer={<ChartMeta source={data.storyCards.changeDistribution.source} unit={data.storyCards.changeDistribution.unit} n={`${data.storyCards.changeDistribution.n} tỉnh`} caveats={data.storyCards.changeDistribution.caveats} />} focus={{ ...focus('overview-change-distribution'), content: distributionView(540) }}>
+      <ChartCard className="overview-chart-card" eyebrow="04 · Thay đổi" title="Phần lớn tỉnh cải thiện hay suy giảm?" insight={distributionInsight} footer={<ChartMeta source={data.storyCards.changeDistribution.source} unit={data.storyCards.changeDistribution.unit} n={`${data.storyCards.changeDistribution.n} tỉnh`} caveats={data.storyCards.changeDistribution.caveats} />} focus={{ ...focus('overview-change-distribution'), content: distributionView(540) }}>
         {distributionView(290)}
       </ChartCard>
     </section>
