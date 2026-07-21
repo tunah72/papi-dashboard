@@ -251,6 +251,7 @@ a { color: inherit; }
   background: var(--accent-wash) !important;
   font-weight: 650;
 }
+.filter-reset:disabled { cursor: not-allowed; opacity: 0.45; }
 
 .kpis, .kpi-grid {
   margin: 1rem 0 1.25rem;
@@ -336,6 +337,131 @@ a { color: inherit; }
 .chart-card-body { flex: 1 1 auto; min-height: 0; }
 .chart-card-footer { margin-top: auto; }
 .chart-card-footer > .chart-meta { padding-top: 0; border-top: 0; }
+
+.overview-redesign .dashboard-title { min-height: 4.75rem; margin-block: 0.55rem 0.9rem; align-items: center; }
+.overview-redesign .dashboard-title h1 { font-size: clamp(2rem, 3vw, 2.75rem); }
+.overview-redesign .lede { margin-top: 0.5rem; font-size: 0.92rem; line-height: 1.5; }
+.overview-scope {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.76rem;
+  font-weight: 600;
+  white-space: nowrap;
+  font-variant-numeric: tabular-nums;
+}
+.overview-redesign .filter-bar { min-height: 4.25rem; margin-bottom: 0.75rem; padding-block: 0.65rem; box-shadow: none; }
+.overview-redesign .kpi-grid { margin: 0 0 1.25rem; }
+.overview-redesign .kpi-card { min-height: 5.8rem; padding: 0.78rem 0.9rem 0.9rem; box-shadow: none; }
+.overview-redesign .kpi-card strong { margin-top: 0.3rem; font-size: clamp(1.25rem, 1.75vw, 1.65rem); }
+.overview-chart-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 1.25rem;
+  align-items: stretch;
+}
+.overview-chart-card {
+  min-height: 32.5rem;
+  padding: 1rem 1rem 0.85rem;
+  box-shadow: 0 10px 30px rgb(23 49 58 / 6%);
+}
+.overview-chart-card .chart-card-header { min-height: 6.5rem; }
+.overview-chart-card .chart-card-header > div { min-width: 0; }
+.overview-chart-card .chart-card-header h2 { max-width: 29ch; font-size: clamp(1.08rem, 1.45vw, 1.32rem); }
+.overview-chart-card .chart-card-body { display: flex; flex-direction: column; justify-content: center; }
+.chart-card-action { display: flex; align-items: center; gap: 0.4rem; }
+.chart-focus-trigger, .chart-focus-close {
+  min-width: 2.75rem;
+  min-height: 2.75rem;
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  border: 1px solid transparent;
+  border-radius: var(--radius-control);
+  color: var(--accent-dark);
+  background: transparent;
+  transition: color 180ms ease, background 180ms ease, border-color 180ms ease, transform 180ms ease;
+}
+.chart-focus-trigger:hover { border-color: var(--line); background: var(--accent-wash); }
+.chart-focus-trigger:active, .chart-focus-close:active { transform: scale(0.97); }
+.chart-insight {
+  min-height: 3.45rem;
+  margin-top: 0.55rem;
+  padding: 0.65rem 0.75rem;
+  display: grid;
+  grid-template-columns: auto 1fr;
+  align-items: start;
+  gap: 0.65rem;
+  border-left: 3px solid var(--accent);
+  border-radius: 0 var(--radius-control) var(--radius-control) 0;
+  background: var(--accent-wash);
+}
+.chart-insight strong { color: var(--accent-dark); font-size: 0.72rem; letter-spacing: 0.04em; }
+.chart-insight p { margin: 0; color: var(--ink); font-size: 0.76rem; line-height: 1.45; text-wrap: pretty; }
+.overview-chart-card .chart-meta { padding-top: 0.55rem; }
+.overview-chart-card .cartesian-chart figcaption { margin-block: 0.1rem 0.25rem; }
+.overview-chart-card .cartesian-chart figcaption strong { display: none; }
+.overview-chart-card .cartesian-chart figcaption p { margin: 0; }
+.chart-table-scroll { max-height: 22rem; overflow: auto; }
+.chart-table table { width: 100%; border-collapse: collapse; font-variant-numeric: tabular-nums; }
+.chart-table caption { text-align: left; }
+.chart-table th, .chart-table td { padding: 0.45rem 0.55rem; border-bottom: 1px solid var(--line); text-align: right; }
+.chart-table th:first-child, .chart-table td:first-child { text-align: left; }
+.chart-table thead th { position: sticky; top: 0; color: var(--ink); background: var(--surface); }
+.overview-selection {
+  margin-top: 1rem;
+  padding: 0.8rem 1rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  border: 1px solid var(--line);
+  border-radius: var(--radius-control);
+  background: var(--surface);
+}
+.overview-selection p { margin: 0.2rem 0 0; color: var(--muted); font-size: 0.78rem; }
+.overview-selection > div:last-child { display: flex; align-items: center; gap: 0.8rem; }
+.overview-selection a { color: var(--accent-dark); font-size: 0.8rem; font-weight: 700; text-decoration: none; }
+
+.chart-focus-dialog {
+  width: min(94vw, 100rem);
+  max-width: none;
+  height: min(90dvh, 60rem);
+  max-height: none;
+  padding: 0;
+  overflow: hidden;
+  border: 1px solid rgb(255 255 255 / 28%);
+  border-radius: 1rem;
+  color: var(--text);
+  background: var(--surface);
+  box-shadow: 0 30px 90px rgb(7 28 34 / 32%);
+}
+.chart-focus-dialog::backdrop { background: rgb(14 36 43 / 68%); backdrop-filter: blur(4px); }
+.chart-focus-dialog[open] { animation: chart-focus-in 240ms cubic-bezier(0.16, 1, 0.3, 1); }
+@keyframes chart-focus-in { from { opacity: 0; transform: scale(0.98) translateY(0.5rem); } to { opacity: 1; transform: scale(1) translateY(0); } }
+.chart-focus-panel { height: 100%; display: flex; flex-direction: column; }
+.chart-focus-header {
+  flex: 0 0 auto;
+  min-height: 5rem;
+  padding: 0.9rem 1rem 0.85rem 1.25rem;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1.5rem;
+  border-bottom: 1px solid var(--line);
+  background: rgb(255 255 255 / 96%);
+}
+.chart-focus-header h2 { margin: 0; color: var(--ink); font-size: clamp(1.25rem, 2vw, 1.7rem); letter-spacing: -0.025em; }
+.chart-focus-header p:not(.eyebrow) { margin: 0.25rem 0 0; color: var(--muted); font-size: 0.78rem; }
+.chart-focus-header-actions { display: flex; align-items: center; gap: 1rem; }
+.chart-focus-header-actions > span { color: var(--muted); font-size: 0.72rem; font-weight: 600; white-space: nowrap; }
+.chart-focus-close { min-width: auto; padding-inline: 0.8rem; gap: 0.35rem; border-color: var(--line); background: var(--surface-muted); font-weight: 700; }
+.chart-focus-layout { min-height: 0; flex: 1 1 auto; display: grid; grid-template-columns: minmax(45rem, 1fr) 19rem; overflow: auto; }
+.chart-focus-plot { min-width: 0; padding: 1rem 1.15rem; overflow: auto; }
+.chart-focus-rail { padding: 1rem; border-left: 1px solid var(--line); background: var(--surface-muted); overflow: auto; }
+.chart-focus-rail .chart-insight { margin: 0 0 1rem; grid-template-columns: 1fr; }
+.chart-focus-rail .chart-meta { padding-top: 0.8rem; border-top: 1px solid var(--line-strong); }
+.chart-focus-plot .cartesian-chart figcaption strong { font-size: 1rem; }
+.chart-focus-plot .chart-table { margin-top: 0.75rem; }
 .province-map { min-width: 0; margin: 0; }
 .province-map .js-plotly-plot { min-width: 0; }
 
@@ -539,6 +665,9 @@ a { color: inherit; }
   .filter-bar { flex-wrap: wrap; }
   .filter-controls { max-width: 100%; flex-wrap: wrap; }
   .filter-bar > label, .filter-controls label { flex: 1 1 12rem; }
+  .overview-chart-grid { grid-template-columns: 1fr; }
+  .chart-focus-layout { grid-template-columns: 1fr; }
+  .chart-focus-rail { border-top: 1px solid var(--line); border-left: 0; }
 }
 
 @media (max-width: 1023px) {
@@ -569,6 +698,7 @@ a { color: inherit; }
   .sidebar { width: min(17rem, 86vw); transform: translateX(-100%); }
   .sidebar.is-open { transform: translateX(0); }
   .main { padding: 0.9rem 1rem 3.5rem; }
+  .main-overview .overview-redesign { padding-top: 3rem; }
   .page-header { min-height: 2.2rem; padding-left: 3.75rem; }
   .product-context { display: none; }
   .breadcrumb { text-align: left; }
@@ -598,4 +728,15 @@ a { color: inherit; }
   .ai-boundary-actions { display: block; }
   .action-row { min-width: 0; justify-content: flex-start; }
   .action-row .cta { width: 100%; }
+  .overview-redesign .dashboard-title { min-height: 0; }
+  .overview-scope { margin-top: 0.55rem; white-space: normal; }
+  .overview-chart-card { min-height: 0; }
+  .overview-chart-card .chart-card-header { min-height: 0; }
+  .chart-insight { grid-template-columns: 1fr; gap: 0.25rem; }
+  .overview-selection, .overview-selection > div:last-child { align-items: flex-start; flex-direction: column; }
+  .chart-focus-dialog { width: 100vw; height: 100dvh; border: 0; border-radius: 0; }
+  .chart-focus-header { align-items: flex-start; padding: 0.8rem; }
+  .chart-focus-header-actions > span { display: none; }
+  .chart-focus-close { min-width: 2.75rem; padding-inline: 0.55rem; font-size: 0.72rem; }
+  .chart-focus-plot, .chart-focus-rail { padding: 0.75rem; }
 }

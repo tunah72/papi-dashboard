@@ -16,6 +16,7 @@ type ProvinceMapRow = {
   provinceVi: string
   region: string
   score: number | null
+  rank?: number
 }
 
 type ProvinceMapProps = {
@@ -37,10 +38,10 @@ export function ProvinceMap({ title, summary, rows, geojson, selectedId, unit, o
       geojson,
       featureidkey: 'properties.province_id',
       locations: rows.map((row) => row.provinceId),
-      customdata: rows.map((row) => row.provinceId),
       z: rows.map((row) => row.score),
       text: rows.map((row) => `${row.provinceVi} · ${row.region}`),
-      hovertemplate: `%{text}<br><b>%{z:.2f} ${unit}</b><extra></extra>`,
+      customdata: rows.map((row) => [row.provinceId, row.rank ?? null]),
+      hovertemplate: `%{text}<br><b>%{z:.2f} ${unit}</b><br>Hạng: %{customdata[1]}<extra></extra>`,
       colorscale: sequentialScale,
       marker: { line: { color: '#F8FBFA', width: 0.65 } },
       colorbar: { title: { text: unit }, thickness: 12, outlinewidth: 0 },
@@ -81,7 +82,8 @@ export function ProvinceMap({ title, summary, rows, geojson, selectedId, unit, o
         config={{ displayModeBar: false, responsive: true, showTips: false }}
         style={{ width: '100%', height }}
         onClick={(event) => {
-          const id = Number(event.points[0]?.customdata)
+          const customdata = event.points[0]?.customdata
+          const id = Number(Array.isArray(customdata) ? customdata[0] : customdata)
           if (Number.isInteger(id)) onSelect(id)
         }}
       />

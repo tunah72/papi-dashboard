@@ -52,7 +52,10 @@ def test_openapi_uses_concrete_response_models_not_generic_free_form_data(client
         assert schema["$ref"].endswith(f"/{model}")
     schemas = openapi["components"]["schemas"]
     assert "DashboardResponse" not in schemas
-    assert schemas["OverviewData"]["properties"]["map"]["$ref"].endswith("/ScoreRowsArtifact")
+    assert schemas["OverviewData"]["properties"]["map"]["$ref"].endswith("/OverviewMapArtifact")
+    assert schemas["OverviewStoryCards"]["properties"]["annualChanges"]["$ref"].endswith("/AnnualChangeArtifact")
+    assert schemas["OverviewStoryCards"]["properties"]["quadrants"]["$ref"].endswith("/QuadrantSummaryArtifact")
+    assert schemas["OverviewStoryCards"]["properties"]["changeDistribution"]["$ref"].endswith("/ChangeDistributionArtifact")
     assert schemas["TrendsData"]["properties"]["covid"]["$ref"].endswith("/CovidArtifact")
     assert schemas["DynamicsData"]["properties"]["clusters"]["$ref"].endswith("/ClusterArtifact")
     assert schemas["DynamicsData"]["properties"]["clusterModel"]["$ref"].endswith("/StableClusterArtifact")
@@ -115,6 +118,19 @@ def test_overview_trends_and_geojson_numeric_parity(client):
     assert overview["data"]["storyCards"]["trend"]["rowCount"] == 14
     assert overview["data"]["storyCards"]["regions"]["rowCount"] == 6
     assert overview["data"]["storyCards"]["strongestPair"]["pearsonR"] is not None
+    assert overview["data"]["map"]["rows"][0]["rank"] == 1
+    annual = overview["data"]["storyCards"]["annualChanges"]
+    assert annual["rows"][0]["baseline"] is True
+    assert annual["rows"][1]["change"] == pytest.approx(
+        annual["rows"][1]["score"] - annual["rows"][0]["score"], abs=1e-9
+    )
+    quadrants = overview["data"]["storyCards"]["quadrants"]
+    assert sum(row["n"] for row in quadrants["rows"]) == quadrants["n"]
+    assert sum(row["percentage"] for row in quadrants["rows"]) == pytest.approx(100, abs=1e-9)
+    distribution = overview["data"]["storyCards"]["changeDistribution"]
+    assert sum(row["count"] for row in distribution["bins"]) == distribution["n"]
+    assert distribution["positiveN"] + distribution["negativeN"] + distribution["unchangedN"] == distribution["n"]
+    assert set(overview["data"]["insights"]) == {"map", "annualChange", "quadrants", "changeDistribution"}
 
     api_trends = client.get("/api/v1/trends?scale=eight&from=2018&to=2024").json()
     reference = trend.total_by_year(d["prov_year"], "total_papi", 2018, 2024)

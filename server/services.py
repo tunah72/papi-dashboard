@@ -3,6 +3,7 @@ from __future__ import annotations
 
 from functools import lru_cache
 
+import numpy as np
 import pandas as pd
 
 from src import data_loader
@@ -91,6 +92,75 @@ def _indicator_rows(codes=None):
     return records(indicators)
 
 
+def _vi_number(value, digits=2):
+    """Định dạng số ngắn cho insight tiếng Việt, không thay đổi giá trị artifact."""
+    if value is None or pd.isna(value):
+        return "—"
+    return f"{float(value):.{digits}f}".replace(".", ",")
+
+
+def _annual_changes(trend_rows):
+    rows = trend_rows.copy()
+    rows["previous_score"] = rows.score.shift()
+    rows["change"] = rows.score.diff()
+    rows["previous_contributor_n"] = rows.contributor_n.shift().fillna(0).astype(int)
+    rows["baseline"] = rows.previous_score.isna()
+    deltas = rows.dropna(subset=["change"])
+    increases = deltas.loc[deltas.change.gt(0)]
+    decreases = deltas.loc[deltas.change.lt(0)]
+    largest_increase = increases.loc[increases.change.idxmax()] if not increases.empty else None
+    largest_decrease = decreases.loc[decreases.change.idxmin()] if not decreases.empty else None
+    return rows, largest_increase, largest_decrease
+
+
+def _quadrant_summary(pair_rows):
+    order = ["Cao–cao", "Cao–thấp", "Thấp–cao", "Thấp–thấp"]
+    total = len(pair_rows)
+    result = []
+    for label in order:
+        group = pair_rows.loc[pair_rows.quadrant.eq(label)]
+        result.append({
+            "label": label,
+            "n": len(group),
+            "percentage": (len(group) / total * 100) if total else 0,
+            "provinces": sorted(group.province_vi.astype(str).tolist()),
+        })
+    return result
+
+
+def _change_distribution(change_rows, start, end):
+    n = len(change_rows)
+    if not n:
+        return {
+            "n": 0, "fromYear": start, "toYear": end, "median": None,
+            "positiveN": 0, "negativeN": 0, "unchangedN": 0,
+            "positivePercentage": 0, "bins": [], "rows": [],
+        }
+    values = change_rows.change.astype(float).to_numpy()
+    bin_count = max(6, min(12, int(round(np.sqrt(n)))))
+    counts, edges = np.histogram(values, bins=bin_count)
+    bins = []
+    for index, count in enumerate(counts):
+        lower, upper = float(edges[index]), float(edges[index + 1])
+        inclusive = change_rows.change.le(upper) if index == len(counts) - 1 else change_rows.change.lt(upper)
+        members = change_rows.loc[change_rows.change.ge(lower) & inclusive, "province_vi"]
+        bins.append({
+            "lower": lower, "upper": upper, "center": (lower + upper) / 2,
+            "count": int(count), "percentage": float(count / n * 100),
+            "provinces": sorted(members.astype(str).tolist()),
+        })
+    positive_n = int((change_rows.change > 0).sum())
+    negative_n = int((change_rows.change < 0).sum())
+    unchanged_n = n - positive_n - negative_n
+    return {
+        "n": n, "fromYear": start, "toYear": end,
+        "median": float(change_rows.change.median()),
+        "positiveN": positive_n, "negativeN": negative_n, "unchangedN": unchanged_n,
+        "positivePercentage": float(positive_n / n * 100),
+        "bins": bins, "rows": records(change_rows),
+    }
+
+
 def _focus(region=None, province=None):
     """Xác thực focus vùng/tỉnh dùng cho chuỗi linked-selection."""
     provinces = data()["dim_prov"].set_index("province_vi").region.astype(str).to_dict()
@@ -129,7 +199,7 @@ def overview(scale="eight", year=None):
         raise ContractError("Không có dữ liệu cho năm và thước đo đã chọn.")
     ranking = snapshot.sort_values([total, "province_vi"], ascending=[False, True]).reset_index(drop=True)
     ranking["rank"] = ranking.index + 1
-    map_rows = snapshot[["province_id", "province_vi", "region", total]].rename(columns={total: "score"})
+    map_rows = ranking[["province_id", "province_vi", "region", total, "rank"]].rename(columns={total: "score"})
     metrics = {
         "mean": float(snapshot[total].mean()), "min": float(snapshot[total].min()), "max": float(snapshot[total].max()),
         "leader": ranking.iloc[0]["province_vi"], "last": ranking.iloc[-1]["province_vi"], "gap": float(ranking.iloc[0][total] - ranking.iloc[-1][total]),
@@ -137,6 +207,7 @@ def overview(scale="eight", year=None):
     start = cfg["year_min"]
     trend_rows = trend.total_by_year(data()["prov_year"], total, start, year).rename(columns={total: "score"})
     trend_rows["contributor_n"] = trend_rows.year.map(lambda item: _contributors(item, total))
+    annual_rows, largest_increase, largest_decrease = _annual_changes(trend_rows)
     regions = provincial.region_summary(snapshot, total, REGION_ORDER).rename(columns={"n_provinces": "n"})
     dimension_snapshot = dimensions.snapshot_for_year(data()["prov_year"], year, cfg["dims"])
     x_code, y_code, _ = dimensions.strongest_pair(dimension_snapshot, cfg["dims"])
@@ -154,6 +225,34 @@ def overview(scale="eight", year=None):
     else:
         highlight_rows = pd.DataFrame(columns=["province_vi", "region", "from_score", "to_score", "change"])
     highlight_n = len(highlight_rows)
+    quadrants = _quadrant_summary(pair_rows)
+    change_distribution = _change_distribution(highlight_rows, start, year)
+    largest_quadrant = max(quadrants, key=lambda item: item["n"]) if quadrants else None
+    map_insight = (
+        f"{metrics['leader']} cao nhất với {_vi_number(metrics['max'])}; "
+        f"{metrics['last']} thấp nhất với {_vi_number(metrics['min'])}, cách nhau {_vi_number(metrics['gap'])} điểm."
+    )
+    if largest_increase is not None and largest_decrease is not None:
+        annual_insight = (
+            f"Tăng mạnh nhất vào {int(largest_increase.year)} (+{_vi_number(largest_increase.change)}); "
+            f"giảm mạnh nhất vào {int(largest_decrease.year)} ({_vi_number(largest_decrease.change)})."
+        )
+    elif largest_increase is not None:
+        annual_insight = f"Mặt bằng chỉ tăng trong phạm vi đang xem; tăng mạnh nhất vào {int(largest_increase.year)} (+{_vi_number(largest_increase.change)})."
+    elif largest_decrease is not None:
+        annual_insight = f"Mặt bằng chỉ giảm trong phạm vi đang xem; giảm mạnh nhất vào {int(largest_decrease.year)} ({_vi_number(largest_decrease.change)})."
+    else:
+        annual_insight = "Chưa đủ hai mốc năm để tính thay đổi năm-kề-năm."
+    quadrant_insight = (
+        f"{x_code} × {y_code} có r = {_vi_number(corr)}; nhóm {largest_quadrant['label']} "
+        f"chiếm nhiều nhất với {largest_quadrant['n']}/{len(pair_rows)} tỉnh. Liên hệ này không hàm ý nhân quả."
+        if largest_quadrant and len(pair_rows) else "Không đủ dữ liệu để phân nhóm bốn góc."
+    )
+    change_insight = (
+        f"{_vi_number(change_distribution['positivePercentage'], 1)}% tỉnh tăng điểm; trung vị thay đổi "
+        f"là {_vi_number(change_distribution['median'])} trên {highlight_n} tỉnh đủ hai mốc."
+        if highlight_n else "Chưa đủ hai mốc để tính thay đổi của tỉnh."
+    )
     return response({
         "measure": {"id": total, "label": cfg["label"], "unit": cfg["unit"]}, "metrics": metrics,
         "map": _artifact(map_rows, cfg["unit"]),
@@ -177,6 +276,27 @@ def overview(scale="eight", year=None):
                 bottom8=records(highlight_rows.tail(8).sort_values("change")) if highlight_n else [],
                 caveats=["Chỉ tỉnh đủ dữ liệu ở cả hai mốc mới có delta."],
             ),
+            "annualChanges": _artifact(
+                annual_rows, cfg["unit"],
+                largestIncreaseYear=int(largest_increase.year) if largest_increase is not None else None,
+                largestIncrease=float(largest_increase.change) if largest_increase is not None else None,
+                largestDecreaseYear=int(largest_decrease.year) if largest_decrease is not None else None,
+                largestDecrease=float(largest_decrease.change) if largest_decrease is not None else None,
+            ),
+            "quadrants": {
+                "rowCount": len(quadrants), "unit": "tỷ lệ tỉnh", "source": SOURCE,
+                "caveats": ["Pearson r là mối liên hệ quan sát, không chứng minh quan hệ nhân quả."],
+                "n": len(pair_rows), "x": x_code, "y": y_code, "pearsonR": corr, "rows": quadrants,
+            },
+            "changeDistribution": {
+                "rowCount": len(change_distribution["bins"]), "unit": "chênh lệch điểm PAPI",
+                "source": SOURCE, "caveats": ["Chỉ tỉnh đủ dữ liệu ở cả hai mốc mới có delta."],
+                **change_distribution,
+            },
+        },
+        "insights": {
+            "map": map_insight, "annualChange": annual_insight,
+            "quadrants": quadrant_insight, "changeDistribution": change_insight,
         },
     }, n=len(snapshot), filters={"scale": scale, "year": year}, unit=cfg["unit"],
        caveats=["Chỉ tính các tỉnh có dữ liệu ở năm đã chọn; không giả định cố định 63 tỉnh."])

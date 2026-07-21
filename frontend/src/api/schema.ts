@@ -144,6 +144,44 @@ export interface paths {
 export type webhooks = Record<string, never>;
 export interface components {
     schemas: {
+        /** AnnualChangeArtifact */
+        AnnualChangeArtifact: {
+            /** Rowcount */
+            rowCount: number;
+            /** Unit */
+            unit: string;
+            /** Source */
+            source: string;
+            /** Caveats */
+            caveats?: string[];
+            /** Rows */
+            rows: components["schemas"]["AnnualChangeRow"][];
+            /** Largestincreaseyear */
+            largestIncreaseYear: number | null;
+            /** Largestincrease */
+            largestIncrease: number | null;
+            /** Largestdecreaseyear */
+            largestDecreaseYear: number | null;
+            /** Largestdecrease */
+            largestDecrease: number | null;
+        };
+        /** AnnualChangeRow */
+        AnnualChangeRow: {
+            /** Year */
+            year: number;
+            /** Score */
+            score: number | null;
+            /** Previousscore */
+            previousScore: number | null;
+            /** Change */
+            change: number | null;
+            /** Contributorn */
+            contributorN: number;
+            /** Previouscontributorn */
+            previousContributorN: number;
+            /** Baseline */
+            baseline: boolean;
+        };
         /** Benchmark */
         Benchmark: {
             /** Unit */
@@ -193,6 +231,37 @@ export interface components {
             D7?: number | null;
             /** D8 */
             D8?: number | null;
+        };
+        /** ChangeDistributionArtifact */
+        ChangeDistributionArtifact: {
+            /** Rowcount */
+            rowCount: number;
+            /** Unit */
+            unit: string;
+            /** Source */
+            source: string;
+            /** Caveats */
+            caveats?: string[];
+            /** N */
+            n: number;
+            /** Fromyear */
+            fromYear: number;
+            /** Toyear */
+            toYear: number;
+            /** Median */
+            median: number | null;
+            /** Positiven */
+            positiveN: number;
+            /** Negativen */
+            negativeN: number;
+            /** Unchangedn */
+            unchangedN: number;
+            /** Positivepercentage */
+            positivePercentage: number;
+            /** Bins */
+            bins: components["schemas"]["HistogramBin"][];
+            /** Rows */
+            rows: components["schemas"]["ChangeRow"][];
         };
         /** ChangeRow */
         ChangeRow: {
@@ -662,6 +731,21 @@ export interface components {
             meta: components["schemas"]["MetadataMeta"];
             data: components["schemas"]["GeojsonData"];
         };
+        /** HistogramBin */
+        HistogramBin: {
+            /** Lower */
+            lower: number;
+            /** Upper */
+            upper: number;
+            /** Center */
+            center: number;
+            /** Count */
+            count: number;
+            /** Percentage */
+            percentage: number;
+            /** Provinces */
+            provinces: string[];
+        };
         /** Indicator */
         Indicator: {
             /** Code */
@@ -728,9 +812,47 @@ export interface components {
         OverviewData: {
             measure: components["schemas"]["Measure"];
             metrics: components["schemas"]["OverviewMetrics"];
-            map: components["schemas"]["ScoreRowsArtifact"];
+            map: components["schemas"]["OverviewMapArtifact"];
             ranking: components["schemas"]["RankingArtifact"];
             storyCards: components["schemas"]["OverviewStoryCards"];
+            insights: components["schemas"]["OverviewInsights"];
+        };
+        /** OverviewInsights */
+        OverviewInsights: {
+            /** Map */
+            map: string;
+            /** Annualchange */
+            annualChange: string;
+            /** Quadrants */
+            quadrants: string;
+            /** Changedistribution */
+            changeDistribution: string;
+        };
+        /** OverviewMapArtifact */
+        OverviewMapArtifact: {
+            /** Rowcount */
+            rowCount: number;
+            /** Unit */
+            unit: string;
+            /** Source */
+            source: string;
+            /** Caveats */
+            caveats?: string[];
+            /** Rows */
+            rows: components["schemas"]["OverviewMapRow"][];
+        };
+        /** OverviewMapRow */
+        OverviewMapRow: {
+            /** Provinceid */
+            provinceId: number;
+            /** Provincevi */
+            provinceVi: string;
+            /** Region */
+            region: string;
+            /** Score */
+            score: number | null;
+            /** Rank */
+            rank: number;
         };
         /** OverviewMeta */
         OverviewMeta: {
@@ -778,6 +900,9 @@ export interface components {
             regions: components["schemas"]["RegionMeanArtifact"];
             strongestPair: components["schemas"]["PairArtifact"];
             changeHighlights: components["schemas"]["ChangesArtifact"];
+            annualChanges: components["schemas"]["AnnualChangeArtifact"];
+            quadrants: components["schemas"]["QuadrantSummaryArtifact"];
+            changeDistribution: components["schemas"]["ChangeDistributionArtifact"];
         };
         /** PairArtifact */
         PairArtifact: {
@@ -916,6 +1041,38 @@ export interface components {
         ProvincesResponse: {
             meta: components["schemas"]["ProvincesMeta"];
             data: components["schemas"]["ProvincesData"];
+        };
+        /** QuadrantSummaryArtifact */
+        QuadrantSummaryArtifact: {
+            /** Rowcount */
+            rowCount: number;
+            /** Unit */
+            unit: string;
+            /** Source */
+            source: string;
+            /** Caveats */
+            caveats?: string[];
+            /** N */
+            n: number;
+            /** X */
+            x: string;
+            /** Y */
+            y: string;
+            /** Pearsonr */
+            pearsonR: number | null;
+            /** Rows */
+            rows: components["schemas"]["QuadrantSummaryRow"][];
+        };
+        /** QuadrantSummaryRow */
+        QuadrantSummaryRow: {
+            /** Label */
+            label: string;
+            /** N */
+            n: number;
+            /** Percentage */
+            percentage: number;
+            /** Provinces */
+            provinces: string[];
         };
         /** RankingArtifact */
         RankingArtifact: {
@@ -1124,30 +1281,6 @@ export interface components {
             scale: "six" | "eight";
             /** Year */
             year: number;
-        };
-        /** ScoreRow */
-        ScoreRow: {
-            /** Provinceid */
-            provinceId: number;
-            /** Provincevi */
-            provinceVi: string;
-            /** Region */
-            region: string;
-            /** Score */
-            score: number | null;
-        };
-        /** ScoreRowsArtifact */
-        ScoreRowsArtifact: {
-            /** Rowcount */
-            rowCount: number;
-            /** Unit */
-            unit: string;
-            /** Source */
-            source: string;
-            /** Caveats */
-            caveats?: string[];
-            /** Rows */
-            rows: components["schemas"]["ScoreRow"][];
         };
         /** StableClusterArtifact */
         StableClusterArtifact: {
