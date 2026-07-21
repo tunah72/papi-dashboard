@@ -1,7 +1,7 @@
 ---
 phase: 5
 title: "Báo cáo và trạng thái"
-status: pending
+status: complete_pending_main_docs
 priority: P2
 effort: "4h"
 dependencies: [4]

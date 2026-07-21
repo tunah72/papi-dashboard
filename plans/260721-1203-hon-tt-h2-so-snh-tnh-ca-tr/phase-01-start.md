@@ -1,7 +1,7 @@
 ---
 phase: 1
 title: "Contract và baseline"
-status: pending
+status: complete
 priority: P1
 effort: "2h"
 dependencies: []

@@ -1,7 +1,7 @@
 ---
 phase: 3
 title: "Trang H2 và drill-down"
-status: pending
+status: complete
 priority: P1
 effort: "6h"
 dependencies: [2]

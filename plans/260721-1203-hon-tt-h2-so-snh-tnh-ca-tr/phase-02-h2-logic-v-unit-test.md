@@ -1,7 +1,7 @@
 ---
 phase: 2
 title: "H2 logic và unit test"
-status: pending
+status: complete
 priority: P1
 effort: "5h"
 dependencies: [1]

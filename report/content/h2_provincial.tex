@@ -1,0 +1,45 @@
+%================================================
+% HƯỚNG 2 — SO SÁNH TỈNH/VÙNG
+%================================================
+\section{So sánh khác biệt giữa tỉnh và vùng (Hướng 2)}
+
+Hướng phân tích này trả lời ba câu hỏi: (i) vùng và tỉnh nào khác biệt trong
+cùng một năm, (ii) có tỉnh nào là ngoại lệ thống kê trong phân bố điểm của năm
+đó, và (iii) tỉnh nào thay đổi nhiều nhất giữa hai mốc do người dùng chọn.
+Nguồn dữ liệu là Chỉ số Hiệu quả Quản trị và Hành chính công cấp tỉnh ở Việt
+Nam (PAPI) do UNDP, CECODES và RTA công bố \cite{papi_vietnam}.
+
+Dashboard chỉ đọc dữ liệu đã xử lý theo cấu trúc tỉnh--năm. Thước đo ``tổng 6
+lĩnh vực gốc'' được dùng liên tục cho giai đoạn 2011--2024; thước đo tổng đủ 8
+lĩnh vực chỉ dùng từ 2018. Hai thước đo không được so sánh chéo. Các quan sát
+không có điểm cho thước đo đang chọn được ghi nhận là thiếu và không nội suy.
+
+\subsection{Phương pháp và tương tác}
+
+Ở một năm và một thước đo, dashboard vẽ choropleth 63 tỉnh, boxplot theo sáu
+vùng, bảng xếp hạng top/bottom, và profile radar của tỉnh được chọn so với
+trung bình vùng và toàn bộ tỉnh có dữ liệu. Người dùng có thể chọn tỉnh bằng
+click trên bản đồ hoặc bằng selectbox; hai cách đều cập nhật cùng một benchmark.
+
+Ngoại lệ được tính bằng z-score mẫu trong đúng snapshot năm đang xem,
+\(z_i=(x_i-\bar{x})/s\), và chỉ gắn cờ khi \(|z_i|>2\). Nếu ít hơn hai quan
+sát hoặc độ lệch chuẩn bằng 0, hệ thống không suy diễn ngoại lệ. Slopegraph chỉ
+nối tỉnh có đủ điểm ở cả hai năm được chọn; vì vậy một đường luôn thể hiện một
+so sánh quan sát được, không phải giá trị bù thiếu.
+
+\subsection{Ví dụ số liệu tái tạo}
+
+Với tổng 6 lĩnh vực gốc năm 2024, dữ liệu có 61 tỉnh đủ điểm. Trung bình vùng
+cao nhất là Đồng bằng sông Hồng (37.29) và thấp nhất là Tây Nguyên (34.69),
+chênh 2.60 điểm. Ba tỉnh điểm cao nhất là Quảng Ninh (39.85), Bình Thuận
+(39.65) và Tây Ninh (39.54); ba điểm thấp nhất là Cần Thơ (33.19), Kiên Giang
+(33.47) và Đắk Nông (33.96). Các số này được tái tạo trực tiếp từ
+\texttt{data/processed/agg\_province\_year.parquet} bằng helper
+\texttt{analysis.provincial}, không chép từ nhánh phát triển cũ.
+
+\subsection{Giới hạn}
+
+Kết quả mô tả chênh lệch điểm khảo sát, không suy ra quan hệ nhân quả hay xếp
+hạng hành chính ngoài phạm vi dữ liệu hiện có. Số tỉnh trong từng biểu đồ có thể
+thấp hơn 63 khi một tỉnh thiếu điểm ở năm/thước đo được chọn; dashboard luôn
+hiển thị phạm vi này cùng nguồn PAPI.

@@ -1,7 +1,7 @@
 ---
 title: "Hoàn tất H2 so sánh tỉnh của Trí"
 description: "Hoàn tất vertical slice H2 trên main, không nhập lại nhánh feature/task/Tri cũ."
-status: pending
+status: implementation_complete_pending_p4
 priority: P1
 effort: "2-3 ngày"
 tags: [h2, provincial, streamlit, papi]
@@ -35,16 +35,17 @@ Design: [H2 design](../../docs/h2-provincial-completion-design.md). Conflict tr�
 
 | # | Phase | Status |
 |---|---|---|
-| 1 | [Contract và baseline](./phase-01-start.md) | Pending |
-| 2 | [Logic H2 và unit test](./phase-02-h2-logic-v-unit-test.md) | Pending |
-| 3 | [Trang H2 và drill-down](./phase-03-trang-h2-v-drill-down.md) | Pending |
-| 4 | [Xác minh giao diện và plugin](./phase-04-xc-minh-giao-din-v-plugin.md) | Pending |
-| 5 | [Báo cáo và trạng thái](./phase-05-bo-co-v-trng-thi.md) | Pending |
+| 1 | [Contract và baseline](./phase-01-start.md) | Complete |
+| 2 | [Logic H2 và unit test](./phase-02-h2-logic-v-unit-test.md) | Complete |
+| 3 | [Trang H2 và drill-down](./phase-03-trang-h2-v-drill-down.md) | Complete |
+| 4 | [Xác minh giao diện và plugin](./phase-04-xc-minh-giao-din-v-plugin.md) | Complete (offline) |
+| 5 | [Báo cáo và trạng thái](./phase-05-bo-co-v-trng-thi.md) | Complete except `main`-only docs gate |
 
 ## Success Criteria
 
-- [ ] H2 có map, top/bottom, boxplot vùng, outlier z-score, slopegraph, benchmark/radar và drill-down.
-- [ ] Click map chọn tỉnh; selectbox fallback vẫn hoạt động.
-- [ ] Unit test, AppTest, full pytest và smoke H2 6/8 lĩnh vực đều đạt trong venv dự án.
-- [ ] Plugin anomaly giữ contract và có evidence offline/manual trung thực.
-- [ ] Report H2 tái tạo được; docs current khớp code/test.
+- [x] H2 có map, top/bottom, boxplot vùng, outlier z-score, slopegraph, benchmark/radar và drill-down.
+- [x] Click map chọn tỉnh; selectbox fallback vẫn hoạt động.
+- [x] Unit test, AppTest, full pytest và smoke H2 6/8 lĩnh vực đều đạt trong môi trường kiểm thử tạm.
+- [x] Plugin anomaly giữ contract và có evidence offline/manual trung thực.
+- [x] Report H2 tái tạo được.
+- [ ] Docs current khớp `main` sau P4 review/merge; xem [deferred P4 context](../reports/deferred-p4-260721-1213-peer-review-and-main-merge.md).

@@ -1,7 +1,7 @@
 ---
 phase: 4
 title: "Xác minh giao diện và plugin"
-status: pending
+status: complete_offline
 priority: P1
 effort: "4h"
 dependencies: [3]
