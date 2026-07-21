@@ -25,3 +25,20 @@ def test_dimension_summaries_and_correlation_order():
     assert summary.code.tolist() == ["D1", "D2"]
     assert summary.loc[0, "mean_score"] == pytest.approx(2.)
     assert corr.index.tolist() == ["D1", "D2"]
+
+
+def test_strongest_pair_regression_and_strength_label():
+    frame = pd.DataFrame({
+        "province_vi": ["A", "B", "C", "D"], "region": ["X"] * 4,
+        "D1": [1.0, 2.0, 3.0, 4.0], "D2": [2.0, 4.0, 6.0, 8.0],
+        "D3": [4.0, 1.0, 3.0, 2.0],
+    })
+    x, y, corr = dimensions.strongest_pair(frame, ["D1", "D2", "D3"])
+    assert (x, y) == ("D1", "D2")
+    assert corr == pytest.approx(1.0)
+    regression, slope, intercept, r_squared = dimensions.regression_snapshot(frame, "D1", "D2")
+    assert slope == pytest.approx(2.0)
+    assert intercept == pytest.approx(0.0)
+    assert r_squared == pytest.approx(1.0)
+    assert regression.residual.abs().max() == pytest.approx(0.0)
+    assert dimensions.correlation_strength(corr) == "mạnh"

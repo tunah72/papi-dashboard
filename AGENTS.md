@@ -12,11 +12,13 @@ Một **dashboard trực quan hóa + phân tích dữ liệu Việt Nam**, có *
 - **≥ 7 biến độc lập**, **≥ 2000 dòng**, **> 50%** dữ liệu liên quan Việt Nam.
 - Ghi rõ mọi bước xử lý dữ liệu (không bỏ sót / không xử lý ngầm).
 
-## 3. Tech stack đã chốt
-- **Streamlit** (Python, all-in-one): dashboard + chat AI + xem/sửa/duyệt code + hiển thị kết quả trong một app.
-- Phân tích/visualize: pandas, matplotlib/plotly, seaborn.
-- LLM: gọi qua API (Gemini/OpenAI) — **code thực thi luôn chạy LOCAL**, không thực thi online.
-- 3 API logic (bắt buộc, có thể là module nội bộ trong Streamlit): **API AI**, **API Thực thi**, **API Logs**.
+## 3. Tech stack và trạng thái migration
+- **UI đích:** React + TypeScript `strict`; đây là nơi dashboard, điều hướng, chat AI, xem/sửa/duyệt code và kết quả sẽ được xây dựng sau các phase migration.
+- **Backend đích:** FastAPI chạy **local**, là ranh giới HTTP cho dữ liệu đã xử lý và ba API bắt buộc: **API AI**, **API Thực thi**, **API Logs**.
+- Phân tích/visualize giữ Python: pandas, matplotlib/plotly, seaborn. React chỉ hiển thị dữ liệu/figure do backend local trả về, không được tự thay đổi dữ liệu gốc.
+- LLM gọi qua API (Gemini/OpenAI) — **code thực thi luôn chạy LOCAL**, không thực thi online.
+- **Streamlit là legacy fallback bị đóng băng:** `app/` tiếp tục là bề mặt demo dự phòng cho đến khi cutover đạt parity theo `docs/react-fastapi-parity-matrix.md`. Không thêm tính năng hay thay đổi hành vi vào Streamlit ngoài sửa lỗi cần thiết để giữ fallback hoạt động.
+- Sidebar điều hướng bên trái là bất biến sản phẩm ở cả UI đích và fallback; sáu route phải luôn truy cập được từ sidebar đó.
 
 ## 4. Quy tắc tích hợp AI (BẮT BUỘC theo đề bài)
 Đây là phần bị chấm và bị hỏi trong vấn đáp — tuân thủ tuyệt đối:

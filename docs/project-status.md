@@ -1,75 +1,54 @@
 # Trạng thái dự án
 
-Ngày rà soát: **17/07/2026**
-Nhánh/commit được kiểm tra: `main` tại `265ebb858a61b1f71808ba0616cf9d151094418c`
+Ngày rà soát migration Phase 0–4: **20/07/2026**
 
-Trạng thái dưới đây được suy ra từ code, dữ liệu và test trong repository; không lấy checkbox của các
-kế hoạch cũ làm bằng chứng.
+Baseline code: `main` tại `697f5b2`
+
+Baseline test tại commit trên: `python3 -m pytest -q` — **62 passed**
+
+## Thứ bậc authority
+
+Khi tài liệu mâu thuẫn, ưu tiên: **code/runtime/test hiện tại** → ADR và parity matrix migration →
+trạng thái trong file này → `docs/archive/`. File này là snapshot để định hướng, không phải bằng chứng
+thay thế cho runtime hoặc test. Archive chỉ để truy vết lịch sử.
 
 ## Tóm tắt
 
-| Khối | Trạng thái | Bằng chứng chính |
+| Khối | Trạng thái tại baseline | Bằng chứng chính |
 |---|---|---|
-| Dữ liệu raw → processed | Hoàn thiện, có thể chạy lại | `src/build_dataset.py`, `src/papi_lib.py`, `data/processed/` |
-| Data understanding và EDA | Hoàn thiện ở mức hiện tại | 3 notebook, 5 hình EDA, tài liệu trong `docs/data/` |
-| Tổng quan dashboard | Đã triển khai | `app/pages/overview.py` |
-| H1 — Diễn biến theo thời gian | Đã triển khai và có test logic | `app/pages/time_trend.py`, `src/analysis/trend.py` |
-| H2 — So sánh tỉnh | Stub | `app/pages/provincial.py` chỉ hiển thị thông báo |
-| H3 — Phân tích theo lĩnh vực | Stub | `app/pages/dimension.py` chỉ hiển thị thông báo |
-| H4 — Động lực và phân nhóm | Stub | `app/pages/dynamics.py` chỉ hiển thị thông báo |
-| AI Assistant | Đã có luồng chính, còn gap tuân thủ/log | `app/pages/ai_assistant.py`, `app/ai/` |
-| Test offline | 46 test đạt | `.venv/bin/python -m pytest -q` |
-| Báo cáo LaTeX | Khung ban đầu | `report/main.tex`, nội dung ngắn trong `report/content/` |
-| Chuẩn bị vấn đáp | Chưa có bộ bằng chứng hoàn chỉnh | chưa có log/ảnh demo được tuyển chọn trong repo |
+| Dữ liệu raw → processed | Có pipeline và dữ liệu đã xử lý | `src/build_dataset.py`, `src/papi_lib.py`, `data/processed/` |
+| Dashboard sáu route | Đã có code Streamlit legacy | `app/main.py`, `app/pages/` |
+| Tổng quan | Có KPI, bản đồ, ranking và context AI | `app/pages/overview.py` |
+| H1 — Diễn biến | Có trend, COVID, heatmap, drill-down | `app/pages/time_trend.py`, `src/analysis/trend.py` |
+| H2 — Vùng & tỉnh | Có phân phối, ranking, benchmark, profile | `app/pages/provincial.py`, `src/analysis/provincial.py` |
+| H3 — Mối quan hệ lĩnh vực | Có correlation, scatter và phân tán | `app/pages/dimension.py`, `src/analysis/dimensions.py` |
+| H4 — Thay đổi & phân nhóm | Có delta và KMeans profile | `app/pages/dynamics.py`, `src/analysis/dynamics.py` |
+| AI Assistant | Có luồng chờ duyệt → thực thi local → log | `app/pages/ai_assistant.py`, `app/ai/` |
+| Test offline | 95 test pass sau Phase 1 | `python3 -m pytest -q` |
+| FastAPI local data API | Có health, OpenAPI và 7 dashboard view-model endpoints; chưa có AI/executor/log HTTP | `server/`, `tests/test_fastapi_contract.py` |
+| React Phase 2–4 | Có shell TypeScript strict, sidebar và 5 route dữ liệu thật: Tổng quan, H1–H4; route AI công bố boundary, không sinh/chạy code | `frontend/`, 28 unit + 27 E2E pass, browser QA 1440–390 px |
+| Báo cáo LaTeX | Ngoài scope migration | `report/` |
 
-## Dữ liệu đã xác minh
+## Ranh giới đang áp dụng
 
-- `fact`: 6.094 dòng × 4 cột.
-- `prov_year`: 882 dòng (63 tỉnh × 14 năm) × 19 cột.
-- `national`: 112 dòng (14 năm × 8 lĩnh vực) × 6 cột.
-- 63 `province_id` duy nhất, năm từ 2011 đến 2024.
-- 13 tỉnh-năm thiếu `total_papi`, được giữ là `NaN`.
-- GeoJSON nguồn có 64 feature record nhưng chỉ 63 `province_id` duy nhất; ID `49` là phần đất liền
-  Bà Rịa–Vũng Tàu và Côn Đảo.
+- Data gốc và processed là bất biến trong migration; app/target UI không đọc Excel raw trực tiếp.
+- Code AI phải được hiện, người dùng sửa/duyệt, rồi mới chạy local; executor demo local không phải sandbox public.
+- Streamlit là fallback frozen đến khi React/FastAPI đạt acceptance trong parity matrix.
+- UI target sẽ dùng sáu nhãn tiếng Việt và sidebar trái theo ADR; legacy labels không phải nguồn quyết định target UX.
 
-Số liệu xử lý chi tiết nằm trong [processing-log.md](data/processing-log.md). Khi nạp app,
-GeoJSON được chuẩn hoá thành 63 feature hiển thị: hai phần của ID `49` được gộp thành MultiPolygon và
-hướng vòng được đổi theo quy ước Plotly/D3. File nguồn không bị thay đổi.
+## Khoảng trống trước cutover
 
-## Dashboard đang chạy thật
+React Phase 2–4 đã phủ shell, Tổng quan và H1–H4; route AI hiện chỉ là boundary minh bạch, không phải UI
+AI thật. Production-like one-command demo/cutover chưa được tạo. FastAPI Phase 1 có OpenAPI/view-model
+data contract, nhưng chưa bao gồm API AI, API thực thi hay API logs. AI demo vẫn chạy ở Streamlit theo
+luồng hiện code → sửa → phê duyệt → thực thi local → log. Không coi test hiện tại là bằng chứng đã cutover.
 
-Trang Tổng quan có hai chế độ tổng 6/8 lĩnh vực, tự giới hạn năm hợp lệ, KPI, choropleth và
-top/bottom 10 theo đúng thước đo đang chọn. Trang H1 có hai chế độ 6/8 lĩnh vực, chọn khoảng năm,
-KPI, xu hướng tổng, so sánh trước/sau COVID, heatmap và click-to-drill.
+## Chạy API Phase 1
 
-H2–H4 vẫn được đăng ký trong menu nhưng mỗi file chỉ có 13 dòng, publish context `status: stub` và
-hiển thị “Trang đang được phát triển”. Không nên trình bày đây là dashboard bốn hướng hoàn chỉnh.
+```bash
+python3 -m uvicorn server.main:app --host 127.0.0.1 --port 8000
+curl http://127.0.0.1:8000/health
+```
 
-## AI đang chạy thật
-
-Đã có:
-
-- gọi Groq và parse/chuẩn hóa code;
-- hiển thị code và giải thích trước khi thực thi;
-- cho phép người dùng sửa code và hiển thị diff trong log;
-- chỉ thực thi khi bấm nút phê duyệt;
-- process riêng, timeout 8 giây, giới hạn stdout;
-- năm lựa chọn registry, trong đó bốn plugin tương ứng bốn hướng phân tích;
-- context thật từ Overview và H1;
-- test offline cho parser, executor, UI state và các guard chính.
-
-Chưa đạt đầy đủ yêu cầu đề bài:
-
-- yêu cầu/code chỉ sinh nhưng chưa thực thi chưa được log;
-- log chưa lưu nội dung đầy đủ của bảng kết quả hoặc artifact biểu đồ;
-- ba page stub chưa gửi context phân tích thật;
-- chưa có live smoke test Groq được ghi nhận trong repo;
-- executor là guard local, không phải sandbox bảo mật cho môi trường public;
-- object không phải DataFrame, gồm GeoJSON, chưa được copy trước khi chạy code.
-
-## Các rủi ro cần xử lý trước demo
-
-1. **Phạm vi sản phẩm chưa đủ:** ba trong bốn hướng phân tích vẫn là stub.
-2. **Bằng chứng human-in-the-loop chưa đủ:** log chưa bao phủ toàn bộ vòng đời và output đầy đủ.
-3. **Báo cáo chưa theo kịp code:** nội dung LaTeX hiện quá ngắn và chưa mô tả quá trình dùng AI.
-Thứ tự giải quyết và tiêu chí hoàn thành nằm trong [roadmap.md](roadmap.md).
+Để xem contract: `http://127.0.0.1:8000/docs` hoặc `/openapi.json`. API chỉ đọc snapshot
+`data/processed/`; Streamlit vẫn là fallback frozen, chạy độc lập bằng lệnh legacy.
