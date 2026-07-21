@@ -2,31 +2,48 @@
 
 \usepackage{hcmus-report-template}
 
+\usepackage{graphicx}
+\usepackage{float}
+\usepackage{placeins}
+% \usepackage{dirtree}
+\usepackage{tabularx}
+\usepackage{longtable}
+\usepackage{booktabs}
+\usepackage{subcaption}
+\usepackage{multirow}
+\usepackage{tikz}
+\usetikzlibrary{shapes.geometric, arrows, arrows.meta, positioning, calc}
+
+\tikzset{
+    base/.style={rectangle, rounded corners, draw=black, minimum width=4.8cm, minimum height=1.5cm, text centered, font=\sffamily},
+    step1/.style={base, fill=blue!15, text width=4.6cm},
+    step2/.style={base, fill=gray!15, text width=4.6cm},
+    step3/.style={base, fill=green!15, text width=4.6cm},
+    step4/.style={base, fill=yellow!15, text width=4.6cm},
+    step5/.style={base, fill=orange!15, text width=4.6cm},
+    stepSAM/.style={base, fill=cyan!15, text width=4.6cm},
+    step6/.style={base, fill=red!15, text width=4.6cm},
+    final/.style={base, fill=purple!15, text width=4.6cm},
+    hitl/.style={base, fill=white, minimum width=10.4cm, text width=10.0cm, minimum height=1cm, font=\sffamily\small},
+    arrow/.style={thick, ->, >=stealth'}
+}
+
 % Disable indentation on new paragraphs
 \setlength{\parindent}{0pt}
-\setlength{\parskip}{2pt plus 1pt minus 1pt}
 
-% Compact report spacing
-\setstretch{1.15}
-\raggedbottom
+% Line spacing 1.5
+\renewcommand{\baselinestretch}{1.5}
 
-% Reduce float/list whitespace while keeping figures readable.
-\setlist{topsep=2pt, itemsep=1pt, parsep=0pt, partopsep=0pt}
-\captionsetup{font=small, skip=4pt}
-\setlength{\textfloatsep}{8pt plus 2pt minus 2pt}
-\setlength{\floatsep}{8pt plus 2pt minus 2pt}
-\setlength{\intextsep}{8pt plus 2pt minus 2pt}
-\setlength{\abovecaptionskip}{4pt}
-\setlength{\belowcaptionskip}{0pt}
-\renewcommand{\topfraction}{0.92}
-\renewcommand{\bottomfraction}{0.85}
-\renewcommand{\textfraction}{0.08}
-\renewcommand{\floatpagefraction}{0.82}
+% Thiết lập khoảng cách (skip) là 0.2cm cho tất cả các bảng
+\captionsetup[table]{skip=0.2cm}
+% Thiết lập khoảng cách (skip) là 0.2cm cho tất cả các hình
+\captionsetup[figure]{skip=0.2cm}
 
-% Using bibtex
-%\usepackage{biblatex}
-% Graphic path: tìm hình trong thư mục img/ của báo cáo và docs/img/ của repo
-\graphicspath{{img/}}
+% Thiết lập khoảng cách giữa các dòng trong bảng (row spacing)
+\renewcommand{\arraystretch}{1.3}
+
+% Optional: graphic path
+% \graphicspath{PATH_TO_GRAPHIC_FOLDER}
 
 % To use Times font family, uncomment this row
 % \usepackage{mathptmx}
@@ -36,16 +53,17 @@
 % \renewcommand{\thesubsection}{\thesection.\Roman{subsection}}
 
 % Define course name, report name and report title.
-\newcommand{\coursename}{Trực quan hóa Dữ liệu}
-\newcommand{\reportname}{}
+\newcommand{\coursename}{CSC14005 - Nhập môn học máy}
+\newcommand{\reportname}{Hệ thống phân vùng thực thể chẩn đoán bệnh trên lá cây nông nghiệp đặc sản cà phê và lúa}
 \newcommand{\reporttitle}{BÁO CÁO ĐỒ ÁN CUỐI KỲ}
 
-\newcommand{\studentname}{23120199 - Lê Xuân Trí \\ 23120208 - Dương Tuấn Anh \\ 23122038 - Nguyễn Trần Trung Kiên \\ 23122045 - Lê Đức Phúc}
-\newcommand{\teachername}{Thầy Bùi Tiến Lên \\ Thầy Trần Huy Bân \\ Thầy Võ Nhật Tân}
+\newcommand{\studentname}{Nguyễn Hồ Anh Tuấn - 23120185 \\ Lê Xuân Trí - 23120099 \\ Đàm Tiến Đạt - 23120118 \\ Tống Thanh Phúc - 23120158\\ Dương Tuấn Anh - 23120208}
+\newcommand{\teachername}{Thầy Bùi Tiến Lên}
 
 % Header
 \lhead{\reporttitle}
-\rhead{Trường Đại học Khoa học Tự nhiên - ĐHQG HCM\\
+\rhead{
+Trường Đại học Khoa học Tự nhiên - ĐHQG HCM\\
 \coursename
 }
 
@@ -56,27 +74,41 @@
 \begin{document}
 
 \pagenumbering{roman}
-\input{content/title.tex}
+\input{content/title}
+
+\cleardoublepage
+\pagenumbering{roman}
+\pagestyle{empty}
 
 \tableofcontents
-\pagebreak
-\listoftables
-\pagebreak
-\listoffigures
-\pagebreak
+% \pagebreak
+% \thispagestyle{empty}
 
+\cleardoublepage
 \pagenumbering{arabic}
-\setcounter{page}{1}
+\pagestyle{plain}
 
-% ============ NỘI DUNG BÁO CÁO ============
-
-
-
-% ============ THAM KHẢO & PHỤ LỤC ============
-\input{ref/ref.tex}
+\listoftables
+\addcontentsline{toc}{section}{Danh sách bảng}
 \pagebreak
-\input{appendix/appendix.tex}
+
+\listoffigures
+\addcontentsline{toc}{section}{Danh sách hình vẽ}
+
+\clearpage
+\input{content/glossary}
+\clearpage
+
+% \setcounter{page}{1}
+
+% ===== NỘI DUNG CHÍNH =====
 
 
+% References
+\input{ref/ref.tex}
 
+% Appendix
+\clearpage
+\appendix
+\input{appendix/ch5_evidence.tex}
 \end{document}
