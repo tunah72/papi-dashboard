@@ -75,7 +75,7 @@ Các điểm vào chính:
 - [Kiến trúc thực tế](docs/architecture.md)
 - [Hướng dẫn cài đặt và phát triển](docs/guides/getting-started.md)
 - [Roadmap còn lại](docs/roadmap.md)
-- [Dữ liệu và EDA](docs/data/README.md)
+- [Dữ liệu PAPI: nguồn gốc, nội dung, xử lý và kết quả](docs/data/README.md)
 - [AI human-in-the-loop](docs/ai/README.md)
 - [Quy ước thiết kế](docs/guides/design-system.md)
 

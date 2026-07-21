@@ -22,15 +22,13 @@ về tính năng đang chạy.
 
 ### Dữ liệu và phân tích
 
-- [Tổng quan tài liệu dữ liệu](data/README.md)
-- [Tìm hiểu 14 file PAPI nguồn](data/data-understanding.md)
-- [Schema dataset đã xử lý](data/processed-dataset.md)
+- [Nguồn gốc, nội dung, cách thu thập, xử lý và kết quả dữ liệu PAPI](data/README.md)
 - [Nhật ký pipeline gần nhất](data/processing-log.md)
-- [Phát hiện EDA](data/eda-findings.md)
 
 ### Dashboard và làm việc nhóm
 
-- [Quy ước thiết kế](guides/design-system.md)
+- [Đặc tả thiết kế lại năm trang Dashboard](design/README.md)
+- [Quy ước thiết kế legacy Streamlit](guides/design-system.md)
 - [Hướng dẫn thành viên](guides/team-guide.md)
 
 ### AI

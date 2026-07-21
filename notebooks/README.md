@@ -9,6 +9,10 @@ Mỗi notebook có các block **🔎 Nhận xét** bình luận kết quả.
 | 2 | `preprocessing.ipynb` | Gộp + làm sạch → `data/processed/`, kiểm chứng QC từng bước |
 | 3 | `eda.ipynb` | Phân tích khám phá + biểu đồ → 5 phát hiện chính |
 
+Tài liệu chuẩn giải thích nguồn gốc, nội dung, pipeline, schema và kết quả EDA nằm tại
+[`../docs/data/README.md`](../docs/data/README.md). Notebook là bề mặt trình bày và kiểm chứng, không
+phải nguồn tài liệu song song.
+
 ## Chuẩn bị
 ```bash
 pip install -r ../requirements-dev.txt
