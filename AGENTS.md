@@ -16,12 +16,12 @@ Một **dashboard trực quan hóa + phân tích dữ liệu Việt Nam**, có *
 
 ## 3. Tech stack và trạng thái migration
 
-- **UI đích:** React + TypeScript `strict`; đây là nơi dashboard, điều hướng, chat AI, xem/sửa/duyệt code và kết quả sẽ được xây dựng sau các phase migration.
+- **UI đích:** React + TypeScript `strict`; dashboard có năm trang phân tích và một floating AI Assistant dùng chung để chat, xem code, yêu cầu sửa bằng ngôn ngữ tự nhiên, duyệt và xem kết quả.
 - **Backend đích:** FastAPI chạy **local**, là ranh giới HTTP cho dữ liệu đã xử lý và ba API bắt buộc: **API AI**, **API Thực thi**, **API Logs**.
 - Phân tích/visualize giữ Python: pandas, matplotlib/plotly, seaborn. React chỉ hiển thị dữ liệu/figure do backend local trả về, không được tự thay đổi dữ liệu gốc.
 - LLM gọi qua API (Gemini/OpenAI) — **code thực thi luôn chạy LOCAL**, không thực thi online.
 - **Streamlit là legacy fallback bị đóng băng:** `app/` tiếp tục là bề mặt demo dự phòng cho đến khi cutover đạt parity theo `docs/react-fastapi-parity-matrix.md`. Không thêm tính năng hay thay đổi hành vi vào Streamlit ngoài sửa lỗi cần thiết để giữ fallback hoạt động.
-- Sidebar điều hướng bên trái là bất biến sản phẩm ở cả UI đích và fallback; sáu route phải luôn truy cập được từ sidebar đó.
+- Sidebar điều hướng bên trái là bất biến sản phẩm; UI React chỉ có năm route phân tích trong sidebar. Trợ lý AI mở bằng launcher cố định trên cả năm trang, không phải mục điều hướng hoặc trang riêng.
 
 ## 4. Nguồn sự thật và bất biến thiết kế Dashboard
 
@@ -35,8 +35,8 @@ Một **dashboard trực quan hóa + phân tích dữ liệu Việt Nam**, có *
 - Desktop dùng grid 2 × 2 cân bằng; tablet/mobile chuyển một cột khi cần để giữ khả năng đọc. Header,
   filter và KPI phải gọn để hàng biểu đồ đầu xuất hiện sớm; không đặt khối “Tín hiệu cần đọc” lớn
   trước grid. Insight ngắn nằm ngay dưới biểu đồ mà nó trả lời.
-- Không đặt khối hoặc CTA “Bước đọc tiếp” ở cuối các trang phân tích. Điều hướng giữa năm trang và
-  Trợ lý AI dùng sidebar; drill-through chỉ xuất hiện tại interaction có ngữ cảnh ngay trên biểu đồ.
+- Không đặt khối hoặc CTA “Bước đọc tiếp” ở cuối các trang phân tích. Điều hướng giữa năm trang dùng
+  sidebar; Trợ lý AI dùng floating launcher; drill-through chỉ xuất hiện tại interaction có ngữ cảnh ngay trên biểu đồ.
 - Dùng đa dạng hình thức trực quan theo ma trận trong `docs/design/README.md`; không thay biểu đồ đã
   duyệt bằng pie/donut, 3D, hai trục tung hoặc animation liên tục nếu chưa cập nhật đặc tả.
 - Mọi biểu đồ phải có tooltip tiếng Việt, hover highlight/dim, legend hoặc control tương đương,
@@ -72,7 +72,7 @@ Một **dashboard trực quan hóa + phân tích dữ liệu Việt Nam**, có *
 - **Không thực thi ngầm:** AI KHÔNG tự đổi dữ liệu gốc, KHÔNG tự chạy thuật toán.
 - **Hiển thị code bắt buộc:** mọi code AI sinh ra phải hiện rõ cho người dùng.
 - **Giải thích bằng ngôn ngữ tự nhiên:** ngay trên code, comment giải thích việc code làm (vd: "Đoạn này xóa 15 dòng NULL ở cột Doanh Thu bằng dropna()").
-- **Luồng phê duyệt:** code AI sinh ra ở trạng thái **"Chờ duyệt"** → người dùng sửa tham số → **chấp nhận** → MỚI thực thi và trả kết quả.
+- **Luồng phê duyệt:** code AI sinh ra ở trạng thái **"Chờ duyệt"** → người dùng mô tả yêu cầu sửa bằng ngôn ngữ tự nhiên → AI sinh toàn bộ code mới → **chấp nhận bản mới nhất** → MỚI thực thi và trả kết quả.
 - **Không tự thêm số liệu/hình ảnh:** AI chỉ trình bày số liệu/biểu đồ do con người/dữ liệu cung cấp.
 - **Lưu trữ:** mọi yêu cầu, code, kết quả, giải thích phải được log lại để truy xuất.
 

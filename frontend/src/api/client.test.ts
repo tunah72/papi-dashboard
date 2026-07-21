@@ -17,3 +17,10 @@ it('giữ thông tin HTTP nhưng không lộ lỗi trình duyệt', async () => 
   vi.stubGlobal('fetch', vi.fn().mockResolvedValue({ ok: false, status: 503, json: vi.fn().mockResolvedValue({ detail: 'Dịch vụ đang bảo trì' }) }))
   await expect(api.metadata()).rejects.toMatchObject({ message: 'Không thể tải dữ liệu (503). Dịch vụ đang bảo trì', status: 503 })
 })
+
+it('API execution chỉ gửi proposal id và approval, không gửi code', async () => {
+  const fetch = vi.fn().mockResolvedValue({ ok: true, status: 200, json: vi.fn().mockResolvedValue({ sessionId: 's1', proposalId: 'p1', status: 'succeeded', stdout: '', warnings: [] }) })
+  vi.stubGlobal('fetch', fetch)
+  await api.executeProposal('s1', 'p1')
+  expect(JSON.parse(fetch.mock.calls[0][1].body)).toEqual({ sessionId: 's1', proposalId: 'p1', approved: true })
+})

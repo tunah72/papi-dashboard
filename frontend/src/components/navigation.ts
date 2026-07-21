@@ -4,5 +4,4 @@ export const navigation = [
   ['Vùng & tỉnh', '/provincial', '03'],
   ['Mối quan hệ lĩnh vực', '/dimension', '04'],
   ['Thay đổi & phân nhóm', '/dynamics', '05'],
-  ['Trợ lý AI', '/ai-assistant', '06'],
 ] as const

@@ -14,13 +14,15 @@ python -m pip install -r requirements-dev.txt
 
 Windows PowerShell dùng `.venv\Scripts\Activate.ps1`. Mọi lệnh sau đây chạy từ thư mục gốc dự án.
 
-## 2. Chạy dashboard
+## 2. Chạy dashboard React + FastAPI
 
 ```bash
-streamlit run app/main.py
+python -m uvicorn server.main:app --host 127.0.0.1 --port 8000
+cd frontend && npm run dev
 ```
 
-Các trang dashboard thường chạy không cần API key. AI Assistant cần Groq:
+Mở `http://127.0.0.1:5173`. Năm trang dashboard không cần API key; floating assistant gọi Groq khi gửi
+câu hỏi. Có thể đặt `GROQ_API_KEY` trong môi trường hoặc file local:
 
 ```bash
 cp .streamlit/secrets.toml.example .streamlit/secrets.toml
@@ -48,7 +50,7 @@ python -m pytest tests/test_ai_assistant.py -q
 Test offline không gọi Groq và không cần API key. Live AI test phải do người dùng chủ động thực hiện
 vì có sử dụng quota/API bên ngoài.
 
-## 3.1 Chạy FastAPI local (Phase 1)
+## 3.1 Kiểm tra FastAPI local
 
 Sau khi kích hoạt môi trường đã cài bằng `requirements-dev.txt`, dùng đúng interpreter của môi trường đó:
 
@@ -59,6 +61,8 @@ curl http://127.0.0.1:8000/health
 
 OpenAPI ở `http://127.0.0.1:8000/docs`. Không suy ra rằng một thư mục `.venv` có sẵn đã chứa dependency
 mới; luôn cài lại theo bước 1 trước khi chạy API/test trong môi trường đó.
+
+Streamlit fallback vẫn chạy độc lập bằng `streamlit run app/main.py`; không thêm capability mới vào đó.
 
 ## 4. Build lại dữ liệu
 
@@ -92,7 +96,8 @@ Notebook chạy theo thứ tự:
 - Không sửa file trong `data/raw/`.
 - Không điền dữ liệu thiếu bằng phỏng đoán; mọi cách xử lý phải có log.
 - Không so tổng PAPI 6 lĩnh vực với tổng 8 lĩnh vực qua mốc 2018.
-- Code AI phải hiển thị, có thể sửa và chỉ chạy sau phê duyệt.
+- Code AI phải hiển thị read-only; yêu cầu sửa bằng ngôn ngữ tự nhiên sinh full code mới và chỉ proposal
+  mới nhất được chạy sau phê duyệt.
 - Không đưa secrets hoặc log phiên chứa nội dung nhạy cảm lên Git.
 - Không quảng bá executor hiện tại như sandbox an toàn cho người dùng không tin cậy.
 

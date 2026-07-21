@@ -123,7 +123,13 @@ export function Dimension() {
     const point = event.points?.[0]
     const indexes = Array.isArray(point?.pointNumber) ? point.pointNumber : point?.pointIndex
     if (Array.isArray(indexes) && indexes[0] > indexes[1]) change({ x: codes[indexes[1]], y: codes[indexes[0]] })
-  }} layout={{ shapes: [{ type: 'rect', x0: selectedColumn - 0.48, x1: selectedColumn + 0.48, y0: selectedRow - 0.48, y1: selectedRow + 0.48, line: { color: uiColors.ink, width: 3 }, fillcolor: 'rgba(0,0,0,0)' }], margin: { l: 78, r: 10, t: 58, b: 82 } }}>
+  }} layout={{
+    xaxis: height < 500
+      ? { tickmode: 'array', tickvals: codes.map(compact), ticktext: codes, tickangle: 0, automargin: true }
+      : { tickangle: -24, automargin: true },
+    shapes: [{ type: 'rect', x0: selectedColumn - 0.48, x1: selectedColumn + 0.48, y0: selectedRow - 0.48, y1: selectedRow + 0.48, line: { color: uiColors.ink, width: 3 }, fillcolor: 'rgba(0,0,0,0)' }],
+    margin: { l: 78, r: 10, t: 58, b: height < 500 ? 52 : 96 },
+  }}>
     <div className="chart-table-scroll"><table><caption className="sr-only">Bảng tương quan giữa từng cặp lĩnh vực</caption><thead><tr><th>Cặp lĩnh vực</th><th>r</th><th>n</th><th>Chọn</th></tr></thead><tbody>{heatmapPairs.map((item) => <tr key={`${item.x}-${item.y}`}><th scope="row">{compact(item.x)} × {compact(item.y)}</th><td>{score(item.r)}</td><td>{item.n}</td><td><button type="button" aria-pressed={(f.x === item.x && f.y === item.y) || (f.x === item.y && f.y === item.x)} onClick={() => change({ x: item.x, y: item.y })}>Chọn cặp</button></td></tr>)}</tbody></table></div>
   </CartesianChart>
 
@@ -161,17 +167,26 @@ export function Dimension() {
   }} onUnhover={() => setHoveredRegion(null)} onClick={(event) => { const raw = event.points?.[0]?.customdata; if (Array.isArray(raw)) pinProvince(raw[0]) }} layout={{
     xaxis: { title: { text: compact(f.x) }, range: pairDomain }, yaxis: { title: { text: compact(f.y) }, range: pairDomain, scaleanchor: 'x', scaleratio: 1 },
     shapes: [{ type: 'line', x0: d.pair.xMean ?? 0, x1: d.pair.xMean ?? 0, y0: 0, y1: 1, yref: 'paper', line: { color: uiColors.muted, dash: 'dot' } }, { type: 'line', x0: 0, x1: 1, xref: 'paper', y0: d.pair.yMean ?? 0, y1: d.pair.yMean ?? 0, line: { color: uiColors.muted, dash: 'dot' } }],
-    legend: { orientation: 'h', y: -0.25 }, margin: { l: 64, r: 24, t: 22, b: 100 },
+    legend: height < 500
+      ? { orientation: 'h', x: 0, y: 1.08, xanchor: 'left', yanchor: 'bottom' }
+      : { orientation: 'h', y: -0.25 },
+    margin: { l: 64, r: 24, t: height < 500 ? 62 : 22, b: height < 500 ? 58 : 100 },
   }}>
     <div className="chart-table-scroll"><table><caption className="sr-only">Bảng điểm hai lĩnh vực và residual theo tỉnh</caption><thead><tr><th>Tỉnh</th><th>Vùng</th><th>{compact(f.x)}</th><th>{compact(f.y)}</th><th>Residual</th></tr></thead><tbody>{d.pair.rows.map((row) => <tr key={row.provinceVi}><th scope="row"><button type="button" aria-pressed={row.provinceVi === selectedProvince} onClick={() => pinProvince(row.provinceVi)}>{row.provinceVi}</button></th><td>{shortRegionLabel(row.region)}</td><td>{score(row.x)}</td><td>{score(row.y)}</td><td>{score(regressionByProvince.get(row.provinceVi)?.residual ?? null)}</td></tr>)}</tbody></table></div>
   </CartesianChart>
 
   const residualSample = [...d.regression.rows].filter((row) => row.residual !== null).sort((a, b) => Math.abs(b.residual ?? 0) - Math.abs(a.residual ?? 0)).slice(0, 12)
   const residualRows = [...residualSample].sort((a, b) => residualSort === 'absolute' ? Math.abs(b.residual ?? 0) - Math.abs(a.residual ?? 0) : (b.residual ?? 0) - (a.residual ?? 0))
+  const residualValues = residualRows.map((row) => row.residual ?? 0)
+  const residualMin = Math.min(0, ...residualValues)
+  const residualMax = Math.max(0, ...residualValues)
+  const residualPadding = Math.max((residualMax - residualMin) * 0.22, 0.28)
   const residualShapes: Layout['shapes'] = residualRows.map((row) => ({ type: 'line', x0: 0, x1: row.residual ?? 0, y0: row.provinceVi, y1: row.provinceVi, line: { color: uiColors.border, width: 3 } }))
   const residualData: Data[] = [{
     type: 'scatter', mode: 'markers+text', x: residualRows.map((row) => row.residual), y: residualRows.map((row) => row.provinceVi),
-    text: residualRows.map((row) => signed.format(row.residual ?? 0)), textposition: 'middle right',
+    text: residualRows.map((row) => signed.format(row.residual ?? 0)),
+    textposition: residualRows.map((row) => (row.residual ?? 0) < 0 ? 'middle left' : 'middle right'),
+    cliponaxis: false,
     customdata: residualRows.map((row) => [row.provinceVi, row.region, row.y, row.predicted, row.residual]),
     marker: {
       color: residualRows.map((row) => (row.residual ?? 0) >= 0 ? uiColors.positive : uiColors.negative),
@@ -181,7 +196,7 @@ export function Dimension() {
     },
     hovertemplate: '<b>%{customdata[0]}</b><br>%{customdata[1]}<br>Thực tế %{customdata[2]:.2f} · dự đoán %{customdata[3]:.2f}<br>Residual %{customdata[4]:+.2f}<extra></extra>', showlegend: false,
   } as unknown as Data]
-  const residualView = (height: number) => <CartesianChart title="Sai lệch so với đường hồi quy" summary="Mười hai tỉnh có trị tuyệt đối residual lớn nhất; dấu cho biết hướng lệch." data={residualData} height={height} onClick={(event) => { const raw = event.points?.[0]?.customdata; if (Array.isArray(raw)) pinProvince(raw[0]) }} layout={{ xaxis: { title: { text: `Residual của ${compact(f.y)}` }, zeroline: true, zerolinewidth: 2 }, yaxis: { categoryorder: 'array', categoryarray: residualRows.map((row) => row.provinceVi), autorange: 'reversed', automargin: true }, shapes: residualShapes, margin: { l: 106, r: 58, t: 22, b: 54 } }}>
+  const residualView = (height: number) => <CartesianChart title="Sai lệch so với đường hồi quy" summary="Mười hai tỉnh có trị tuyệt đối residual lớn nhất; dấu cho biết hướng lệch." data={residualData} height={height} onClick={(event) => { const raw = event.points?.[0]?.customdata; if (Array.isArray(raw)) pinProvince(raw[0]) }} layout={{ xaxis: { title: { text: `Residual của ${compact(f.y)}` }, zeroline: true, zerolinewidth: 2, range: [residualMin - residualPadding, residualMax + residualPadding] }, yaxis: { categoryorder: 'array', categoryarray: residualRows.map((row) => row.provinceVi), autorange: 'reversed', automargin: true }, shapes: residualShapes, margin: { l: 106, r: 58, t: 22, b: 54 } }}>
     <div className="chart-table-scroll"><table><caption className="sr-only">Bảng mười hai residual lớn nhất</caption><thead><tr><th>Tỉnh</th><th>Thực tế</th><th>Dự đoán</th><th>Residual</th></tr></thead><tbody>{residualRows.map((row) => <tr key={row.provinceVi}><th scope="row"><button type="button" aria-pressed={row.provinceVi === selectedProvince} onClick={() => pinProvince(row.provinceVi)}>{row.provinceVi}</button></th><td>{score(row.y)}</td><td>{score(row.predicted)}</td><td>{row.residual === null ? '—' : signed.format(row.residual)}</td></tr>)}</tbody></table></div>
   </CartesianChart>
 
@@ -193,7 +208,7 @@ export function Dimension() {
   const variationData: Data[] = [{
     type: 'scatter', mode: 'markers+text', x: variationRows.map((row) => row.meanScore), y: variationRows.map((row) => compact(row.code)),
     text: variationRows.map((row) => `${row.meanScore === null ? '—' : compactNumber.format(row.meanScore)} ± ${row.stdScore === null ? '—' : compactNumber.format(row.stdScore)}`),
-    textposition: variationRows.map((row) => (row.meanScore ?? 0) > 7 ? 'middle left' : 'middle right'), textfont: { size: 10 },
+    textposition: 'top center', textfont: { size: 10 }, cliponaxis: false,
     customdata: variationRows.map((row) => [row.code, label(row.code), row.stdScore, row.n, row.minScore, row.maxScore]),
     marker: {
       color: variationRows.map((row) => colorForDimension(row.code)), size: 12,
@@ -207,7 +222,7 @@ export function Dimension() {
   const variationView = (height: number) => <CartesianChart title="Trung bình và độ lệch chuẩn theo lĩnh vực" summary="Chấm là trung bình; đoạn thẳng biểu thị trung bình cộng hoặc trừ một độ lệch chuẩn trên thang 1–10." data={variationData} height={height} onClick={(event) => {
     const raw = event.points?.[0]?.customdata
     if (Array.isArray(raw) && typeof raw[0] === 'string') change(variationTarget === 'x' ? { x: raw[0] } : { y: raw[0] })
-  }} layout={{ xaxis: { title: { text: 'Điểm lĩnh vực PAPI' }, range: [1, 10], dtick: 1 }, yaxis: { categoryorder: 'array', categoryarray: variationRows.map((row) => compact(row.code)), autorange: 'reversed', automargin: true }, shapes: variationShapes, margin: { l: 112, r: 92, t: 22, b: 54 } }}>
+  }} layout={{ xaxis: { title: { text: 'Điểm lĩnh vực PAPI' }, range: [1, 10], dtick: 1 }, yaxis: { categoryorder: 'array', categoryarray: variationRows.map((row) => compact(row.code)), autorange: 'reversed', automargin: true }, shapes: variationShapes, margin: { l: 112, r: 36, t: 32, b: 54 } }}>
     <table><caption className="sr-only">Bảng trung bình và độ lệch chuẩn theo lĩnh vực</caption><thead><tr><th>Lĩnh vực</th><th>Trung bình</th><th>SD</th><th>n</th><th>Gán</th></tr></thead><tbody>{variationRows.map((row) => <tr key={row.code}><th scope="row">{label(row.code)}</th><td>{score(row.meanScore)}</td><td>{score(row.stdScore)}</td><td>{row.n}</td><td><button type="button" onClick={() => change(variationTarget === 'x' ? { x: row.code } : { y: row.code })}>Đặt làm {variationTarget.toUpperCase()}</button></td></tr>)}</tbody></table>
   </CartesianChart>
 

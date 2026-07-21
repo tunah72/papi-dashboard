@@ -1,9 +1,9 @@
 """Schema OpenAPI cụ thể cho từng view-model dashboard Phase 1."""
 from __future__ import annotations
 
-from typing import Literal
+from typing import Annotated, Any, Literal
 
-from pydantic import BaseModel, Field
+from pydantic import BaseModel, Field, RootModel
 
 
 class ApiModel(BaseModel):
@@ -757,3 +757,79 @@ class OverviewResponse(ApiModel):
 class ErrorResponse(ApiModel):
     detail: str
     fields: dict[str, str] | None = None
+
+
+def _camel_alias(name: str) -> str:
+    head, *tail = name.split("_")
+    return head + "".join(part.title() for part in tail)
+
+
+class AssistantApiModel(BaseModel):
+    model_config = {"populate_by_name": True, "alias_generator": _camel_alias}
+
+
+class AssistantContext(BaseModel):
+    route: Literal["/overview", "/time-trend", "/provincial", "/dimension", "/dynamics"]
+    search: dict[str, str] = Field(default_factory=dict)
+
+
+class AssistantMessageRequest(BaseModel):
+    sessionId: str | None = None
+    message: str = Field(min_length=1, max_length=2000)
+    context: AssistantContext
+    revisionOf: str | None = None
+
+
+class AssistantAnswerResponse(AssistantApiModel):
+    session_id: str
+    turn_id: str
+    kind: Literal["answer"]
+    answer: str
+    source: str
+
+
+class AssistantClarificationResponse(AssistantApiModel):
+    session_id: str
+    turn_id: str
+    kind: Literal["clarification"]
+    question: str
+
+
+class AssistantProposalResponse(AssistantApiModel):
+    session_id: str
+    turn_id: str
+    kind: Literal["proposal"]
+    proposal_id: str
+    explanation: str
+    code: str
+    status: Literal["pending_approval"] = Field(alias="status")
+    source: str
+
+
+class AssistantMessageResponse(RootModel[Annotated[
+    AssistantAnswerResponse | AssistantClarificationResponse | AssistantProposalResponse,
+    Field(discriminator="kind"),
+]]):
+    pass
+
+
+class AssistantExecutionRequest(BaseModel):
+    sessionId: str
+    proposalId: str
+    approved: Literal[True]
+
+
+class AssistantExecutionResponse(AssistantApiModel):
+    session_id: str
+    proposal_id: str
+    status: Literal["succeeded", "failed"]
+    result: dict[str, Any] | None = None
+    figure: dict[str, Any] | None = None
+    stdout: str = ""
+    warnings: list[str] = Field(default_factory=list)
+    error: str | None = None
+
+
+class AssistantLogsResponse(AssistantApiModel):
+    session_id: str
+    events: list[dict[str, Any]]

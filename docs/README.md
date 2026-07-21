@@ -16,7 +16,7 @@ về tính năng đang chạy.
 3. [Hướng dẫn cài đặt và phát triển](guides/getting-started.md) — lệnh chạy, test và quy trình sửa đổi.
 4. [Roadmap migration](roadmap.md) — trạng thái và thứ tự Phase 0–6 đến cutover React + FastAPI.
 5. [ADR migration React + FastAPI](adr/2026-07-20-react-fastapi-local-migration.md) — quyết định kiến trúc, cutover và rollback.
-6. [Ma trận parity React + FastAPI](react-fastapi-parity-matrix.md) — acceptance source cho sáu route trước khi cutover.
+6. [Ma trận parity React + FastAPI](react-fastapi-parity-matrix.md) — acceptance source cho năm trang và floating assistant trước cutover.
 
 ## Theo chủ đề
 
@@ -34,6 +34,7 @@ về tính năng đang chạy.
 ### AI
 
 - [Thiết kế và trạng thái AI human-in-the-loop](ai/README.md)
+- [Execution contract Floating AI Assistant](ai/floating-ai-assistant-execution.md)
 - [Manual test cases](ai/manual-test-cases.md)
 
 ### Tài liệu lịch sử

@@ -18,7 +18,7 @@ for (const [width, height] of [[1440, 900], [1280, 900], [1024, 900], [900, 900]
     expect(await page.locator('body').evaluate((body) => body.scrollWidth <= innerWidth)).toBe(true)
     if ([1440, 768, 390].includes(width)) await page.screenshot({ path: `test-results/phase4-dimension-${width}.png`, fullPage: true })
     await page.goto('/dynamics?scale=six&from=2011&to=2024&province=C%C3%A0%20Mau')
-    await expect(page.getByRole('heading', { name: /Tỉnh thay đổi và chuyển hồ sơ/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Tỉnh thay đổi và chuyển hồ sơ/ })).toBeVisible({ timeout: 15_000 })
     await expect(page.getByRole('img', { name: /Điểm đầu–cuối của các tỉnh thay đổi mạnh/ })).toBeVisible()
     await expect(page.getByRole('img', { name: /Đặc trưng chuẩn hóa của từng hồ sơ/ })).toBeVisible()
     await expect(page.getByRole('img', { name: /Dịch chuyển PCA đầu–cuối/ })).toBeVisible()

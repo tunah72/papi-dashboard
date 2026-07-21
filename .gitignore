@@ -29,5 +29,6 @@ frontend/dist/
 frontend/test-results/
 frontend/playwright-report/
 frontend/.vitest-localstorage*
+frontend/.vite/
 frontend/node_modules/.tmp/
 frontend/*.tsbuildinfo

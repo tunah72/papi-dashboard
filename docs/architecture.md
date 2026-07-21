@@ -36,9 +36,9 @@ python3 -m uvicorn server.main:app --host 127.0.0.1 --port 8000
 ```
 
 `server.main:create_app()` chỉ cho phép CORS từ các origin dev localhost đã liệt kê và target bind là
-`127.0.0.1`. Phase 1 có `GET /health` và bảy endpoint dashboard dưới `/api/v1`: `metadata`,
-`geojson`, `overview`, `trends`, `provinces`, `dimensions`, `dynamics`. Không có HTTP API AI,
-executor hay logs ở phase này; chúng vẫn thuộc Phase 5 để không làm mờ luồng phê duyệt của con người.
+`127.0.0.1`. Ngoài `GET /health` và bảy endpoint dashboard, Phase 5 bổ sung `POST assistant/messages`,
+`POST assistant/executions` và `GET assistant/logs`. Execution không nhận code từ client; server đối
+chiếu proposal ID/checksum mới nhất trước khi chạy.
 
 View-model trả JSON (không trả DataFrame hay Plotly Python object) với `meta.schemaVersion`, `source`,
 `unit`, `n` là số quan sát hợp lệ của input chính, `caveats` và filter đã resolve. `rowCount` của từng
@@ -107,16 +107,9 @@ primitive dùng chung. Phép tính theo route nằm trong `src/analysis/`: `tren
 
 ## AI human-in-the-loop
 
-“Ba API” trong đề bài hiện được triển khai dưới dạng ba module Python nội bộ, không phải ba HTTP
-service độc lập:
-
-1. `api_ai.py` ghép schema/context/prompt, gọi Groq và parse `code` + `explanation`.
-2. `api_exec.py` chỉ chạy sau khi người dùng bấm **Phê duyệt và thực thi**.
-3. `api_logs.py` ghi JSON Lines vào `logs/ai_sessions.jsonl`.
-
-Registry tự discover năm lựa chọn: một ví dụ thống kê mô tả và bốn technique thật (`trend`,
-`anomaly`, `insight`, `clustering`). Các trang phân tích publish context để AI Assistant nhận câu hỏi
-theo filter/chart đang xem.
+React dùng một floating assistant chung trên năm trang. FastAPI có ba HTTP contract: messages gọi Groq
+với knowledge/schema/context; executions chỉ chạy proposal mới nhất đã duyệt; logs đọc lifecycle JSONL
+theo session. Streamlit giữ ba module Python cũ như frozen fallback, không còn là UI đích.
 
 ### Giới hạn an toàn cần hiểu đúng
 
@@ -125,8 +118,8 @@ built-in/import nguy hiểm. DataFrame được sao chép trước khi đưa và
 guard phù hợp cho demo local, **không phải security sandbox hoàn chỉnh** và không nên dùng để chạy
 code từ người dùng không tin cậy trên máy chủ công khai.
 
-GeoJSON hiện được truyền theo object gốc thay vì bản sao. Vì vậy tài liệu cũ nói “toàn bộ dữ liệu
-read-only” là mạnh hơn đảm bảo thực tế. Việc harden executor được giữ trong roadmap.
+FastAPI kiểm AST để chặn import, dunder và thao tác file/process phổ biến; GeoJSON vẫn không có đảm bảo
+immutable ở cấp OS. Việc harden executor sâu hơn được giữ trong roadmap.
 
 ## Luồng trạng thái AI
 
@@ -134,12 +127,12 @@ read-only” là mạnh hơn đảm bảo thực tế. Việc harden executor đ
 Người dùng nhập yêu cầu
         │
         ▼
-Groq sinh code + giải thích
+Groq trả answer | clarification | proposal
         │
         ▼
-Code hiển thị ở trạng thái Chờ duyệt
+Proposal code hiển thị read-only ở trạng thái Chờ duyệt
         │
-        ├── người dùng sửa code
+        ├── người dùng mô tả yêu cầu sửa → proposal mới supersede bản cũ
         ▼
 Người dùng bấm Phê duyệt và thực thi
         │
@@ -147,10 +140,9 @@ Người dùng bấm Phê duyệt và thực thi
 Process local chạy code → result/fig/stdout/error → log metadata
 ```
 
-Ngay khi AI sinh đề xuất, UI ghi event `generated_pending_approval` với request, code, explanation và
-context; reset cũng được log. Sau phê duyệt, event `executed_after_approval` ghi `code_run`, stdout,
-error, shape kết quả và loại figure (cùng metadata liên quan). Kết quả bảng/biểu đồ đầy đủ vẫn chưa được
-lưu thành artifact truy xuất được, nên đây còn là khoảng trống so với yêu cầu lưu toàn bộ quá trình.
+Server ghi request, answer/clarification, pending/superseded proposal, approval và execution success/error.
+Table artifact giới hạn 500 hàng nhưng luôn ghi shape/total/truncated; figure lưu Plotly JSON. Không lưu
+API key hoặc internal reasoning.
 
 ## Ranh giới và quy tắc phụ thuộc
 

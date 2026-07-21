@@ -140,6 +140,57 @@ export interface paths {
         patch?: never;
         trace?: never;
     };
+    "/api/v1/assistant/messages": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Assistant Message */
+        post: operations["post_assistant_message_api_v1_assistant_messages_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/executions": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        get?: never;
+        put?: never;
+        /** Post Assistant Execution */
+        post: operations["post_assistant_execution_api_v1_assistant_executions_post"];
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
+    "/api/v1/assistant/logs": {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        /** Get Assistant Logs */
+        get: operations["get_assistant_logs_api_v1_assistant_logs_get"];
+        put?: never;
+        post?: never;
+        delete?: never;
+        options?: never;
+        head?: never;
+        patch?: never;
+        trace?: never;
+    };
 }
 export type webhooks = Record<string, never>;
 export interface components {
@@ -181,6 +232,135 @@ export interface components {
             previousContributorN: number;
             /** Baseline */
             baseline: boolean;
+        };
+        /** AssistantAnswerResponse */
+        AssistantAnswerResponse: {
+            /** Sessionid */
+            sessionId: string;
+            /** Turnid */
+            turnId: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "answer";
+            /** Answer */
+            answer: string;
+            /** Source */
+            source: string;
+        };
+        /** AssistantClarificationResponse */
+        AssistantClarificationResponse: {
+            /** Sessionid */
+            sessionId: string;
+            /** Turnid */
+            turnId: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "clarification";
+            /** Question */
+            question: string;
+        };
+        /** AssistantContext */
+        AssistantContext: {
+            /**
+             * Route
+             * @enum {string}
+             */
+            route: "/overview" | "/time-trend" | "/provincial" | "/dimension" | "/dynamics";
+            /** Search */
+            search?: {
+                [key: string]: string;
+            };
+        };
+        /** AssistantExecutionRequest */
+        AssistantExecutionRequest: {
+            /** Sessionid */
+            sessionId: string;
+            /** Proposalid */
+            proposalId: string;
+            /**
+             * Approved
+             * @constant
+             */
+            approved: true;
+        };
+        /** AssistantExecutionResponse */
+        AssistantExecutionResponse: {
+            /** Sessionid */
+            sessionId: string;
+            /** Proposalid */
+            proposalId: string;
+            /**
+             * Status
+             * @enum {string}
+             */
+            status: "succeeded" | "failed";
+            /** Result */
+            result?: {
+                [key: string]: unknown;
+            } | null;
+            /** Figure */
+            figure?: {
+                [key: string]: unknown;
+            } | null;
+            /**
+             * Stdout
+             * @default
+             */
+            stdout: string;
+            /** Warnings */
+            warnings?: string[];
+            /** Error */
+            error?: string | null;
+        };
+        /** AssistantLogsResponse */
+        AssistantLogsResponse: {
+            /** Sessionid */
+            sessionId: string;
+            /** Events */
+            events: {
+                [key: string]: unknown;
+            }[];
+        };
+        /** AssistantMessageRequest */
+        AssistantMessageRequest: {
+            /** Sessionid */
+            sessionId?: string | null;
+            /** Message */
+            message: string;
+            context: components["schemas"]["AssistantContext"];
+            /** Revisionof */
+            revisionOf?: string | null;
+        };
+        /** AssistantMessageResponse */
+        AssistantMessageResponse: components["schemas"]["AssistantAnswerResponse"] | components["schemas"]["AssistantClarificationResponse"] | components["schemas"]["AssistantProposalResponse"];
+        /** AssistantProposalResponse */
+        AssistantProposalResponse: {
+            /** Sessionid */
+            sessionId: string;
+            /** Turnid */
+            turnId: string;
+            /**
+             * @description discriminator enum property added by openapi-typescript
+             * @enum {string}
+             */
+            kind: "proposal";
+            /** Proposalid */
+            proposalId: string;
+            /** Explanation */
+            explanation: string;
+            /** Code */
+            code: string;
+            /**
+             * Status
+             * @constant
+             */
+            status: "pending_approval";
+            /** Source */
+            source: string;
         };
         /** Benchmark */
         Benchmark: {
@@ -779,6 +959,11 @@ export interface components {
         GeojsonResponse: {
             meta: components["schemas"]["MetadataMeta"];
             data: components["schemas"]["GeojsonData"];
+        };
+        /** HTTPValidationError */
+        HTTPValidationError: {
+            /** Detail */
+            detail?: components["schemas"]["ValidationError"][];
         };
         /** HistogramBin */
         HistogramBin: {
@@ -1600,6 +1785,15 @@ export interface components {
             /** Rows */
             rows: components["schemas"]["TurningPoint"][];
         };
+        /** ValidationError */
+        ValidationError: {
+            /** Location */
+            loc: (string | number)[];
+            /** Message */
+            msg: string;
+            /** Error Type */
+            type: string;
+        };
     };
     responses: never;
     parameters: never;
@@ -1852,6 +2046,130 @@ export interface operations {
                 };
                 content: {
                     "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    post_assistant_message_api_v1_assistant_messages_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistantMessageRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantMessageResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+            /** @description Bad Gateway */
+            502: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+        };
+    };
+    post_assistant_execution_api_v1_assistant_executions_post: {
+        parameters: {
+            query?: never;
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody: {
+            content: {
+                "application/json": components["schemas"]["AssistantExecutionRequest"];
+            };
+        };
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantExecutionResponse"];
+                };
+            };
+            /** @description Conflict */
+            409: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["ErrorResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
+                };
+            };
+        };
+    };
+    get_assistant_logs_api_v1_assistant_logs_get: {
+        parameters: {
+            query: {
+                sessionId: string;
+            };
+            header?: never;
+            path?: never;
+            cookie?: never;
+        };
+        requestBody?: never;
+        responses: {
+            /** @description Successful Response */
+            200: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["AssistantLogsResponse"];
+                };
+            };
+            /** @description Validation Error */
+            422: {
+                headers: {
+                    [name: string]: unknown;
+                };
+                content: {
+                    "application/json": components["schemas"]["HTTPValidationError"];
                 };
             };
         };
