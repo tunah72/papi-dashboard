@@ -1,5 +1,5 @@
 import { test, expect } from '@playwright/test'
-type RuntimePlot = { _fullData: Array<{ type?: string; z?: (number | null)[][]; x?: unknown[] }> }
+type RuntimePlot = { _fullData: Array<{ type?: string; z?: (number | null)[][]; x?: unknown[]; text?: unknown[]; customdata?: unknown[][] }> }
 type InteractivePlot = HTMLElement & { emit: (event: string, payload: unknown) => void }
 
 for (const [width, height] of [[1440, 900], [1280, 900], [1024, 900], [900, 900], [768, 900], [390, 844]] as const) {
@@ -8,11 +8,13 @@ for (const [width, height] of [[1440, 900], [1280, 900], [1024, 900], [900, 900]
     page.on('console', (message) => { if (['warning', 'error'].includes(message.type())) problems.push(message.text()) })
     await page.setViewportSize({ width, height })
     await page.goto('/dimension?scale=six&year=2024&x=D2&y=D1&province=C%C3%A0%20Mau')
-    await expect(page.getByRole('heading', { name: /Cùng biến thiên/ })).toBeVisible()
+    await expect(page.getByRole('heading', { name: /Các lĩnh vực cùng biến thiên/ })).toBeVisible()
     await expect(page.getByRole('img', { name: /Ma trận tương quan nửa dưới/ })).toBeVisible()
-    await expect(page.locator('.dimension-story-grid .cartesian-chart')).toHaveCount(4)
-    await expect.poll(async () => page.locator('.js-plotly-plot').evaluateAll((plots) => plots.flatMap((plot) => ((plot as unknown as { _fullData?: Array<{ type: string }> })._fullData ?? []).map((trace) => trace.type)))).toEqual(expect.arrayContaining(['heatmap', 'scatter', 'bar']))
-    expect(await page.getByRole('img', { name: /Ma trận tương quan nửa dưới/ }).locator('.js-plotly-plot').evaluate((plot) => { const z = (plot as unknown as RuntimePlot)._fullData[0].z ?? []; return z.every((row, rowIndex) => row.slice(rowIndex + 1).every((value) => value === null)) })).toBe(true)
+    await expect(page.locator('.dimension-chart-grid .cartesian-chart')).toHaveCount(4)
+    await expect(page.getByLabel('Insight biểu đồ')).toHaveCount(4)
+    await expect(page.getByRole('button', { name: /Phóng to biểu đồ/ })).toHaveCount(4)
+    await expect.poll(async () => page.locator('.js-plotly-plot').evaluateAll((plots) => plots.flatMap((plot) => ((plot as unknown as { _fullData?: Array<{ type: string }> })._fullData ?? []).map((trace) => trace.type)))).toEqual(expect.arrayContaining(['heatmap', 'scatter']))
+    expect(await page.getByRole('img', { name: /Ma trận tương quan nửa dưới/ }).locator('.js-plotly-plot').evaluate((plot) => { const z = (plot as unknown as RuntimePlot)._fullData[0].z ?? []; return z.every((row, rowIndex) => row.slice(rowIndex).every((value) => value === null)) })).toBe(true)
     expect(await page.locator('body').evaluate((body) => body.scrollWidth <= innerWidth)).toBe(true)
     if ([1440, 768, 390].includes(width)) await page.screenshot({ path: `test-results/phase4-dimension-${width}.png`, fullPage: true })
     await page.goto('/dynamics?scale=six&from=2011&to=2024&province=C%C3%A0%20Mau')
@@ -33,9 +35,38 @@ test('H3 click Plotly trên ô tam giác dưới cập nhật X/Y và scatter', 
   await page.goto('/dimension?scale=six&year=2024&x=D2&y=D1')
   const heatmap = page.getByRole('img', { name: /Ma trận tương quan nửa dưới/ }).locator('.js-plotly-plot')
   await expect(heatmap).toBeVisible()
-  await heatmap.evaluate((plot) => (plot as InteractivePlot).emit('plotly_click', { points: [{ pointNumber: [0, 1] }] }))
+  await heatmap.evaluate((plot) => (plot as InteractivePlot).emit('plotly_click', { points: [{ pointNumber: [1, 0] }] }))
   await expect(page).toHaveURL(/x=D1&y=D2/)
   await expect(page.getByRole('img', { name: /Phân tán theo hai lĩnh vực/ })).toBeVisible()
+})
+
+test('H3 popup xem riêng mở từ URL, đóng bằng Escape và trả focus về button', async ({ page }) => {
+  await page.goto('/dimension?scale=six&year=2024&x=D2&y=D1&focus=dimension-pair')
+  const dialog = page.getByRole('dialog', { name: /Mối quan hệ của cặp đang chọn/ })
+  await expect(dialog).toBeVisible()
+  await expect(dialog.getByRole('img', { name: /Phân tán theo hai lĩnh vực/ })).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(dialog).toBeHidden()
+  await expect(page).not.toHaveURL(/focus=/)
+  await expect(page.getByRole('button', { name: /Phóng to biểu đồ: Mối quan hệ của cặp đang chọn/ })).toBeFocused()
+})
+
+test('H3 pin tỉnh từ scatter và gán lĩnh vực Y từ range plot', async ({ page }) => {
+  await page.goto('/dimension?scale=six&year=2024&x=D2&y=D1')
+  const scatter = page.getByRole('img', { name: /Phân tán theo hai lĩnh vực/ }).locator('.js-plotly-plot')
+  const province = await scatter.evaluate((plot) => {
+    const trace = (plot as unknown as RuntimePlot)._fullData.find((item) => item.customdata?.length)
+    return trace?.customdata?.[0]?.[0]
+  })
+  expect(typeof province).toBe('string')
+  await scatter.evaluate((plot, selectedProvince) => (plot as InteractivePlot).emit('plotly_click', { points: [{ customdata: [selectedProvince] }] }), province)
+  await expect.poll(() => new URL(page.url()).searchParams.get('province')).toBe(province)
+  await expect.poll(async () => scatter.evaluate((plot, selectedProvince) => (plot as unknown as RuntimePlot)._fullData.some((trace) => trace.text?.includes(selectedProvince)), province)).toBe(true)
+
+  await page.getByRole('button', { name: 'Gán click: X' }).click()
+  const range = page.getByRole('img', { name: /Trung bình và độ lệch chuẩn theo lĩnh vực/ }).locator('.js-plotly-plot')
+  await range.evaluate((plot) => (plot as InteractivePlot).emit('plotly_click', { points: [{ customdata: ['D3'] }] }))
+  await expect(page).toHaveURL(/y=D3/)
 })
 
 test('H4 click hồ sơ Plotly, tìm kiếm và sắp xếp bảng cập nhật nội dung', async ({ page }) => {

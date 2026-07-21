@@ -457,6 +457,8 @@ class CorrelationArtifact(Artifact):
     n: int
     codes: list[str]
     matrix: list[list[float | None]]
+    counts: list[list[int]]
+    strengths: list[list[str]]
 
 
 class PairRow(ApiModel):
@@ -481,6 +483,8 @@ class StdRow(ApiModel):
     code: str
     mean_score: float | None = Field(alias="meanScore")
     std_score: float | None = Field(alias="stdScore")
+    min_score: float | None = Field(alias="minScore")
+    max_score: float | None = Field(alias="maxScore")
     n: int
 
 
@@ -513,6 +517,13 @@ class DimensionAvailability(ApiModel):
     dimensions: list[str]
 
 
+class DimensionInsights(ApiModel):
+    correlation: str
+    pair: str
+    residual: str
+    variation: str
+
+
 class DimensionsData(ApiModel):
     availability: DimensionAvailability
     correlation: CorrelationArtifact
@@ -520,6 +531,7 @@ class DimensionsData(ApiModel):
     standard_deviation: StdArtifact = Field(alias="standardDeviation")
     regression: RegressionArtifact
     labels: list[Indicator]
+    insights: DimensionInsights
 
 
 class DimensionsResponse(ApiModel):

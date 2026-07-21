@@ -436,6 +436,10 @@ export interface components {
             codes: string[];
             /** Matrix */
             matrix: (number | null)[][];
+            /** Counts */
+            counts: number[][];
+            /** Strengths */
+            strengths: string[][];
         };
         /** CovidArtifact */
         CovidArtifact: {
@@ -518,6 +522,17 @@ export interface components {
             /** Y */
             y: string;
         };
+        /** DimensionInsights */
+        DimensionInsights: {
+            /** Correlation */
+            correlation: string;
+            /** Pair */
+            pair: string;
+            /** Residual */
+            residual: string;
+            /** Variation */
+            variation: string;
+        };
         /** DimensionPoint */
         DimensionPoint: {
             /** Year */
@@ -553,6 +568,7 @@ export interface components {
             regression: components["schemas"]["RegressionArtifact"];
             /** Labels */
             labels: components["schemas"]["Indicator"][];
+            insights: components["schemas"]["DimensionInsights"];
         };
         /** DimensionsMeta */
         DimensionsMeta: {
@@ -1407,6 +1423,10 @@ export interface components {
             meanScore: number | null;
             /** Stdscore */
             stdScore: number | null;
+            /** Minscore */
+            minScore: number | null;
+            /** Maxscore */
+            maxScore: number | null;
             /** N */
             n: number;
         };

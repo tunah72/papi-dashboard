@@ -181,3 +181,20 @@ lặp heatmap vì chỉ so từng lĩnh vực độc lập.
 - Range plot dùng cùng thang 1–10 và không gọi SD là sai số.
 - Cả bốn chart mở được trong popup xem riêng; popup không thay đổi cặp X/Y hoặc tính lại mô hình.
 - Tất cả insight có qualifier chống diễn giải nhân quả.
+
+## 10. Contract triển khai
+
+`GET /api/v1/dimensions` trả đúng artifact cho bốn card:
+
+- `correlation.matrix`, `counts` và `strengths`: hệ số, cỡ mẫu hợp lệ và nhãn mức liên hệ của từng
+  cặp. Snapshot giữ tỉnh có ít nhất một lĩnh vực; từng hệ số vẫn dùng pairwise-complete observations,
+  vì vậy `n` có thể khác giữa các ô.
+- `pair` và `regression`: điểm thật, vùng, quadrant, đường OLS, residual và R² của cặp X/Y đang chọn.
+- `standardDeviation.rows`: mean, SD, min, max và `n` riêng cho từng lĩnh vực.
+- `insights.correlation`, `pair`, `residual` và `variation`: bốn kết luận xác định từ cùng artifact đã
+  xử lý, không phải nội dung do AI sinh.
+
+Trang không lặp snapshot ở header, không đặt khối “Cách đọc đúng” và không thêm hướng dẫn dưới từng
+biểu đồ. Control `Gán click: X/Y` là kênh truy cập được thay cho yêu cầu `Shift+click` ở range plot.
+Mở trang, thay filter hoặc mở popup không gọi API AI và không thực thi code; luồng human-in-the-loop
+của Trợ lý AI vẫn là code hiển thị ở trạng thái chờ duyệt, chỉ chạy local sau khi người dùng phê duyệt.

@@ -530,22 +530,57 @@ def dimensions_view(scale="eight", year=None, x=None, y=None):
     if snapshot.empty:
         raise ContractError("Không đủ dữ liệu lĩnh vực cho năm đã chọn.")
     matrix = dimensions.correlation_matrix(snapshot, dims)
+    counts = dimensions.correlation_counts(snapshot, dims)
     pair, x_mean, y_mean, corr = dimensions.pair_snapshot(snapshot, x, y)
     regression, slope, intercept, r_squared = dimensions.regression_snapshot(snapshot, x, y)
     summary = dimensions.summaries(snapshot, dims)
     labels = _labels()
+    label_rows = _indicator_rows(dims)
+    short_labels = {row["code"]: row["short"] for row in label_rows}
     pair_rows = pair.rename(columns={"province_vi": "province_vi", x: "x", y: "y"})
     regression_rows = regression.rename(columns={x: "x", y: "y"})
     valid_residuals = regression_rows.dropna(subset=["residual"])
     largest_residual = "" if valid_residuals.empty else str(
         valid_residuals.loc[valid_residuals.residual.abs().idxmax(), "province_vi"]
     )
-    summary["n"] = len(snapshot)
+    strongest_x, strongest_y, strongest_r = dimensions.strongest_pair(snapshot, dims)
+    strongest_direction = "cùng chiều" if strongest_r >= 0 else "ngược chiều"
+    correlation_insight = (
+        f"{short_labels.get(strongest_x, strongest_x)} và {short_labels.get(strongest_y, strongest_y)} "
+        f"liên hệ {strongest_direction} mạnh nhất (r = {_vi_number(strongest_r)}); không phải bằng chứng nhân quả."
+    )
+    quadrant_counts = pair.quadrant.value_counts()
+    largest_quadrant = str(quadrant_counts.index[0]) if not quadrant_counts.empty else "Không đủ dữ liệu"
+    largest_quadrant_n = int(quadrant_counts.iloc[0]) if not quadrant_counts.empty else 0
+    pair_insight = (
+        f"{short_labels[x]} và {short_labels[y]} có r = {_vi_number(corr)}, R² = {_vi_number(r_squared)}; "
+        f"{largest_quadrant} đông nhất (n = {largest_quadrant_n}), chỉ là liên hệ quan sát."
+    )
+    if valid_residuals.empty:
+        residual_insight = "Không đủ dữ liệu để xác định tỉnh lệch khỏi xu hướng tuyến tính."
+    else:
+        residual_row = valid_residuals.loc[valid_residuals.residual.abs().idxmax()]
+        residual_direction = "cao hơn" if residual_row.residual >= 0 else "thấp hơn"
+        residual_insight = (
+            f"{residual_row.province_vi} lệch nhiều nhất: {short_labels[y]} {residual_direction} dự đoán "
+            f"{_vi_number(abs(residual_row.residual))} điểm; không tự động là lỗi dữ liệu."
+        )
+    variable_row = summary.loc[summary.std_score.idxmax()]
+    highest_row = summary.loc[summary.mean_score.idxmax()]
+    variation_insight = (
+        f"{short_labels[variable_row.code]} phân hóa mạnh nhất (SD = {_vi_number(variable_row.std_score)}); "
+        f"{short_labels[highest_row.code]} có trung bình cao nhất ({_vi_number(highest_row.mean_score)}), trong snapshot này."
+    )
+    strengths = [
+        [dimensions.correlation_strength(value) for value in row]
+        for row in matrix.values.tolist()
+    ]
     return response({
         "availability": {"dimensions": dims},
         "correlation": {
             "rowCount": len(dims), "unit": "không đơn vị", "source": SOURCE, "caveats": [],
             "n": len(snapshot), "codes": dims, "matrix": matrix.values.tolist(),
+            "counts": counts.values.tolist(), "strengths": strengths,
         },
         "pair": _artifact(pair_rows, "điểm lĩnh vực PAPI", n=len(pair), x=x, y=y, xMean=x_mean, yMean=y_mean, pearsonR=corr),
         "standardDeviation": _artifact(summary, "điểm lĩnh vực PAPI"),
@@ -556,7 +591,13 @@ def dimensions_view(scale="eight", year=None, x=None, y=None):
             largestResidualProvince=largest_residual,
             caveats=["Hồi quy chỉ mô tả xu hướng quan sát, không chứng minh quan hệ nhân quả."],
         ),
-        "labels": _indicator_rows(dims),
+        "labels": label_rows,
+        "insights": {
+            "correlation": correlation_insight,
+            "pair": pair_insight,
+            "residual": residual_insight,
+            "variation": variation_insight,
+        },
     }, n=len(snapshot), filters={"scale": scale, "year": year, "x": x, "y": y}, unit="điểm lĩnh vực PAPI",
        caveats=["Pearson r là mối liên hệ quan sát, không chứng minh quan hệ nhân quả."])
 

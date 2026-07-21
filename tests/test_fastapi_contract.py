@@ -186,8 +186,12 @@ def test_h3_matrix_quadrant_std_parity_and_partial_dimension_filters(client):
     std = dimensions.summaries(snap, services.SCALES["eight"]["dims"])
     assert payload["data"]["correlation"]["unit"] == "không đơn vị"
     assert payload["data"]["correlation"]["matrix"][0][1] == pytest.approx(matrix.iloc[0, 1], abs=1e-9)
+    assert payload["data"]["correlation"]["counts"][0][1] == int(snap[["D1", "D2"]].dropna().shape[0])
+    assert payload["data"]["correlation"]["strengths"][0][1] == dimensions.correlation_strength(matrix.iloc[0, 1])
     assert payload["data"]["pair"]["rows"][0]["quadrant"] == pair.iloc[0].quadrant
     assert payload["data"]["standardDeviation"]["rows"][0]["stdScore"] == pytest.approx(std.iloc[0].std_score, abs=1e-9)
+    assert payload["data"]["standardDeviation"]["rows"][0]["n"] == int(snap.D1.notna().sum())
+    assert set(payload["data"]["insights"]) == {"correlation", "pair", "residual", "variation"}
     regression, slope, intercept, r_squared = dimensions.regression_snapshot(snap, "D1", "D2")
     assert payload["data"]["regression"]["slope"] == pytest.approx(slope, abs=1e-9)
     assert payload["data"]["regression"]["intercept"] == pytest.approx(intercept, abs=1e-9)

@@ -95,7 +95,7 @@ người xem không phải ghép kết luận với một hình ở vị trí kh
 | Tổng quan | map, trend, strongest pair, toàn bộ delta tỉnh | annual delta summary, quadrant counts và histogram summary trong view-model |
 | Diễn biến | total/regional series, vùng năm-kề-năm, delta lĩnh vực | hạng vùng theo năm cho bump chart và insight bốn chart |
 | Vùng và tỉnh | distribution, ranking, benchmark, profile | `regionMeans.q1/q3/iqr`, range toàn mẫu và bốn insight nằm trong contract FastAPI |
-| Quan hệ | matrix, pair, OLS, residual, mean/SD | insight payload và n theo từng cặp nếu khác n snapshot |
+| Quan hệ | matrix, pair, OLS, residual, mean/SD, min/max, n từng cặp và bốn insight | — đã đủ contract cho bốn card |
 | Phân nhóm | change rows, centroid, PCA assignment, transition | khoảng cách PCA, retention summary và insight payload |
 | Chart component | click, responsive, bảng fallback | hover/unhover, selected/legend events, `ChartInsight`, `ChartFocusDialog`, waterfall/polar/Sankey bundle |
 
