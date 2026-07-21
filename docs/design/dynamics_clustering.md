@@ -198,3 +198,19 @@ Dưới grid có một `<details>` duy nhất:
 - Sankey chỉ dùng transition thật và có bảng fallback.
 - Cả bốn chart mở được trong popup xem riêng; thao tác mở không chạy lại KMeans/PCA.
 - Insight phân biệt rõ thay đổi tổng điểm, dịch chuyển PCA và đổi profile.
+
+## 11. Contract triển khai
+
+`GET /api/v1/dynamics` trả đúng artifact cho bốn card:
+
+- `changes.rows/top8/bottom8`: điểm hai mốc và delta dùng để hợp nhất thành dumbbell cực trị.
+- `clusterModel.centroids`: z-score, điểm gốc và cỡ mẫu đầu/cuối cho small multiples.
+- `clusterModel.assignments`: profile, tọa độ hai mốc và `pcaDistance` của từng tỉnh.
+- `clusterModel.transitions`: số tỉnh, tỷ lệ `share` và danh sách tỉnh của từng luồng thật.
+- `clusterModel.changedN/changedPct`, `retainedN/retentionPct`, `farthestProvince/farthestDistance`
+  cùng `insights.change/profiles/pca/transition`: thống kê và bốn kết luận xác định từ artifact đã xử lý.
+
+Sankey dùng bundle Plotly riêng được lazy-load, không đưa trace flow vào bundle Cartesian của bốn trang
+còn lại. Profile, tỉnh, luồng và popup được giữ trong URL; mở popup hoặc thay selection chỉ mã hóa lại
+artifact đã nhận, không chạy lại KMeans/PCA. Trang không có khối “Bước đọc tiếp”; điều hướng nằm ở
+sidebar. Mở trang không gọi API AI và không thực thi code.

@@ -18,12 +18,17 @@ for (const [width, height] of [[1440, 900], [1280, 900], [1024, 900], [900, 900]
     expect(await page.locator('body').evaluate((body) => body.scrollWidth <= innerWidth)).toBe(true)
     if ([1440, 768, 390].includes(width)) await page.screenshot({ path: `test-results/phase4-dimension-${width}.png`, fullPage: true })
     await page.goto('/dynamics?scale=six&from=2011&to=2024&province=C%C3%A0%20Mau')
-    await expect(page.getByRole('heading', { name: /Điểm thay đổi/ })).toBeVisible()
-    await expect(page.getByRole('img', { name: /Bản đồ nhiệt hồ sơ A–F/ })).toBeVisible()
-    await expect(page.locator('.dynamics-story-grid .cartesian-chart')).toHaveCount(5)
-    await expect.poll(async () => page.locator('.js-plotly-plot').evaluateAll((plots) => plots.flatMap((plot) => ((plot as unknown as { _fullData?: Array<{ type: string }> })._fullData ?? []).map((trace) => trace.type)))).toEqual(expect.arrayContaining(['bar', 'heatmap', 'scatter']))
-    expect(await page.getByRole('img', { name: /8 tỉnh tăng nhiều nhất/ }).locator('.js-plotly-plot').evaluate((plot) => ((plot as unknown as RuntimePlot)._fullData[0].x ?? []).length)).toBeLessThanOrEqual(8)
-    expect(await page.getByRole('img', { name: /8 tỉnh giảm nhiều nhất/ }).locator('.js-plotly-plot').evaluate((plot) => ((plot as unknown as RuntimePlot)._fullData[0].x ?? []).length)).toBeLessThanOrEqual(8)
+    await expect(page.getByRole('heading', { name: /Tỉnh thay đổi và chuyển hồ sơ/ })).toBeVisible()
+    await expect(page.getByRole('img', { name: /Điểm đầu–cuối của các tỉnh thay đổi mạnh/ })).toBeVisible()
+    await expect(page.getByRole('img', { name: /Đặc trưng chuẩn hóa của từng hồ sơ/ })).toBeVisible()
+    await expect(page.getByRole('img', { name: /Dịch chuyển PCA đầu–cuối/ })).toBeVisible()
+    await expect(page.getByRole('img', { name: /Luồng chuyển hồ sơ đầu–cuối/ })).toBeVisible()
+    await expect(page.locator('.dynamics-chart-grid .cartesian-chart')).toHaveCount(4)
+    await expect(page.getByLabel('Insight biểu đồ')).toHaveCount(4)
+    await expect(page.getByRole('button', { name: /Phóng to biểu đồ/ })).toHaveCount(4)
+    await expect.poll(async () => page.locator('.js-plotly-plot').evaluateAll((plots) => plots.flatMap((plot) => ((plot as unknown as { _fullData?: Array<{ type: string }> })._fullData ?? []).map((trace) => trace.type)))).toEqual(expect.arrayContaining(['bar', 'scatter', 'sankey']))
+    expect(await page.getByRole('img', { name: /Điểm đầu–cuối/ }).locator('.js-plotly-plot').evaluate((plot) => (plot as unknown as RuntimePlot)._fullData.length)).toBeLessThanOrEqual(16)
+    await expect(page.getByText(/Bước đọc tiếp/)).toHaveCount(0)
     expect(await page.locator('body').evaluate((body) => body.scrollWidth <= innerWidth)).toBe(true)
     if ([1440, 768, 390].includes(width)) await page.screenshot({ path: `test-results/phase4-dynamics-${width}.png`, fullPage: true })
     expect(problems).toEqual([])
@@ -69,7 +74,7 @@ test('H3 pin tỉnh từ scatter và gán lĩnh vực Y từ range plot', async 
   await expect(page).toHaveURL(/y=D3/)
 })
 
-test('H4 click hồ sơ Plotly, tìm kiếm và sắp xếp bảng cập nhật nội dung', async ({ page }) => {
+test('H4 chọn profile, luồng Sankey, tìm kiếm và sắp xếp bảng cập nhật URL', async ({ page }) => {
   await page.goto('/dynamics?scale=six&from=2011&to=2024')
   await page.getByText('Xem tất cả tỉnh').click()
   await page.getByRole('textbox', { name: 'Tìm tỉnh' }).fill('Cà Mau')
@@ -79,25 +84,59 @@ test('H4 click hồ sơ Plotly, tìm kiếm và sắp xếp bảng cập nhật 
   const before = await page.locator('.dynamics-table tbody tr').first().locator('th').innerText()
   await page.getByRole('button', { name: /Thay đổi/ }).click()
   await expect.poll(async () => page.locator('.dynamics-table tbody tr').first().locator('th').innerText()).not.toBe(before)
-  const heatmap = page.getByRole('img', { name: /Bản đồ nhiệt hồ sơ A–F/ }).locator('.js-plotly-plot')
-  const heading = page.locator('.nearby-provinces h3')
-  const old = await heading.innerText()
-  await heatmap.evaluate((plot) => (plot as InteractivePlot).emit('plotly_click', { points: [{ pointNumber: [0, 1] }] }))
-  await expect(heading).not.toHaveText(old)
+  const profiles = page.getByRole('img', { name: /Đặc trưng chuẩn hóa của từng hồ sơ/ }).locator('.js-plotly-plot')
+  await profiles.evaluate((plot) => (plot as InteractivePlot).emit('plotly_click', { points: [{ customdata: ['B'] }] }))
+  await expect.poll(() => new URL(page.url()).searchParams.get('profile')).toBe('B')
+  await expect(page.getByRole('button', { name: 'Hồ sơ B' })).toHaveAttribute('aria-pressed', 'true')
+  const sankey = page.getByRole('img', { name: /Luồng chuyển hồ sơ đầu–cuối/ }).locator('.js-plotly-plot')
+  await sankey.evaluate((plot) => (plot as InteractivePlot).emit('plotly_click', { points: [{ customdata: ['A', 'B'] }] }))
+  await expect.poll(() => new URL(page.url()).searchParams.get('flow')).toBe('A-B')
 })
 
-test('H4 dùng được bằng bàn phím và H3 năm đầu mở khoảng hợp lệ', async ({ page }) => {
+test('H4 dùng được bằng bàn phím và popup đóng bằng Escape', async ({ page }) => {
   await page.goto('/dynamics?scale=six&from=2011&to=2024')
   const profileB = page.getByRole('button', { name: 'Hồ sơ B' })
   await profileB.focus()
   await page.keyboard.press('Enter')
   await expect(profileB).toHaveAttribute('aria-pressed', 'true')
-  await expect(page.locator('.nearby-provinces h3')).toContainText('Hồ sơ B')
-  await page.goto('/dimension?scale=eight&year=2018&x=D1&y=D2&province=C%C3%A0%20Mau')
-  const cta = page.getByRole('link', { name: /Mở Thay đổi/ })
-  await expect(cta).toHaveAttribute('href', /scale=eight&from=2018&to=2019.*province=/)
-  await cta.click()
-  await expect(page).toHaveURL(/\/dynamics\?scale=eight&from=2018&to=2019/)
+  await page.goto('/dynamics?scale=six&from=2011&to=2024&focus=dynamics-transition')
+  const dialog = page.getByRole('dialog', { name: /Luồng chuyển profile nào phổ biến nhất/ })
+  await expect(dialog.getByRole('img', { name: /Luồng chuyển hồ sơ đầu–cuối/ })).toBeVisible()
+  await page.keyboard.press('Escape')
+  await expect(dialog).toBeHidden()
+  await expect(page).not.toHaveURL(/focus=/)
+  await expect(page.getByRole('button', { name: /Phóng to biểu đồ: Luồng chuyển profile/ })).toBeFocused()
+})
+
+test('H4 click dumbbell pin tỉnh, mở bảng và K=6 không tràn', async ({ page }) => {
+  await page.goto('/dynamics?scale=six&from=2011&to=2024')
+  const dumbbell = page.getByRole('img', { name: /Điểm đầu–cuối của các tỉnh thay đổi mạnh/ }).locator('.js-plotly-plot')
+  const province = await dumbbell.evaluate((plot) => (plot as unknown as RuntimePlot)._fullData[0]?.customdata?.[0]?.[0])
+  expect(typeof province).toBe('string')
+  await dumbbell.evaluate((plot, selectedProvince) => (plot as InteractivePlot).emit('plotly_click', { points: [{ customdata: [selectedProvince] }] }), province)
+  await expect.poll(() => new URL(page.url()).searchParams.get('province')).toBe(province)
+  await expect(page.locator('.dynamics-table details')).toHaveAttribute('open', '')
+  await expect(page.locator('.dynamics-table tr.selected-row')).toContainText(String(province))
+
+  await page.setViewportSize({ width: 390, height: 844 })
+  await page.goto('/dynamics?scale=six&from=2011&to=2024&k=6')
+  await expect(page.getByRole('group', { name: 'Chọn hồ sơ' }).getByRole('button')).toHaveCount(6)
+  expect(await page.locator('body').evaluate((body) => body.scrollWidth <= innerWidth)).toBe(true)
+  await page.screenshot({ path: 'test-results/phase4-dynamics-k6-390.png', fullPage: true })
+})
+
+test('Năm trang phân tích không còn chức năng Bước đọc tiếp', async ({ page }) => {
+  for (const route of [
+    '/overview?scale=eight&year=2024',
+    '/time-trend?scale=six&from=2011&to=2024',
+    '/provincial?scale=eight&year=2024',
+    '/dimension?scale=eight&year=2024&x=D2&y=D1',
+    '/dynamics?scale=eight&from=2018&to=2024',
+  ]) {
+    await page.goto(route)
+    await expect(page.locator('h1')).toBeVisible()
+    await expect(page.getByText(/Bước đọc tiếp/)).toHaveCount(0)
+  }
 })
 
 test('H3 scatter 390px giữ đầy đủ nhãn qua caption và không cắt SVG', async ({ page }) => {

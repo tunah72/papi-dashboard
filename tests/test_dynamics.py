@@ -30,6 +30,8 @@ def test_cluster_transitions_are_deterministic_and_share_endpoint_labels():
     assert first["assignments"].equals(second["assignments"])
     assert len(first["assignments"]) == 8
     assert sum(item["n"] for item in first["transitions"]) == 8
+    assert abs(sum(item["share"] for item in first["transitions"]) - 1) < 1e-12
+    assert first["assignments"].pca_distance.ge(0).all()
     assert len(first["pca_variance"]) == 2
 
 

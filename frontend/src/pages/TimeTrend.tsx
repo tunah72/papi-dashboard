@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { Data } from 'plotly.js'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 
 import { api, type Scale, type TrendsResponse } from '../api/client'
 import { CartesianChart } from '../components/CartesianChart'
@@ -113,6 +113,5 @@ export function TimeTrend() {
         <CartesianChart title="Slopegraph thay đổi theo lĩnh vực" summary={`Điểm đầu và cuối trong giai đoạn ${range.from}–${range.to}.`} data={slopeData} height={310} onClick={(event) => { const code = dims[event.points?.[0]?.curveNumber ?? -1]?.code; if (code) update({ dimension: code }) }} layout={{ xaxis: { tickmode: 'array', tickvals: [range.from, range.to], title: { text: 'Mốc so sánh' } }, yaxis: { title: { text: 'Điểm lĩnh vực PAPI' } }, showlegend: false, margin: { l: 62, r: 98, t: 18, b: 48 } }} />
       </ChartCard>
     </section>
-    <section className="story"><p className="eyebrow">Bước đọc tiếp</p><h2>Xem khác biệt theo vùng và tỉnh</h2><p>Giữ phạm vi và năm cuối kỳ để chuyển từ thời gian sang không gian.</p><Link className="cta" to={`/provincial?scale=${scale}&year=${range.to}${province ? `&province=${encodeURIComponent(province)}` : ''}`}>Mở Vùng & tỉnh</Link></section>
   </article>
 }

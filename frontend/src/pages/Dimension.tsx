@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { Data, Layout } from 'plotly.js'
-import { Link, useSearchParams } from 'react-router-dom'
+import { useSearchParams } from 'react-router-dom'
 
 import { api, type Scale } from '../api/client'
 import { CartesianChart } from '../components/CartesianChart'
@@ -211,10 +211,6 @@ export function Dimension() {
     <table><caption className="sr-only">Bảng trung bình và độ lệch chuẩn theo lĩnh vực</caption><thead><tr><th>Lĩnh vực</th><th>Trung bình</th><th>SD</th><th>n</th><th>Gán</th></tr></thead><tbody>{variationRows.map((row) => <tr key={row.code}><th scope="row">{label(row.code)}</th><td>{score(row.meanScore)}</td><td>{score(row.stdScore)}</td><td>{row.n}</td><td><button type="button" onClick={() => change(variationTarget === 'x' ? { x: row.code } : { y: row.code })}>Đặt làm {variationTarget.toUpperCase()}</button></td></tr>)}</tbody></table>
   </CartesianChart>
 
-  const firstYear = cfg.years[0]
-  const nextYear = cfg.years.find((item) => item > f.year) ?? f.year
-  const dynamicsRange = f.year > firstYear ? { from: firstYear, to: f.year } : { from: f.year, to: nextYear }
-  const preserve = selectedProvince ? `&province=${encodeURIComponent(selectedProvince)}` : ''
   const defaultYear = metadata.data!.data.scales.find((item) => item.id === 'eight')?.years.at(-1) ?? 2024
   const defaultSelection = f.scale === 'eight' && f.year === defaultYear && f.x === 'D2' && f.y === 'D1' && !selectedProvince && !focused
 
@@ -247,6 +243,5 @@ export function Dimension() {
         {variationView(310)}
       </ChartCard>
     </section>
-    <section className="story"><p className="eyebrow">Bước đọc tiếp</p><h2>Xem thay đổi và nhóm tương đồng</h2><p>Giữ phạm vi và tỉnh đang chọn để xem chênh lệch giữa hai mốc và các hồ sơ gần nhau.</p><Link className="cta" to={`/dynamics?scale=${f.scale}&from=${dynamicsRange.from}&to=${dynamicsRange.to}${preserve}`}>Mở Thay đổi & phân nhóm</Link></section>
   </article>
 }

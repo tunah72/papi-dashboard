@@ -1,7 +1,7 @@
 import { useEffect, useState } from 'react'
 import { useQuery } from '@tanstack/react-query'
 import type { Data, Layout } from 'plotly.js'
-import { Link, useNavigate, useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { api, type Scale } from '../api/client'
 import { CartesianChart } from '../components/CartesianChart'
@@ -178,8 +178,6 @@ export function Provincial() {
   const benchmarkView = (height: number) => <CartesianChart title="So sánh điểm với hai benchmark" summary="Điểm tỉnh, trung bình vùng và trung bình toàn bộ mẫu trên cùng một thang đo." data={bulletData} height={height} onClick={(event) => { const raw = event.points?.[0]?.customdata; const id = Array.isArray(raw) ? raw[0] : null; if (id === 'region' || id === 'national') setBenchmarkFocus((current) => current === id ? null : id) }} layout={{ xaxis: { title: { text: d.measure.unit }, range: [(d.benchmark.nationalMin ?? 0) - rangeSpan * 0.08, (d.benchmark.nationalMax ?? 1) + rangeSpan * 0.12] }, yaxis: { categoryorder: 'array', categoryarray: bulletRows.map((row) => row.label), autorange: 'reversed', automargin: true, fixedrange: true }, shapes: bulletShapes, showlegend: false, margin: { l: 138, r: 48, t: 34, b: 58 } }}><table><caption className="sr-only">Bảng benchmark tổng điểm</caption><thead><tr><th>Mốc</th><th>Điểm</th><th>n</th></tr></thead><tbody>{bulletRows.map((row) => <tr key={row.id}><th scope="row">{row.label}</th><td>{value(row.score)}</td><td>{row.n}</td></tr>)}</tbody></table></CartesianChart>
   const profileView = (height: number) => <PolarChart title="Hồ sơ lĩnh vực của tỉnh" summary={`So sánh ${f.province}, ${f.region} và toàn bộ mẫu trên thang điểm 1–10.`} data={radarData} height={height} onClick={(event) => { const raw = event.points?.[0]?.customdata; const code = Array.isArray(raw) ? raw[0] : null; if (typeof code === 'string') { const other = profileRows.find((row) => row.code !== code)?.code ?? code; navigate(`/dimension?scale=${f.scale}&year=${f.year}&x=${code}&y=${other}&province=${encodeURIComponent(f.province)}`) } }} layout={{ polar: { radialaxis: { range: [1, 10], tickvals: [2, 4, 6, 8, 10] } }, legend: { orientation: 'h', y: -0.13 }, margin: { l: 70, r: 70, t: 32, b: 78 } }}><table><caption className="sr-only">Bảng điểm lĩnh vực của tỉnh và benchmark</caption><thead><tr><th>Lĩnh vực</th><th>Tỉnh</th><th>Vùng</th><th>Toàn bộ mẫu</th></tr></thead><tbody>{profileRows.map((row) => <tr key={row.code}><th scope="row">{labels.get(row.code) ?? row.code}</th><td>{value(row.provinceScore)}</td><td>{value(row.regionMean)}</td><td>{value(row.nationalMean)}</td></tr>)}</tbody></table></PolarChart>
 
-  const first = cfg.years[0] ?? f.year
-  const trendTo = f.year > first ? f.year : (cfg.years.find((item) => item > first) ?? first + 1)
   const defaultYear = metadata.data!.data.scales.find((item) => item.id === 'eight')?.years.at(-1) ?? 2024
   const defaultSelection = f.scale === 'eight' && f.year === defaultYear && f.region === d.availability.regions[0] && f.province === d.availability.provinces[0] && !focused
   const benchmarkLabel = benchmarkFocus === 'region' ? 'Vùng' : benchmarkFocus === 'national' ? 'Toàn bộ mẫu' : 'Cả hai'
@@ -213,6 +211,5 @@ export function Provincial() {
         {profileView(310)}
       </ChartCard>
     </section>
-    <section className="story"><p className="eyebrow">Bước đọc tiếp</p><h2>Xem diễn biến của chính tỉnh này</h2><p>Chuyển sang chuỗi thời gian nhưng giữ nguyên phạm vi và tỉnh đang chọn.</p><Link className="cta" to={`/time-trend?scale=${f.scale}&from=${first}&to=${trendTo}&province=${encodeURIComponent(f.province)}`}>Mở Diễn biến theo thời gian</Link></section>
   </article>
 }

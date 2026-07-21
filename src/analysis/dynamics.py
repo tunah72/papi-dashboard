@@ -99,6 +99,10 @@ def cluster_transitions(prov_year, y0, y1, dims, requested_k=None, k_min=2, k_ma
             "changed": row[("cluster", y0)] != row[("cluster", y1)],
             "start_pc1": row[("pc1", y0)], "start_pc2": row[("pc2", y0)],
             "end_pc1": row[("pc1", y1)], "end_pc2": row[("pc2", y1)],
+            "pca_distance": float(np.hypot(
+                row[("pc1", y1)] - row[("pc1", y0)],
+                row[("pc2", y1)] - row[("pc2", y0)],
+            )),
         })
     assignments = pd.DataFrame(assignment_rows).sort_values("province_vi").reset_index(drop=True)
 
@@ -127,6 +131,7 @@ def cluster_transitions(prov_year, y0, y1, dims, requested_k=None, k_min=2, k_ma
     ):
         transitions.append({
             "from_cluster": start_cluster, "to_cluster": end_cluster, "n": len(group),
+            "share": float(len(group) / len(assignments)),
             "provinces": group.province_vi.sort_values().tolist(),
         })
     selected_score = next(item["silhouette"] for item in candidates if item["k"] == selected_k)

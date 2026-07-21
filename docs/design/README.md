@@ -72,11 +72,13 @@ Tên trang + mô tả một câu, không kèm lại phạm vi/năm/n đã có tr
          ├── Insight động trả lời câu hỏi
          └── nguồn, đơn vị, n và lưu ý
     → bảng dữ liệu/progressive disclosure nếu cần
-    → liên kết sang bước phân tích tiếp theo hoặc Trợ lý AI
 ```
 
 Không đặt một khối “Tín hiệu cần đọc” lớn trước grid. Bốn insight phải nằm ngay dưới bốn biểu đồ để
 người xem không phải ghép kết luận với một hình ở vị trí khác.
+
+Không đặt khối hoặc CTA “Bước đọc tiếp” ở cuối trang. Người dùng chuyển trang qua sidebar hoặc
+interaction drill-through có ngữ cảnh ngay trên biểu đồ; Trợ lý AI luôn là route độc lập trong sidebar.
 
 ## 6. Phạm vi implementation
 
@@ -96,8 +98,8 @@ người xem không phải ghép kết luận với một hình ở vị trí kh
 | Diễn biến | total/regional series, vùng năm-kề-năm, delta lĩnh vực | hạng vùng theo năm cho bump chart và insight bốn chart |
 | Vùng và tỉnh | distribution, ranking, benchmark, profile | `regionMeans.q1/q3/iqr`, range toàn mẫu và bốn insight nằm trong contract FastAPI |
 | Quan hệ | matrix, pair, OLS, residual, mean/SD, min/max, n từng cặp và bốn insight | — đã đủ contract cho bốn card |
-| Phân nhóm | change rows, centroid, PCA assignment, transition | khoảng cách PCA, retention summary và insight payload |
-| Chart component | click, responsive, bảng fallback | hover/unhover, selected/legend events, `ChartInsight`, `ChartFocusDialog`, waterfall/polar/Sankey bundle |
+| Phân nhóm | change rows, centroid, PCA assignment/distance, transition/share, retention và bốn insight | — đã đủ contract cho bốn card |
+| Chart component | click, hover/unhover, responsive, bảng fallback, `ChartInsight`, `ChartFocusDialog`, waterfall/polar/Sankey lazy bundle | selected/legend events chuyên biệt khi từng chart cần |
 
 Các thống kê trên nên được tính ở `src/analysis`/FastAPI và có test. Frontend chỉ mã hóa artifact thành
 biểu đồ và quản lý interaction; không sao chép công thức nghiệp vụ vào page component.

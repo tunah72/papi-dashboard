@@ -661,6 +661,7 @@ class ClusterAssignment(ApiModel):
     start_pc2: float | None = Field(alias="startPc2")
     end_pc1: float | None = Field(alias="endPc1")
     end_pc2: float | None = Field(alias="endPc2")
+    pca_distance: float | None = Field(alias="pcaDistance")
 
 
 class ClusterCentroidValue(ApiModel):
@@ -681,6 +682,7 @@ class ClusterTransition(ApiModel):
     from_cluster: str = Field(alias="fromCluster")
     to_cluster: str = Field(alias="toCluster")
     n: int = Field(ge=1)
+    share: float = Field(ge=0, le=1)
     provinces: list[str]
 
 
@@ -695,6 +697,24 @@ class StableClusterArtifact(Artifact):
     assignments: list[ClusterAssignment]
     centroids: list[StableClusterCentroid]
     transitions: list[ClusterTransition]
+    changed_n: int = Field(alias="changedN", ge=0)
+    changed_pct: float = Field(alias="changedPct", ge=0, le=1)
+    retained_n: int = Field(alias="retainedN", ge=0)
+    retention_pct: float = Field(alias="retentionPct", ge=0, le=1)
+    farthest_province: str = Field(alias="farthestProvince")
+    farthest_distance: float | None = Field(alias="farthestDistance")
+
+
+class DynamicsProfileInsight(ApiModel):
+    cluster: str
+    text: str
+
+
+class DynamicsInsights(ApiModel):
+    change: str
+    profiles: list[DynamicsProfileInsight]
+    pca: str
+    transition: str
 
 
 class DynamicsData(ApiModel):
@@ -702,6 +722,7 @@ class DynamicsData(ApiModel):
     changes: ChangesArtifact
     clusters: ClusterArtifact
     cluster_model: StableClusterArtifact = Field(alias="clusterModel")
+    insights: DynamicsInsights
 
 
 class DynamicsResponse(ApiModel):

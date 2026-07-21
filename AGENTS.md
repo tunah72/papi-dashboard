@@ -35,6 +35,8 @@ Một **dashboard trực quan hóa + phân tích dữ liệu Việt Nam**, có *
 - Desktop dùng grid 2 × 2 cân bằng; tablet/mobile chuyển một cột khi cần để giữ khả năng đọc. Header,
   filter và KPI phải gọn để hàng biểu đồ đầu xuất hiện sớm; không đặt khối “Tín hiệu cần đọc” lớn
   trước grid. Insight ngắn nằm ngay dưới biểu đồ mà nó trả lời.
+- Không đặt khối hoặc CTA “Bước đọc tiếp” ở cuối các trang phân tích. Điều hướng giữa năm trang và
+  Trợ lý AI dùng sidebar; drill-through chỉ xuất hiện tại interaction có ngữ cảnh ngay trên biểu đồ.
 - Dùng đa dạng hình thức trực quan theo ma trận trong `docs/design/README.md`; không thay biểu đồ đã
   duyệt bằng pie/donut, 3D, hai trục tung hoặc animation liên tục nếu chưa cập nhật đặc tả.
 - Mọi biểu đồ phải có tooltip tiếng Việt, hover highlight/dim, legend hoặc control tương đương,

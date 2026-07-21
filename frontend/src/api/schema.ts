@@ -351,6 +351,8 @@ export interface components {
             endPc1: number | null;
             /** Endpc2 */
             endPc2: number | null;
+            /** Pcadistance */
+            pcaDistance: number | null;
         };
         /** ClusterCandidate */
         ClusterCandidate: {
@@ -417,6 +419,8 @@ export interface components {
             toCluster: string;
             /** N */
             n: number;
+            /** Share */
+            share: number;
             /** Provinces */
             provinces: string[];
         };
@@ -629,6 +633,7 @@ export interface components {
             changes: components["schemas"]["ChangesArtifact"];
             clusters: components["schemas"]["ClusterArtifact"];
             clusterModel: components["schemas"]["StableClusterArtifact"];
+            insights: components["schemas"]["DynamicsInsights"];
         };
         /** DynamicsFilters */
         DynamicsFilters: {
@@ -643,6 +648,17 @@ export interface components {
             to: number;
             /** K */
             k: number | "auto";
+        };
+        /** DynamicsInsights */
+        DynamicsInsights: {
+            /** Change */
+            change: string;
+            /** Profiles */
+            profiles: components["schemas"]["DynamicsProfileInsight"][];
+            /** Pca */
+            pca: string;
+            /** Transition */
+            transition: string;
         };
         /** DynamicsMeta */
         DynamicsMeta: {
@@ -663,6 +679,13 @@ export interface components {
             /** Caveats */
             caveats?: string[];
             filters: components["schemas"]["DynamicsFilters"];
+        };
+        /** DynamicsProfileInsight */
+        DynamicsProfileInsight: {
+            /** Cluster */
+            cluster: string;
+            /** Text */
+            text: string;
         };
         /** DynamicsResponse */
         DynamicsResponse: {
@@ -1388,6 +1411,18 @@ export interface components {
             centroids: components["schemas"]["StableClusterCentroid"][];
             /** Transitions */
             transitions: components["schemas"]["ClusterTransition"][];
+            /** Changedn */
+            changedN: number;
+            /** Changedpct */
+            changedPct: number;
+            /** Retainedn */
+            retainedN: number;
+            /** Retentionpct */
+            retentionPct: number;
+            /** Farthestprovince */
+            farthestProvince: string;
+            /** Farthestdistance */
+            farthestDistance: number | null;
         };
         /** StableClusterCentroid */
         StableClusterCentroid: {

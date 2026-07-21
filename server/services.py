@@ -619,6 +619,47 @@ def dynamics_view(scale="eight", from_year=None, to_year=None, k=None):
     centroids["n"] = centroids.cluster.map(cluster_sizes).astype(int)
     profiles = [{"cluster": cluster, "n": len(group), "provinces": records(group[["province_vi", "region"]].sort_values("province_vi"))}
                 for cluster, group in clusters.groupby("cluster", observed=True)]
+    assignments = stable["assignments"]
+    changed_n = int(assignments.changed.sum())
+    retained_n = int(len(assignments) - changed_n)
+    retention_pct = float(retained_n / len(assignments))
+    farthest = assignments.loc[assignments.pca_distance.idxmax()]
+    transition_changes = [row for row in stable["transitions"] if row["from_cluster"] != row["to_cluster"]]
+    largest_transition = max(transition_changes, key=lambda row: row["n"], default=None)
+    label_rows = _indicator_rows(cfg["dims"])
+    short_labels = {row["code"]: row["short"] for row in label_rows}
+    profile_insights = []
+    for centroid in stable["centroids"]:
+        ordered = sorted(centroid["values"], key=lambda item: item["z_score"])
+        weak = ", ".join(short_labels.get(item["code"], item["code"]) for item in ordered[:2])
+        strong = ", ".join(short_labels.get(item["code"], item["code"]) for item in reversed(ordered[-2:]))
+        profile_insights.append({
+            "cluster": centroid["cluster"],
+            "text": (
+                f"Hồ sơ {centroid['cluster']} nổi bật ở {strong}, thấp hơn mặt bằng ở {weak}; "
+                f"có {centroid['n_end']} tỉnh tại mốc cuối."
+            ),
+        })
+    strongest_change = change_rows.iloc[0]
+    weakest_change = change_rows.iloc[-1]
+    strongest_label = "tăng nhiều nhất" if strongest_change.change >= 0 else "giảm ít nhất"
+    weakest_label = "giảm nhiều nhất" if weakest_change.change <= 0 else "tăng ít nhất"
+    change_insight = (
+        f"{strongest_change.province_vi} {strongest_label} ({_vi_number(strongest_change.change)}); "
+        f"{weakest_change.province_vi} {weakest_label} ({_vi_number(weakest_change.change)})."
+    )
+    pca_insight = (
+        f"{changed_n}/{len(assignments)} tỉnh đổi hồ sơ; {farthest.province_vi} dịch chuyển xa nhất "
+        f"trên mặt phẳng PCA ({_vi_number(farthest.pca_distance)})."
+    )
+    transition_insight = (
+        f"{_vi_number(retention_pct * 100)}% tỉnh giữ hồ sơ; "
+        + (
+            f"luồng chuyển lớn nhất là {largest_transition['from_cluster']} → {largest_transition['to_cluster']} "
+            f"với {largest_transition['n']} tỉnh."
+            if largest_transition else "không có luồng đổi hồ sơ trong mẫu này."
+        )
+    )
     return response({
         "measure": {"id": total, "label": cfg["label"], "unit": cfg["unit"]},
         "changes": _artifact(
@@ -643,8 +684,16 @@ def dynamics_view(scale="eight", from_year=None, to_year=None, k=None):
             "selectionMode": stable["selection_mode"], "silhouette": stable["silhouette"],
             "randomState": 42, "candidateScores": stable["candidates"],
             "pcaVariance": stable["pca_variance"],
-            "assignments": records(stable["assignments"]),
+            "assignments": records(assignments),
             "centroids": stable["centroids"], "transitions": stable["transitions"],
+            "changedN": changed_n, "changedPct": float(changed_n / len(assignments)),
+            "retainedN": retained_n, "retentionPct": retention_pct,
+            "farthestProvince": str(farthest.province_vi),
+            "farthestDistance": float(farthest.pca_distance),
+        },
+        "insights": {
+            "change": change_insight, "profiles": profile_insights,
+            "pca": pca_insight, "transition": transition_insight,
         },
     }, n=len(changes), filters={"scale": scale, "from": start, "to": end, "k": "auto" if k is None else k}, unit=cfg["unit"],
        caveats=["KMeans chuẩn hoá các lĩnh vực và dùng random_state=42; cụm không phải xếp hạng.", "Chỉ tỉnh đủ dữ liệu ở cả hai mốc mới có delta."])

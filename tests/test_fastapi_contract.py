@@ -216,7 +216,13 @@ def test_h4_delta_centroid_profile_parity_and_no_dynamic_year_keys(client):
     assert stable["selectionMode"] == "auto"
     assert 2 <= stable["selectedK"] <= 6
     assert sum(item["n"] for item in stable["transitions"]) == stable["n"]
+    assert sum(item["share"] for item in stable["transitions"]) == pytest.approx(1)
+    assert stable["changedN"] + stable["retainedN"] == stable["n"]
+    assert stable["changedPct"] + stable["retentionPct"] == pytest.approx(1)
+    assert stable["farthestDistance"] == pytest.approx(max(row["pcaDistance"] for row in stable["assignments"]))
     assert len(stable["pcaVariance"]) == 2
+    assert set(payload["data"]["insights"]) == {"change", "profiles", "pca", "transition"}
+    assert {item["cluster"] for item in payload["data"]["insights"]["profiles"]} == {item["cluster"] for item in stable["centroids"]}
 
 
 def test_focus_series_manual_k_and_product_defaults(client):
