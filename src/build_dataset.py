@@ -42,7 +42,8 @@ def clean(fact):
     zeros = fact[fact.score == 0]
     if len(zeros):
         z = zeros[zeros.code != "TOTAL"].merge(DIM_PROVINCE[["province_id","province_vi"]], on="province_id")
-        log(f"\n_Loại {len(zeros)} ô điểm = 0 (không hợp lệ, coi là thiếu):_ "
+        log(f"\n_Loại {len(zeros)} record = 0 ({len(z)} điểm lĩnh vực + {len(zeros) - len(z)} tổng; "
+            "không hợp lệ, coi là thiếu). Các điểm lĩnh vực:_ "
             + ", ".join(f"{r.province_vi}-{r.year}-{r.code}" for _, r in z.iterrows()))
     fact = fact[fact.score != 0].copy()
 

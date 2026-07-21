@@ -48,6 +48,13 @@ export const divergingScale: [number, string][] = [
   [0, uiColors.negative], [0.5, '#F0F2F1'], [1, uiColors.positive],
 ]
 
+export const quadrantColors: Record<string, string> = {
+  'Cao–cao': '#2C6E75',
+  'Cao–thấp': '#C18A45',
+  'Thấp–cao': '#7E6F9F',
+  'Thấp–thấp': '#8A9B9A',
+}
+
 export const basePlotLayout: Partial<Layout> = {
   autosize: true,
   paper_bgcolor: 'rgba(0,0,0,0)',

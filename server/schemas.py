@@ -172,6 +172,10 @@ class RankingRow(ScoreRow):
     rank: int
 
 
+class OverviewMapRow(ScoreRow):
+    rank: int
+
+
 class OverviewMetrics(ApiModel):
     mean: float | None
     min: float | None
@@ -183,6 +187,10 @@ class OverviewMetrics(ApiModel):
 
 class ScoreRowsArtifact(Artifact):
     rows: list[ScoreRow]
+
+
+class OverviewMapArtifact(Artifact):
+    rows: list[OverviewMapRow]
 
 
 class RankingArtifact(Artifact):
@@ -244,6 +252,24 @@ class TotalSeriesArtifact(Artifact):
     rows: list[TotalPoint]
 
 
+class AnnualChangeRow(ApiModel):
+    year: int
+    score: float | None
+    previous_score: float | None = Field(alias="previousScore")
+    change: float | None
+    contributor_n: int = Field(alias="contributorN", ge=0)
+    previous_contributor_n: int = Field(alias="previousContributorN", ge=0)
+    baseline: bool
+
+
+class AnnualChangeArtifact(Artifact):
+    rows: list[AnnualChangeRow]
+    largest_increase_year: int | None = Field(alias="largestIncreaseYear")
+    largest_increase: float | None = Field(alias="largestIncrease")
+    largest_decrease_year: int | None = Field(alias="largestDecreaseYear")
+    largest_decrease: float | None = Field(alias="largestDecrease")
+
+
 class DimensionSeriesArtifact(Artifact):
     rows: list[DimensionPoint]
 
@@ -275,6 +301,21 @@ class RegionalYearOverYearPoint(RegionalPoint):
 
 class RegionalYearOverYearArtifact(Artifact):
     rows: list[RegionalYearOverYearPoint]
+
+
+class RegionalRankPoint(RegionalPoint):
+    rank: int
+
+
+class RegionalRankArtifact(Artifact):
+    rows: list[RegionalRankPoint]
+
+
+class TrendInsights(ApiModel):
+    total: str
+    regional_year_over_year: str = Field(alias="regionalYearOverYear")
+    regional_rank: str = Field(alias="regionalRank")
+    dimensions: str
 
 
 class FocusPoint(ApiModel):
@@ -311,8 +352,10 @@ class TrendsData(ApiModel):
     heatmap: DimensionSeriesArtifact
     regional_series: RegionalSeriesArtifact = Field(alias="regionalSeries")
     regional_year_over_year: RegionalYearOverYearArtifact = Field(alias="regionalYearOverYear")
+    regional_ranks: RegionalRankArtifact = Field(alias="regionalRanks")
     selected_series: FocusSeriesArtifact = Field(alias="selectedSeries")
     turning_points: TurningPointArtifact = Field(alias="turningPoints")
+    insights: TrendInsights
 
 
 class TrendsResponse(ApiModel):
@@ -322,12 +365,16 @@ class TrendsResponse(ApiModel):
 
 class DistributionRow(ScoreRow):
     year: int
+    rank: int = Field(ge=1)
 
 
 class RegionMeanRow(ApiModel):
     region: str
     mean_score: float | None = Field(alias="meanScore")
     median_score: float | None = Field(alias="medianScore")
+    q1: float | None
+    q3: float | None
+    iqr: float | None
     min_score: float | None = Field(alias="minScore")
     max_score: float | None = Field(alias="maxScore")
     n: int
@@ -341,6 +388,10 @@ class Benchmark(ApiModel):
     province_score: float | None = Field(alias="provinceScore")
     region_mean: float | None = Field(alias="regionMean")
     national_mean: float | None = Field(alias="nationalMean")
+    national_min: float | None = Field(alias="nationalMin")
+    national_max: float | None = Field(alias="nationalMax")
+    national_q1: float | None = Field(alias="nationalQ1")
+    national_q3: float | None = Field(alias="nationalQ3")
     vs_region: float | None = Field(alias="vsRegion")
     vs_national: float | None = Field(alias="vsNational")
     region_n: int = Field(alias="regionN")
@@ -379,6 +430,13 @@ class ProvinceAvailability(ApiModel):
     provinces: list[str]
 
 
+class ProvinceInsights(ApiModel):
+    distribution: str
+    ranking: str
+    benchmark: str
+    profile: str
+
+
 class ProvincesData(ApiModel):
     measure: Measure
     distribution: DistributionArtifact
@@ -387,6 +445,7 @@ class ProvincesData(ApiModel):
     benchmark: Benchmark
     profile: ProfileArtifact
     availability: ProvinceAvailability
+    insights: ProvinceInsights
 
 
 class ProvincesResponse(ApiModel):
@@ -398,6 +457,8 @@ class CorrelationArtifact(Artifact):
     n: int
     codes: list[str]
     matrix: list[list[float | None]]
+    counts: list[list[int]]
+    strengths: list[list[str]]
 
 
 class PairRow(ApiModel):
@@ -422,6 +483,8 @@ class StdRow(ApiModel):
     code: str
     mean_score: float | None = Field(alias="meanScore")
     std_score: float | None = Field(alias="stdScore")
+    min_score: float | None = Field(alias="minScore")
+    max_score: float | None = Field(alias="maxScore")
     n: int
 
 
@@ -454,6 +517,13 @@ class DimensionAvailability(ApiModel):
     dimensions: list[str]
 
 
+class DimensionInsights(ApiModel):
+    correlation: str
+    pair: str
+    residual: str
+    variation: str
+
+
 class DimensionsData(ApiModel):
     availability: DimensionAvailability
     correlation: CorrelationArtifact
@@ -461,6 +531,7 @@ class DimensionsData(ApiModel):
     standard_deviation: StdArtifact = Field(alias="standardDeviation")
     regression: RegressionArtifact
     labels: list[Indicator]
+    insights: DimensionInsights
 
 
 class DimensionsResponse(ApiModel):
@@ -482,6 +553,50 @@ class ChangesArtifact(Artifact):
     rows: list[ChangeRow]
     top8: list[ChangeRow]
     bottom8: list[ChangeRow]
+
+
+class QuadrantSummaryRow(ApiModel):
+    label: str
+    n: int = Field(ge=0)
+    percentage: float = Field(ge=0, le=100)
+    provinces: list[str]
+
+
+class QuadrantSummaryArtifact(Artifact):
+    n: int = Field(ge=0)
+    x: str
+    y: str
+    pearson_r: float | None = Field(alias="pearsonR")
+    rows: list[QuadrantSummaryRow]
+
+
+class HistogramBin(ApiModel):
+    lower: float
+    upper: float
+    center: float
+    count: int = Field(ge=0)
+    percentage: float = Field(ge=0, le=100)
+    provinces: list[str]
+
+
+class ChangeDistributionArtifact(Artifact):
+    n: int = Field(ge=0)
+    from_year: int = Field(alias="fromYear")
+    to_year: int = Field(alias="toYear")
+    median: float | None
+    positive_n: int = Field(alias="positiveN", ge=0)
+    negative_n: int = Field(alias="negativeN", ge=0)
+    unchanged_n: int = Field(alias="unchangedN", ge=0)
+    positive_percentage: float = Field(alias="positivePercentage", ge=0, le=100)
+    bins: list[HistogramBin]
+    rows: list[ChangeRow]
+
+
+class OverviewInsights(ApiModel):
+    map: str
+    annual_change: str = Field(alias="annualChange")
+    quadrants: str
+    change_distribution: str = Field(alias="changeDistribution")
 
 
 class ClusterRow(ApiModel):
@@ -546,6 +661,7 @@ class ClusterAssignment(ApiModel):
     start_pc2: float | None = Field(alias="startPc2")
     end_pc1: float | None = Field(alias="endPc1")
     end_pc2: float | None = Field(alias="endPc2")
+    pca_distance: float | None = Field(alias="pcaDistance")
 
 
 class ClusterCentroidValue(ApiModel):
@@ -566,6 +682,7 @@ class ClusterTransition(ApiModel):
     from_cluster: str = Field(alias="fromCluster")
     to_cluster: str = Field(alias="toCluster")
     n: int = Field(ge=1)
+    share: float = Field(ge=0, le=1)
     provinces: list[str]
 
 
@@ -580,6 +697,24 @@ class StableClusterArtifact(Artifact):
     assignments: list[ClusterAssignment]
     centroids: list[StableClusterCentroid]
     transitions: list[ClusterTransition]
+    changed_n: int = Field(alias="changedN", ge=0)
+    changed_pct: float = Field(alias="changedPct", ge=0, le=1)
+    retained_n: int = Field(alias="retainedN", ge=0)
+    retention_pct: float = Field(alias="retentionPct", ge=0, le=1)
+    farthest_province: str = Field(alias="farthestProvince")
+    farthest_distance: float | None = Field(alias="farthestDistance")
+
+
+class DynamicsProfileInsight(ApiModel):
+    cluster: str
+    text: str
+
+
+class DynamicsInsights(ApiModel):
+    change: str
+    profiles: list[DynamicsProfileInsight]
+    pca: str
+    transition: str
 
 
 class DynamicsData(ApiModel):
@@ -587,6 +722,7 @@ class DynamicsData(ApiModel):
     changes: ChangesArtifact
     clusters: ClusterArtifact
     cluster_model: StableClusterArtifact = Field(alias="clusterModel")
+    insights: DynamicsInsights
 
 
 class DynamicsResponse(ApiModel):
@@ -599,14 +735,18 @@ class OverviewStoryCards(ApiModel):
     regions: RegionMeanArtifact
     strongest_pair: PairArtifact = Field(alias="strongestPair")
     change_highlights: ChangesArtifact = Field(alias="changeHighlights")
+    annual_changes: AnnualChangeArtifact = Field(alias="annualChanges")
+    quadrants: QuadrantSummaryArtifact
+    change_distribution: ChangeDistributionArtifact = Field(alias="changeDistribution")
 
 
 class OverviewData(ApiModel):
     measure: Measure
     metrics: OverviewMetrics
-    map: ScoreRowsArtifact
+    map: OverviewMapArtifact
     ranking: RankingArtifact
     story_cards: OverviewStoryCards = Field(alias="storyCards")
+    insights: OverviewInsights
 
 
 class OverviewResponse(ApiModel):

@@ -1,0 +1,32 @@
+\documentclass[aspectratio=169]{beamer}
+
+\setbeamertemplate{navigation symbols}{}
+
+\input{preamble/packages}
+\input{preamble/settings}
+\graphicspath{{img/}{../report/img/}{../report/img/autoregressive_world_modeling_and_planning/}}
+\input{content/0-title}
+
+%-------------------------------------
+\begin{document}
+
+\begin{frame}
+  \titlepage
+  \vspace{-0.5cm}
+  \centering
+\end{frame}
+
+\boolfalse{showsectnum}
+\begin{frame}[t]{Mục lục}
+  \tableofcontents[subsectionstyle=hide]
+\end{frame}
+\booltrue{showsectnum}
+
+%-------------------------------------
+
+
+\boolfalse{showtocatsection}
+\section{Tài liệu tham khảo}
+\input{ref/ref}
+
+\end{document}

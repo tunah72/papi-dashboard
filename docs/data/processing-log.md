@@ -20,7 +20,7 @@ _Chạy lúc: 2026-06-16 11:59_
 | 2023 | 2023PAPI_ProvincialIndicators_BangChiTieuC | 63 | 8 | có | 549 |
 | 2024 | 2024PAPI_ProvincialIndicators_BangChiTieuC | 63 | 8 | có | 567 |
 
-_Loại 28 ô điểm = 0 (không hợp lệ, coi là thiếu):_ Bắc Giang-2022-D1, Bắc Giang-2022-D2, Bắc Ninh-2022-D2, Bắc Ninh-2022-D3, Bắc Giang-2022-D4, Bắc Ninh-2022-D4, Bắc Giang-2022-D5, Bắc Ninh-2022-D8, Vĩnh Phúc-2024-D1, Tiền Giang-2024-D1, Vĩnh Phúc-2024-D2, Tiền Giang-2024-D2, Vĩnh Phúc-2024-D3, Tiền Giang-2024-D3, Vĩnh Phúc-2024-D4, Tiền Giang-2024-D4, Vĩnh Phúc-2024-D5, Tiền Giang-2024-D5, Vĩnh Phúc-2024-D6, Tiền Giang-2024-D6, Vĩnh Phúc-2024-D7, Tiền Giang-2024-D7, Vĩnh Phúc-2024-D8, Tiền Giang-2024-D8
+_Loại 28 record = 0 (24 điểm lĩnh vực + 4 tổng; không hợp lệ, coi là thiếu). Các điểm lĩnh vực:_ Bắc Giang-2022-D1, Bắc Giang-2022-D2, Bắc Ninh-2022-D2, Bắc Ninh-2022-D3, Bắc Giang-2022-D4, Bắc Ninh-2022-D4, Bắc Giang-2022-D5, Bắc Ninh-2022-D8, Vĩnh Phúc-2024-D1, Tiền Giang-2024-D1, Vĩnh Phúc-2024-D2, Tiền Giang-2024-D2, Vĩnh Phúc-2024-D3, Tiền Giang-2024-D3, Vĩnh Phúc-2024-D4, Tiền Giang-2024-D4, Vĩnh Phúc-2024-D5, Tiền Giang-2024-D5, Vĩnh Phúc-2024-D6, Tiền Giang-2024-D6, Vĩnh Phúc-2024-D7, Tiền Giang-2024-D7, Vĩnh Phúc-2024-D8, Tiền Giang-2024-D8
 
 ## Bước 2 — Làm sạch tối thiểu
 - Tách TOTAL khỏi fact; fact chỉ giữ 8 trục.

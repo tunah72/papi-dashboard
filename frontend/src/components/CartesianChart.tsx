@@ -18,24 +18,28 @@ type Props = {
   layout?: Partial<Layout>
   height?: number
   children?: ReactNode
-  onClick?: (event: { points?: Array<{ pointIndex?: number | number[]; pointNumber?: number | number[]; x?: unknown; y?: unknown; customdata?: unknown }> }) => void
+  onClick?: (event: { points?: Array<{ curveNumber?: number; pointIndex?: number | number[]; pointNumber?: number | number[]; x?: unknown; y?: unknown; customdata?: unknown }> }) => void
+  onHover?: (event: { points?: Array<{ curveNumber?: number; pointIndex?: number | number[]; pointNumber?: number | number[]; x?: unknown; y?: unknown; customdata?: unknown }> }) => void
+  onUnhover?: () => void
+  onSelected?: (event: { points?: Array<{ pointIndex?: number | number[]; pointNumber?: number | number[]; x?: unknown; y?: unknown; customdata?: unknown }> }) => void
+  config?: Partial<Config>
   className?: string
 }
 
 /** Biểu đồ 2D dùng bundle Plotly Cartesian, tách khỏi bundle bản đồ địa lý. */
-export function CartesianChart({ title, summary, data, layout = {}, height = 360, children, onClick, className }: Props) {
+export function CartesianChart({ title, summary, data, layout = {}, height = 360, children, onClick, onHover, onUnhover, onSelected, config, className }: Props) {
   const baseLayout: Partial<Layout> = {
     ...basePlotLayout,
     ...layout,
     xaxis: { ...basePlotLayout.xaxis, ...layout.xaxis },
     yaxis: { ...basePlotLayout.yaxis, ...layout.yaxis },
   }
-  const config: Partial<Config> = { displayModeBar: false, responsive: true, showTips: false }
+  const plotConfig: Partial<Config> = { displayModeBar: false, responsive: true, showTips: false, ...config }
   return <figure className={`cartesian-chart${className ? ` ${className}` : ''}`} aria-label={title}>
     <figcaption><strong>{title}</strong><p>{summary}</p></figcaption>
     <div role="img" aria-label={`${title}. ${summary}`}>
       <Suspense fallback={<div className="chart-fallback" role="status" aria-live="polite" aria-label={`Đang tải ${title}`} />}>
-        <Plot data={data} layout={baseLayout} config={config} style={{ width: '100%', height }} useResizeHandler onClick={onClick} />
+        <Plot data={data} layout={baseLayout} config={plotConfig} style={{ width: '100%', height }} useResizeHandler onClick={onClick} onHover={onHover} onUnhover={onUnhover} onSelected={onSelected} />
       </Suspense>
     </div>
     {children && <details className="chart-table"><summary>Xem bảng tóm tắt</summary>{children}</details>}

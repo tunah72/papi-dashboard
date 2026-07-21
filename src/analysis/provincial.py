@@ -26,9 +26,18 @@ def region_summary(snapshot, total_col, region_order=None):
     """
     summary = (
         snapshot.groupby("region", observed=True)[total_col]
-        .agg(mean_score="mean", median_score="median", min_score="min", max_score="max", n_provinces="count")
+        .agg(
+            mean_score="mean",
+            median_score="median",
+            q1=lambda values: values.quantile(0.25),
+            q3=lambda values: values.quantile(0.75),
+            min_score="min",
+            max_score="max",
+            n_provinces="count",
+        )
         .reset_index()
     )
+    summary["iqr"] = summary["q3"] - summary["q1"]
     summary["spread"] = summary["max_score"] - summary["min_score"]
     if region_order:
         summary["region"] = pd.Categorical(summary["region"], categories=region_order, ordered=True)
@@ -42,7 +51,7 @@ def ranking_in_region(snapshot, region, total_col):
         .sort_values([total_col, "province_vi"], ascending=[False, True])
         .reset_index(drop=True)
     )
-    ranked["rank_region"] = ranked.index + 1
+    ranked["rank_region"] = ranked[total_col].rank(method="min", ascending=False).astype(int)
     return ranked
 
 

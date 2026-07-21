@@ -52,8 +52,12 @@ def test_openapi_uses_concrete_response_models_not_generic_free_form_data(client
         assert schema["$ref"].endswith(f"/{model}")
     schemas = openapi["components"]["schemas"]
     assert "DashboardResponse" not in schemas
-    assert schemas["OverviewData"]["properties"]["map"]["$ref"].endswith("/ScoreRowsArtifact")
+    assert schemas["OverviewData"]["properties"]["map"]["$ref"].endswith("/OverviewMapArtifact")
+    assert schemas["OverviewStoryCards"]["properties"]["annualChanges"]["$ref"].endswith("/AnnualChangeArtifact")
+    assert schemas["OverviewStoryCards"]["properties"]["quadrants"]["$ref"].endswith("/QuadrantSummaryArtifact")
+    assert schemas["OverviewStoryCards"]["properties"]["changeDistribution"]["$ref"].endswith("/ChangeDistributionArtifact")
     assert schemas["TrendsData"]["properties"]["covid"]["$ref"].endswith("/CovidArtifact")
+    assert schemas["TrendsData"]["properties"]["regionalRanks"]["$ref"].endswith("/RegionalRankArtifact")
     assert schemas["DynamicsData"]["properties"]["clusters"]["$ref"].endswith("/ClusterArtifact")
     assert schemas["DynamicsData"]["properties"]["clusterModel"]["$ref"].endswith("/StableClusterArtifact")
 
@@ -96,10 +100,12 @@ def test_semantic_artifacts_contributors_and_bool_are_typed(client):
     assert payload["meta"]["n"] == 430  # valid province-year total observations, not seven annual rows
     for key in (
         "totalSeries", "dimensionSeries", "dimensionDeltas", "covid", "heatmap",
-        "regionalSeries", "regionalYearOverYear", "selectedSeries", "turningPoints",
+        "regionalSeries", "regionalYearOverYear", "regionalRanks", "selectedSeries", "turningPoints",
     ):
         _artifact(payload["data"][key])
     assert payload["data"]["totalSeries"]["rowCount"] == 7
+    assert set(payload["data"]["insights"]) == {"total", "regionalYearOverYear", "regionalRank", "dimensions"}
+    assert all(1 <= row["rank"] <= 6 for row in payload["data"]["regionalRanks"]["rows"])
     assert all(point["contributorN"] > 0 for point in payload["data"]["totalSeries"]["rows"])
     assert isinstance(payload["data"]["covid"]["available"], bool)
     assert payload["data"]["covid"]["available"] is True
@@ -115,6 +121,19 @@ def test_overview_trends_and_geojson_numeric_parity(client):
     assert overview["data"]["storyCards"]["trend"]["rowCount"] == 14
     assert overview["data"]["storyCards"]["regions"]["rowCount"] == 6
     assert overview["data"]["storyCards"]["strongestPair"]["pearsonR"] is not None
+    assert overview["data"]["map"]["rows"][0]["rank"] == 1
+    annual = overview["data"]["storyCards"]["annualChanges"]
+    assert annual["rows"][0]["baseline"] is True
+    assert annual["rows"][1]["change"] == pytest.approx(
+        annual["rows"][1]["score"] - annual["rows"][0]["score"], abs=1e-9
+    )
+    quadrants = overview["data"]["storyCards"]["quadrants"]
+    assert sum(row["n"] for row in quadrants["rows"]) == quadrants["n"]
+    assert sum(row["percentage"] for row in quadrants["rows"]) == pytest.approx(100, abs=1e-9)
+    distribution = overview["data"]["storyCards"]["changeDistribution"]
+    assert sum(row["count"] for row in distribution["bins"]) == distribution["n"]
+    assert distribution["positiveN"] + distribution["negativeN"] + distribution["unchangedN"] == distribution["n"]
+    assert set(overview["data"]["insights"]) == {"map", "annualChange", "quadrants", "changeDistribution"}
 
     api_trends = client.get("/api/v1/trends?scale=eight&from=2018&to=2024").json()
     reference = trend.total_by_year(d["prov_year"], "total_papi", 2018, 2024)
@@ -142,6 +161,12 @@ def test_h2_benchmark_and_profile_parity_and_province_only_filter(client):
     assert all(row["regionN"] > 0 and row["nationalN"] > 0 for row in province_only["data"]["profile"]["rows"])
     assert province_only["data"]["benchmark"]["rankRegion"] >= 1
     assert province_only["data"]["benchmark"]["regionTotal"] == len(region_only["data"]["ranking"]["rows"])
+    assert province_only["data"]["benchmark"]["nationalMin"] <= province_only["data"]["benchmark"]["nationalQ1"]
+    assert province_only["data"]["benchmark"]["nationalQ1"] <= province_only["data"]["benchmark"]["nationalQ3"]
+    assert province_only["data"]["benchmark"]["nationalQ3"] <= province_only["data"]["benchmark"]["nationalMax"]
+    assert set(province_only["data"]["insights"]) == {"distribution", "ranking", "benchmark", "profile"}
+    assert all({"q1", "q3", "iqr"} <= set(row) for row in province_only["data"]["regionMeans"]["rows"])
+    assert all(row["rank"] >= 1 for row in province_only["data"]["distribution"]["rows"])
     _artifact(province_only["data"]["distribution"])
     _artifact(province_only["data"]["regionMeans"])
     _artifact(province_only["data"]["ranking"])
@@ -161,8 +186,12 @@ def test_h3_matrix_quadrant_std_parity_and_partial_dimension_filters(client):
     std = dimensions.summaries(snap, services.SCALES["eight"]["dims"])
     assert payload["data"]["correlation"]["unit"] == "không đơn vị"
     assert payload["data"]["correlation"]["matrix"][0][1] == pytest.approx(matrix.iloc[0, 1], abs=1e-9)
+    assert payload["data"]["correlation"]["counts"][0][1] == int(snap[["D1", "D2"]].dropna().shape[0])
+    assert payload["data"]["correlation"]["strengths"][0][1] == dimensions.correlation_strength(matrix.iloc[0, 1])
     assert payload["data"]["pair"]["rows"][0]["quadrant"] == pair.iloc[0].quadrant
     assert payload["data"]["standardDeviation"]["rows"][0]["stdScore"] == pytest.approx(std.iloc[0].std_score, abs=1e-9)
+    assert payload["data"]["standardDeviation"]["rows"][0]["n"] == int(snap.D1.notna().sum())
+    assert set(payload["data"]["insights"]) == {"correlation", "pair", "residual", "variation"}
     regression, slope, intercept, r_squared = dimensions.regression_snapshot(snap, "D1", "D2")
     assert payload["data"]["regression"]["slope"] == pytest.approx(slope, abs=1e-9)
     assert payload["data"]["regression"]["intercept"] == pytest.approx(intercept, abs=1e-9)
@@ -187,7 +216,13 @@ def test_h4_delta_centroid_profile_parity_and_no_dynamic_year_keys(client):
     assert stable["selectionMode"] == "auto"
     assert 2 <= stable["selectedK"] <= 6
     assert sum(item["n"] for item in stable["transitions"]) == stable["n"]
+    assert sum(item["share"] for item in stable["transitions"]) == pytest.approx(1)
+    assert stable["changedN"] + stable["retainedN"] == stable["n"]
+    assert stable["changedPct"] + stable["retentionPct"] == pytest.approx(1)
+    assert stable["farthestDistance"] == pytest.approx(max(row["pcaDistance"] for row in stable["assignments"]))
     assert len(stable["pcaVariance"]) == 2
+    assert set(payload["data"]["insights"]) == {"change", "profiles", "pca", "transition"}
+    assert {item["cluster"] for item in payload["data"]["insights"]["profiles"]} == {item["cluster"] for item in stable["centroids"]}
 
 
 def test_focus_series_manual_k_and_product_defaults(client):

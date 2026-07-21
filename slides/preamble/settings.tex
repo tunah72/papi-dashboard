@@ -1,0 +1,125 @@
+\usetheme{Madrid}
+\usecolortheme{default}
+\useinnertheme{circles}
+
+%------------- Đánh số công thức và Caption -------------
+\setbeamertemplate{equations}[numbered]
+\setbeamertemplate{caption}[numbered]
+\captionsetup{labelfont={color=black},textfont={color=black}}
+% \setbeamertemplate{frametitle}{}
+
+%------------- Màu nhận diện -------------
+\definecolor{Logo1}{HTML}{1B5E20}
+\definecolor{Logo2}{HTML}{3E2723}
+
+\setbeamercolor*{palette primary}{bg=Logo1, fg=white}
+\setbeamercolor*{palette secondary}{bg=Logo2, fg=white}
+\setbeamercolor*{palette tertiary}{bg=white, fg=Logo1}
+\setbeamercolor*{palette quaternary}{bg=Logo1,fg=white}
+\setbeamercolor{structure}{fg=Logo1}
+\setbeamercolor{section in toc}{fg=Logo1}
+\setbeamerfont{section in toc}{size=\small,series=\mdseries}
+\setbeamerfont{section number projected}{size=\small}
+
+%------------- Mục lục đầu mỗi section -------------
+\newbool{showtocatsection}
+\booltrue{showtocatsection}
+\makeatletter
+\AtBeginDocument{
+  \def\beamer@sectionintoc#1#2#3#4#5{%
+    \ifnum \c@tocdepth >0%
+    \ifnum #4=\beamer@showpartnumber%
+    {%
+      \beamer@saveanother%
+      \gdef\beamer@todo{}%
+      \beamer@slideinframe =#1\relax%
+      \expandafter \only \beamer@tocsections {\gdef \beamer@todo {%
+        \beamer@tempcount =#5\relax%
+        \advance \beamer@tempcount by\beamer@sectionadjust%
+        \ifnum \beamer@tempcount >0%
+          \ifnum \beamer@tempcount >\beamer@toclastsection%
+            \def \inserttocsectionnumber{}%
+          \else%
+            \edef \inserttocsectionnumber {\the \beamer@tempcount}%
+          \fi%
+        \else%
+          \def \inserttocsectionnumber{}%
+        \fi%
+        \def \inserttocsection {\hyperlink {Navigation#3}{#2}}%
+        \beamer@tocifnothide {\ifnum \c@section =#1\beamer@toc@cs \else \beamer@toc@os \fi }%
+        {%
+          \ifbeamer@pausesections \pause \fi%
+          \ifx \beamer@toc@ooss \beamer@hidetext \vskip 2.4ex \else \vskip 2.4ex \fi%
+          {\hbox {\vbox {\def \beamer@breakhere {\\}\beamer@tocact {\ifnum \c@section =#1\beamer@toc@cs \else \beamer@toc@os \fi }{section in toc}}}\par }%
+        }%
+      }}%
+      \beamer@restoreanother%
+    }%
+    \beamer@todo%
+    \fi%
+    \fi%
+  }
+}
+\makeatother
+\AtBeginSection[]{
+  \ifbool{showtocatsection}{
+    \boolfalse{showsectnum}
+    \begin{frame}[t]{Mục lục}
+      \tableofcontents[currentsection,subsectionstyle=hide]
+    \end{frame}
+    \booltrue{showsectnum}
+  }{}
+}
+
+% Căn đều (justify) toàn bộ các khối văn bản trong slide
+\apptocmd{\frame}{}{\justifying}{}
+\addtobeamertemplate{block begin}{}{\justifying}
+\makeatletter
+\apptocmd{\beamer@column}{\justifying}{}{}
+
+\newbool{showsectnum}
+\booltrue{showsectnum}
+
+% Tự động thêm frametitle từ subsection nếu slide chưa có tiêu đề
+\patchcmd{\endbeamer@frameslide}{\ifx\beamer@frametitle\@empty}{\iffalse}{}{\typeout{patch failed}}
+
+\setbeamertemplate{frametitle}
+{
+  \ifx\insertframetitle\@empty
+    \ifx\insertsubsection\@empty
+      % Empty title and no subsection - draw nothing
+    \else
+      \nointerlineskip%
+      \begin{beamercolorbox}[wd=\paperwidth,leftskip=0.3cm,rightskip=0.3cm,sep=0.3cm,dp=0.2ex]{frametitle}%
+        \usebeamerfont{frametitle}%
+        \ifbool{showsectnum}{%
+          \ifnumgreater{\value{section}}{0}{%
+            \thesection.%
+            \ifnumgreater{\value{subsection}}{0}{%
+              \thesubsection.%
+            }{}%
+            \ ~%
+          }{}%
+        }{}%
+        \insertsubsection%
+      \end{beamercolorbox}%
+    \fi
+  \else
+    \nointerlineskip%
+    \begin{beamercolorbox}[wd=\paperwidth,leftskip=0.3cm,rightskip=0.3cm,sep=0.3cm,dp=0.2ex]{frametitle}%
+      \usebeamerfont{frametitle}%
+      \ifbool{showsectnum}{%
+        \ifnumgreater{\value{section}}{0}{%
+          \thesection.%
+          \ifnumgreater{\value{subsection}}{0}{%
+            \thesubsection.%
+          }{}%
+          \ ~%
+        }{}%
+      }{}%
+      \insertframetitle%
+    \end{beamercolorbox}%
+  \fi
+}
+\makeatother
+

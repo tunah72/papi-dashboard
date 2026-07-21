@@ -1,5 +1,9 @@
 # Quy ước thiết kế Dashboard PAPI
 
+> **Legacy Streamlit:** tài liệu này mô tả design system của fallback trong `app/`. Đặc tả thiết kế
+> lại React hiện hành nằm tại [`../design/README.md`](../design/README.md) và có ưu tiên cho năm trang
+> Dashboard target. Không dùng composition/chart catalog bên dưới để ghi đè đặc tả React mới.
+
 Tài liệu chốt quy ước thiết kế để bốn trang phân tích trông như một sản phẩm. Phần lớn
 quy ước được **enforce bằng code** trong `app/lib/` và `.streamlit/config.toml`, nên thành
 viên chủ yếu chỉ thêm nội dung, không tự đặt style.

@@ -5,9 +5,9 @@ from sklearn.linear_model import LinearRegression
 
 
 def snapshot_for_year(prov_year, year, dims):
-    """Panel tỉnh cùng năm, chỉ giữ hàng đủ điểm cho các lĩnh vực đang so sánh."""
+    """Panel tỉnh cùng năm, giữ hàng có ít nhất một lĩnh vực để thống kê pairwise."""
     cols = ["province_vi", "region", "year", *dims]
-    return prov_year.loc[prov_year.year.eq(year), cols].dropna(subset=dims).copy()
+    return prov_year.loc[prov_year.year.eq(year), cols].dropna(subset=dims, how="all").copy()
 
 
 def correlation_matrix(snapshot, dims):
@@ -15,10 +15,22 @@ def correlation_matrix(snapshot, dims):
     return snapshot[dims].corr().reindex(index=dims, columns=dims)
 
 
+def correlation_counts(snapshot, dims):
+    """Số tỉnh đủ dữ liệu cho từng cặp Pearson trong cùng snapshot."""
+    available = snapshot[dims].notna().astype(int)
+    return available.T.dot(available).reindex(index=dims, columns=dims).astype(int)
+
+
 def summaries(snapshot, dims):
     """Trung bình và độ lệch chuẩn liên tỉnh của từng lĩnh vực."""
-    out = pd.DataFrame({"code": dims, "mean_score": [snapshot[c].mean() for c in dims],
-                        "std_score": [snapshot[c].std() for c in dims]})
+    out = pd.DataFrame({
+        "code": dims,
+        "mean_score": [snapshot[c].mean() for c in dims],
+        "std_score": [snapshot[c].std() for c in dims],
+        "min_score": [snapshot[c].min() for c in dims],
+        "max_score": [snapshot[c].max() for c in dims],
+        "n": [int(snapshot[c].notna().sum()) for c in dims],
+    })
     return out
 
 
