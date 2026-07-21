@@ -5,16 +5,18 @@ import type { AssistantExecutionResponse, AssistantMessageResponse } from '../ap
 export type UserTurn = { id: string; role: 'user'; text: string }
 export type AssistantTurn = { id: string; role: 'assistant'; response: AssistantMessageResponse; superseded?: boolean; execution?: AssistantExecutionResponse }
 export type ConversationTurn = UserTurn | AssistantTurn
-export type AssistantMode = 'hidden' | 'minimized' | 'open'
+export type AssistantMode = 'hidden' | 'open'
 
 type AssistantState = {
   mode: AssistantMode
+  isMaximized: boolean
   sessionId: string | null
   turns: ConversationTurn[]
   revisionOf: string | null
   busy: 'message' | 'execution' | null
   error: string | null
   setMode: (mode: AssistantMode) => void
+  setMaximized: (isMaximized: boolean) => void
   setSessionId: (sessionId: string) => void
   addUser: (text: string) => void
   addResponse: (response: AssistantMessageResponse) => void
@@ -28,8 +30,9 @@ type AssistantState = {
 const id = () => globalThis.crypto?.randomUUID?.() ?? `${Date.now()}-${Math.random()}`
 
 export const useAssistantStore = create<AssistantState>()(persist((set) => ({
-  mode: 'hidden', sessionId: null, turns: [], revisionOf: null, busy: null, error: null,
+  mode: 'hidden', isMaximized: false, sessionId: null, turns: [], revisionOf: null, busy: null, error: null,
   setMode: (mode) => set({ mode }),
+  setMaximized: (isMaximized) => set({ isMaximized }),
   setSessionId: (sessionId) => set({ sessionId }),
   addUser: (text) => set((state) => ({ turns: [...state.turns, { id: id(), role: 'user', text }] })),
   addResponse: (response) => set((state) => ({
@@ -49,5 +52,10 @@ export const useAssistantStore = create<AssistantState>()(persist((set) => ({
 }), {
   name: 'papi.floating-assistant',
   storage: createJSONStorage(() => sessionStorage),
-  partialize: (state) => ({ mode: state.mode, sessionId: state.sessionId, turns: state.turns, revisionOf: state.revisionOf }),
+  version: 2,
+  migrate: (persistedState) => {
+    const persisted = persistedState as Partial<AssistantState>
+    return { ...persisted, mode: persisted.mode === 'open' ? 'open' : 'hidden', isMaximized: Boolean(persisted.isMaximized) } as AssistantState
+  },
+  partialize: (state) => ({ mode: state.mode, isMaximized: state.isMaximized, sessionId: state.sessionId, turns: state.turns, revisionOf: state.revisionOf }),
 }))

@@ -119,7 +119,7 @@ export function Provincial() {
   const rankingData: Data[] = [{
     type: 'scatter', mode: 'text+markers', name: 'Tỉnh trong vùng', x: ranking.map((row) => row.score), y: ranking.map((row) => row.provinceVi),
     text: ranking.map((row) => rankLabelMode === 'value' ? value(row.score) : `Hạng ${row.rankRegion}`),
-    textposition: ranking.map((row) => row.provinceVi === f.province ? 'middle left' : 'middle right'),
+    textposition: 'middle right', cliponaxis: false,
     customdata: ranking.map((row) => [row.provinceVi, row.rankRegion]),
     marker: {
       color: ranking.map((row) => row.provinceVi === f.province ? uiColors.primary : '#9CB8B3'),
@@ -136,7 +136,7 @@ export function Provincial() {
   ] as const
   const bulletData: Data[] = [{
     type: 'scatter', mode: 'text+markers', x: bulletRows.map((row) => row.score), y: bulletRows.map((row) => row.label),
-    text: bulletRows.map((row) => value(row.score)), textposition: bulletRows.map((row) => row.id === 'province' ? 'middle left' : 'middle right'),
+    text: bulletRows.map((row) => value(row.score)), textposition: 'top center', cliponaxis: false,
     customdata: bulletRows.map((row) => [row.id, row.label, row.n, row.delta]),
     marker: { symbol: bulletRows.map((row) => row.symbol), color: bulletRows.map((row) => row.color), size: [17, 13, 14], line: { width: 2 } },
     hovertemplate: '<b>%{customdata[1]}</b><br>%{x:.2f} điểm · n = %{customdata[2]}<br>Chênh với tỉnh: %{customdata[3]:+.2f}<extra></extra>', showlegend: false,

@@ -34,16 +34,19 @@
 .assistant-launcher { position: fixed; right: 1.5rem; bottom: 1.5rem; width: 3.5rem; height: 3.5rem; padding: 0; display: grid; place-items: center; border: 1px solid rgb(255 255 255 / 18%); border-radius: 50%; color: #fff; background: var(--sidebar); box-shadow: 0 10px 28px rgb(23 49 58 / 24%); pointer-events: auto; transition: transform 160ms ease, background 160ms ease, box-shadow 160ms ease; }
 .assistant-launcher:hover { background: var(--accent-dark); transform: translateY(-2px); box-shadow: 0 14px 32px rgb(23 49 58 / 30%); }
 .assistant-launcher svg { width: 1.65rem; height: 1.65rem; }
-.assistant-pill { position: fixed; right: 1.5rem; bottom: 5.75rem; min-height: 2.75rem; padding: 0.55rem 0.85rem; display: flex; align-items: center; gap: 0.55rem; border: 1px solid var(--line-strong); border-radius: 999px; color: var(--ink); background: var(--surface); box-shadow: var(--shadow); font-size: 0.78rem; font-weight: 700; pointer-events: auto; }
-.assistant-pill span { width: 0.55rem; height: 0.55rem; border-radius: 50%; background: var(--positive); box-shadow: 0 0 0 4px var(--accent-wash); }
 .assistant-dialog { position: fixed; right: 1.5rem; bottom: 5.75rem; width: clamp(26.25rem, 31vw, 28.75rem); height: min(42.5rem, calc(100dvh - 7rem)); display: grid; grid-template-rows: auto minmax(0, 1fr) auto; overflow: hidden; border: 1px solid var(--line-strong); border-radius: 1rem; color: var(--text); background: var(--surface); box-shadow: 0 24px 70px rgb(23 49 58 / 22%); pointer-events: auto; }
+.assistant-dialog.is-maximized { inset: 1.5rem 1.5rem 1.5rem 17rem; width: auto; height: auto; }
+.app-frame.sidebar-collapsed .assistant-dialog.is-maximized { left: 6rem; }
+.floating-assistant[data-maximized="true"] .assistant-launcher { visibility: hidden; opacity: 0; pointer-events: none; }
 .assistant-header { min-height: 4.5rem; padding: 0.8rem 0.9rem; display: flex; align-items: center; justify-content: space-between; gap: 0.75rem; border-bottom: 1px solid var(--line); background: var(--surface); }
 .assistant-header h2 { margin: 0; color: var(--ink); font-size: 1.05rem; letter-spacing: -0.02em; }
 .assistant-header p { margin: 0.15rem 0 0; color: var(--muted); font-size: 0.72rem; }
 .assistant-header-actions { display: flex; align-items: center; gap: 0.25rem; }
 .assistant-header-actions button { min-width: 2.75rem; min-height: 2.75rem; padding: 0.4rem 0.55rem; border: 1px solid transparent; border-radius: var(--radius-control); color: var(--accent-dark); background: transparent; font-size: 0.72rem; font-weight: 700; }
 .assistant-header-actions button:hover { border-color: var(--line); background: var(--surface-muted); }
+.assistant-header-actions .assistant-new-conversation { font-size: 1.15rem; line-height: 1; }
 .assistant-header-actions button:last-child { font-size: 1rem; }
+.assistant-header-actions svg { width: 1.1rem; height: 1.1rem; display: block; fill: none; stroke: currentColor; stroke-width: 1.8; stroke-linecap: round; stroke-linejoin: round; }
 .assistant-conversation { min-height: 0; padding: 1rem; overflow-y: auto; overscroll-behavior: contain; background: linear-gradient(180deg, var(--surface-muted), #f8faf9 8rem); }
 .assistant-empty { padding: 1rem; border-left: 3px solid var(--accent); background: var(--surface); }
 .assistant-empty strong { color: var(--ink); font-size: 0.9rem; }
@@ -85,15 +88,20 @@
 .assistant-composer > div button:disabled { cursor: not-allowed; opacity: 0.45; }
 .assistant-composer > small { display: block; margin-top: 0.35rem; color: var(--muted); font-size: 0.62rem; }
 
+@media (max-width: 1023px) {
+  .assistant-dialog.is-maximized { left: 6rem; }
+}
+
 @media (max-width: 767px) {
   .assistant-launcher { right: 1rem; bottom: calc(1rem + env(safe-area-inset-bottom)); }
-  .assistant-pill { right: 1rem; bottom: calc(5.25rem + env(safe-area-inset-bottom)); max-width: calc(100vw - 2rem); }
   .assistant-dialog { right: 1rem; bottom: calc(5.25rem + env(safe-area-inset-bottom)); width: calc(100vw - 2rem); height: min(88dvh, calc(100dvh - 6.25rem - env(safe-area-inset-bottom))); border-radius: 0.9rem; }
+  .assistant-dialog.is-maximized { inset: 0.5rem 0.5rem calc(0.5rem + env(safe-area-inset-bottom)); width: auto; height: auto; border-radius: 0.75rem; }
   .assistant-header, .assistant-composer { position: relative; z-index: 1; }
 }
 
 @media (max-width: 420px) {
   .assistant-dialog { right: 0.5rem; bottom: calc(4.9rem + env(safe-area-inset-bottom)); width: calc(100vw - 1rem); height: min(86dvh, calc(100dvh - 5.6rem - env(safe-area-inset-bottom))); }
+  .assistant-dialog.is-maximized { inset: 0.35rem 0.35rem calc(0.35rem + env(safe-area-inset-bottom)); width: auto; height: auto; }
   .assistant-header { padding-inline: 0.7rem; }
   .assistant-header-actions button { min-width: 2.75rem; padding-inline: 0.35rem; }
   .assistant-proposal-actions { grid-template-columns: 1fr; }

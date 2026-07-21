@@ -4,8 +4,11 @@
 
 1. Mở từng route phân tích và click launcher `Mở Trợ lý AI`.
 2. Kiểm tra panel mở tại chỗ, chart grid không đổi kích thước và Network không có POST assistant.
-3. Thu nhỏ thành pill, mở lại, Đóng rồi mở lại; câu hỏi/kết quả cũ phải còn.
+3. Xác nhận header không còn nút Thu nhỏ trùng chức năng; Đóng rồi mở lại và kiểm tra câu hỏi/kết quả
+   cũ vẫn còn.
 4. Mở `/ai-assistant`; URL phải thành `/overview?assistant=open` và panel mở.
+5. Phóng to panel, kiểm tra chart grid không đổi; `Esc` lần đầu khôi phục kích thước và `Esc` lần hai
+   đóng panel, trả focus về launcher.
 
 ## 2. Câu hỏi kiến thức
 
@@ -30,4 +33,5 @@ hoặc proposal.
 
 Kiểm ở 1440×900, 1024×768, 390×844, keyboard-only, zoom 200% và reduced motion. Launcher/panel không
 gây horizontal overflow; mobile có safe area; header/composer còn nhìn thấy; conversation cuộn độc lập.
-`Esc` đóng panel và trả focus về launcher. Click ngoài không làm mất hoặc đóng state.
+Ở kích thước mặc định, `Esc` đóng panel và trả focus về launcher. Khi phóng to, `Esc` đầu tiên khôi phục
+kích thước. Click ngoài không làm mất hoặc đóng state.

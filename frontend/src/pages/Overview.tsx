@@ -135,10 +135,10 @@ function QuadrantView({ rows, pairLabel, pearsonR, height, hovered, onHover, onS
     layout={{
       barmode: 'stack', barnorm: 'percent', showlegend: false,
       uniformtext: { minsize: 10, mode: 'hide' },
-      margin: { l: 16, r: 16, t: 44, b: 42 },
+      margin: { l: 16, r: 16, t: 52, b: 42 },
       xaxis: { range: [0, 100], ticksuffix: '%', title: { text: 'Tỷ lệ tỉnh' } },
       yaxis: { visible: false },
-      annotations: [{ x: 0.5, y: 1.16, xref: 'paper', yref: 'paper', showarrow: false, text: `r = <b>${metric(pearsonR)}</b>`, font: { color: uiColors.ink, size: 13 } }],
+      annotations: [{ x: 0.5, y: 1.08, xref: 'paper', yref: 'paper', showarrow: false, text: `r = <b>${metric(pearsonR)}</b>`, font: { color: uiColors.ink, size: 13 } }],
     } as Partial<Layout>}
   ><QuadrantTable rows={rows} /></CartesianChart>
 }

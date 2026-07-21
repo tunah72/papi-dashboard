@@ -1,4 +1,4 @@
-import { fireEvent, render, screen, waitFor } from '@testing-library/react'
+import { act, fireEvent, render, screen, waitFor } from '@testing-library/react'
 import { MemoryRouter } from 'react-router-dom'
 import { afterEach, beforeEach, expect, it, vi } from 'vitest'
 import { FloatingAssistant } from './FloatingAssistant'
@@ -8,19 +8,40 @@ const renderAssistant = (route = '/overview?scale=eight&year=2024') => render(<M
 
 beforeEach(() => {
   sessionStorage.clear()
-  useAssistantStore.setState({ mode: 'hidden', sessionId: null, turns: [], revisionOf: null, busy: null, error: null })
+  useAssistantStore.setState({ mode: 'hidden', isMaximized: false, sessionId: null, turns: [], revisionOf: null, busy: null, error: null })
 })
 afterEach(() => vi.unstubAllGlobals())
 
-it('mở từ launcher mà không gọi API, thu nhỏ thành pill và đóng giữ state', async () => {
+it('mở từ launcher mà không gọi API và chỉ có một action đóng dialog', async () => {
   const fetch = vi.fn()
   vi.stubGlobal('fetch', fetch)
   renderAssistant()
   fireEvent.click(screen.getByRole('button', { name: 'Mở Trợ lý AI' }))
   expect(screen.getByRole('dialog', { name: 'Trợ lý AI' })).toBeInTheDocument()
+  expect(screen.getByRole('button', { name: 'Bắt đầu cuộc trò chuyện mới' })).toHaveTextContent('+')
   expect(fetch).not.toHaveBeenCalled()
-  fireEvent.click(screen.getByRole('button', { name: 'Thu nhỏ' }))
-  expect(screen.getByRole('button', { name: /Trợ lý AI · Mở lại/ })).toBeInTheDocument()
+  expect(screen.queryByRole('button', { name: 'Thu nhỏ' })).not.toBeInTheDocument()
+  act(() => useAssistantStore.getState().addUser('Giữ lại câu hỏi này'))
+  fireEvent.click(screen.getByRole('button', { name: 'Đóng Trợ lý AI' }))
+  expect(screen.queryByRole('dialog', { name: 'Trợ lý AI' })).not.toBeInTheDocument()
+  fireEvent.click(screen.getByRole('button', { name: 'Mở Trợ lý AI' }))
+  expect(screen.getByText('Giữ lại câu hỏi này')).toBeInTheDocument()
+})
+
+it('phóng to, khôi phục bằng Escape rồi đóng bằng Escape', async () => {
+  renderAssistant()
+  const launcher = screen.getByRole('button', { name: 'Mở Trợ lý AI' })
+  fireEvent.click(launcher)
+  const dialog = screen.getByRole('dialog', { name: 'Trợ lý AI' })
+  fireEvent.click(screen.getByRole('button', { name: 'Phóng to Trợ lý AI' }))
+  expect(dialog).toHaveClass('is-maximized')
+  expect(screen.getByRole('button', { name: 'Khôi phục kích thước Trợ lý AI' })).toHaveAttribute('aria-pressed', 'true')
+  fireEvent.keyDown(dialog, { key: 'Escape' })
+  expect(dialog).not.toHaveClass('is-maximized')
+  expect(dialog).toBeInTheDocument()
+  fireEvent.keyDown(dialog, { key: 'Escape' })
+  await waitFor(() => expect(launcher).toHaveFocus())
+  expect(screen.queryByRole('dialog', { name: 'Trợ lý AI' })).not.toBeInTheDocument()
 })
 
 it('assistant=open mở panel nhưng không gửi request', async () => {

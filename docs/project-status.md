@@ -24,7 +24,7 @@ thay thế cho runtime hoặc test. Archive chỉ để truy vết lịch sử.
 | H3 — Mối quan hệ lĩnh vực | Có correlation, scatter và phân tán | `app/pages/dimension.py`, `src/analysis/dimensions.py` |
 | H4 — Thay đổi & phân nhóm | Có delta và KMeans profile | `app/pages/dynamics.py`, `src/analysis/dynamics.py` |
 | Floating AI Assistant | Có answer/proposal/revision → duyệt proposal mới nhất → thực thi local → lifecycle log | `frontend/src/components/FloatingAssistant.tsx`, `server/assistant.py` |
-| Test offline | 112 Python, 38 frontend unit và 39 browser E2E pass sau Floating AI phase | `pytest`, Vitest, Playwright |
+| Test offline | 112 Python, 39 frontend unit và 43 browser E2E pass; E2E bao phủ thêm lỗi nhãn/đường/clip của 20 biểu đồ ở card, tablet, mobile và chế độ xem riêng | `pytest`, Vitest, Playwright |
 | FastAPI local API | Có health, 7 dashboard endpoint và 3 contract assistant messages/executions/logs | `server/`, `tests/test_assistant_http.py` |
 | React target | Sidebar 5 route dữ liệu thật và floating assistant dùng chung; route AI cũ chỉ redirect | `frontend/` |
 | Báo cáo LaTeX | Ngoài scope migration | `report/` |

@@ -146,28 +146,32 @@ export function Dynamics() {
   const allExtremeRows = [...new Map([...d.changes.top8, ...d.changes.bottom8].map((row) => [row.provinceVi, row])).values()]
   const filteredExtremeRows = allExtremeRows.filter((row) => direction === 'both' || (direction === 'increase' ? (row.change ?? 0) >= 0 : (row.change ?? 0) < 0))
   const extremeRows = (filteredExtremeRows.length ? filteredExtremeRows : allExtremeRows).sort((a, b) => (b.change ?? 0) - (a.change ?? 0))
-  const dumbbellData: Data[] = extremeRows.map((row) => {
-    const positive = (row.change ?? 0) >= 0
-    const color = positive ? uiColors.positive : uiColors.negative
-    const selected = !selectedProvince || selectedProvince === row.provinceVi
-    return {
-      type: 'scatter', mode: 'lines+markers+text', name: row.provinceVi,
-      x: [row.fromScore, row.toScore], y: [row.provinceVi, row.provinceVi],
-      text: ['', deltaFmt.format(row.change ?? 0)], textposition: ['middle left', 'middle right'],
-      customdata: [[row.provinceVi, row.region, row.fromScore, row.toScore, row.change], [row.provinceVi, row.region, row.fromScore, row.toScore, row.change]],
-      line: { color, width: selectedProvince === row.provinceVi ? 4 : 2.5 },
-      marker: { color, size: [9, selectedProvince === row.provinceVi ? 15 : 11], symbol: ['circle-open', 'circle'], line: { color: uiColors.ink, width: [1.4, selectedProvince === row.provinceVi ? 2.5 : 0.7] } },
-      opacity: selected ? 0.92 : 0.2, showlegend: false,
-      hovertemplate: '<b>%{customdata[0]}</b><br>%{customdata[1]}<br>Đầu %{customdata[2]:.2f} · cuối %{customdata[3]:.2f}<br>Thay đổi %{customdata[4]:+.2f}<extra></extra>',
-    } as unknown as Data
-  })
-  const endpointScores = extremeRows.flatMap((row) => [row.fromScore, row.toScore]).filter((value): value is number => value !== null)
-  const scoreMin = Math.min(...endpointScores)
-  const scoreMax = Math.max(...endpointScores)
-  const scorePadding = Math.max((scoreMax - scoreMin) * 0.12, 0.5)
-  const dumbbellView = (height: number) => <CartesianChart title="Điểm đầu–cuối của các tỉnh thay đổi mạnh" summary="Chấm rỗng là mốc đầu, chấm đặc là mốc cuối; dấu của nhãn cho biết hướng thay đổi." data={dumbbellData} height={height} onClick={(event) => { const raw = event.points?.[0]?.customdata; if (Array.isArray(raw)) pinProvince(raw[0]) }} layout={{ xaxis: { title: { text: d.measure.unit }, range: [scoreMin - scorePadding, scoreMax + scorePadding] }, yaxis: { categoryorder: 'array', categoryarray: extremeRows.map((row) => row.provinceVi), autorange: 'reversed', automargin: true }, margin: { l: 108, r: 62, t: 22, b: 54 } }}>
-    <div className="chart-table-scroll"><table><caption className="sr-only">Các tỉnh thay đổi mạnh nhất</caption><thead><tr><th>Tỉnh</th><th>{f.from}</th><th>{f.to}</th><th>Thay đổi</th></tr></thead><tbody>{extremeRows.map((row) => <tr key={row.provinceVi}><th scope="row"><button type="button" aria-pressed={selectedProvince === row.provinceVi} onClick={() => pinProvince(row.provinceVi)}>{row.provinceVi}</button></th><td>{scoreFmt.format(row.fromScore ?? 0)}</td><td>{scoreFmt.format(row.toScore ?? 0)}</td><td>{deltaFmt.format(row.change ?? 0)}</td></tr>)}</tbody></table></div>
-  </CartesianChart>
+  const dumbbellView = (height: number) => {
+    const displayRows = height < 500 && extremeRows.length > 10 ? [...extremeRows.slice(0, 5), ...extremeRows.slice(-5)] : extremeRows
+    const displayData: Data[] = displayRows.map((row) => {
+      const positive = (row.change ?? 0) >= 0
+      const color = positive ? uiColors.positive : uiColors.negative
+      const selected = !selectedProvince || selectedProvince === row.provinceVi
+      return {
+        type: 'scatter', mode: 'lines+markers+text', name: row.provinceVi,
+        x: [row.fromScore, row.toScore], y: [row.provinceVi, row.provinceVi],
+        text: ['', deltaFmt.format(row.change ?? 0)], textposition: ['middle center', 'top center'],
+        cliponaxis: false,
+        customdata: [[row.provinceVi, row.region, row.fromScore, row.toScore, row.change], [row.provinceVi, row.region, row.fromScore, row.toScore, row.change]],
+        line: { color, width: selectedProvince === row.provinceVi ? 4 : 2.5 },
+        marker: { color, size: [9, selectedProvince === row.provinceVi ? 15 : 11], symbol: ['circle-open', 'circle'], line: { color: uiColors.ink, width: [1.4, selectedProvince === row.provinceVi ? 2.5 : 0.7] } },
+        opacity: selected ? 0.92 : 0.2, showlegend: false,
+        hovertemplate: '<b>%{customdata[0]}</b><br>%{customdata[1]}<br>Đầu %{customdata[2]:.2f} · cuối %{customdata[3]:.2f}<br>Thay đổi %{customdata[4]:+.2f}<extra></extra>',
+      } as unknown as Data
+    })
+    const endpointScores = displayRows.flatMap((row) => [row.fromScore, row.toScore]).filter((value): value is number => value !== null)
+    const scoreMin = Math.min(...endpointScores)
+    const scoreMax = Math.max(...endpointScores)
+    const scorePadding = Math.max((scoreMax - scoreMin) * 0.12, 0.5)
+    return <CartesianChart className="dynamics-dumbbell" title="Điểm đầu–cuối của các tỉnh thay đổi mạnh" summary="Chấm rỗng là mốc đầu, chấm đặc là mốc cuối; dấu của nhãn cho biết hướng thay đổi." data={displayData} height={height} onClick={(event) => { const raw = event.points?.[0]?.customdata; if (Array.isArray(raw)) pinProvince(raw[0]) }} layout={{ xaxis: { title: { text: d.measure.unit }, range: [scoreMin - scorePadding, scoreMax + scorePadding] }, yaxis: { categoryorder: 'array', categoryarray: displayRows.map((row) => row.provinceVi), autorange: 'reversed', automargin: true }, margin: { l: 108, r: 62, t: 22, b: 54 } }}>
+      <div className="chart-table-scroll"><table><caption className="sr-only">Các tỉnh thay đổi mạnh nhất</caption><thead><tr><th>Tỉnh</th><th>{f.from}</th><th>{f.to}</th><th>Thay đổi</th></tr></thead><tbody>{displayRows.map((row) => <tr key={row.provinceVi}><th scope="row"><button type="button" aria-pressed={selectedProvince === row.provinceVi} onClick={() => pinProvince(row.provinceVi)}>{row.provinceVi}</button></th><td>{scoreFmt.format(row.fromScore ?? 0)}</td><td>{scoreFmt.format(row.toScore ?? 0)}</td><td>{deltaFmt.format(row.change ?? 0)}</td></tr>)}</tbody></table></div>
+    </CartesianChart>
+  }
 
   const dimensionCodes = cfg.dimensions
   const profileColumns = clusterKeys.length > 4 ? 2 : Math.ceil(clusterKeys.length / 2)
@@ -193,7 +197,7 @@ export function Dynamics() {
   } as unknown as Data))
   const maxProfileZ = Math.max(1, ...model.centroids.flatMap((centroid) => centroid.values.map((value) => Math.abs(value.zScore ?? 0))))
   const profileLayout: Partial<Layout> & Record<string, unknown> = {
-    grid: { rows: profileRows, columns: profileColumns, pattern: 'independent', roworder: 'top to bottom', xgap: 0.14, ygap: 0.26 },
+    grid: { rows: profileRows, columns: profileColumns, pattern: 'independent', roworder: 'top to bottom', xgap: 0.14, ygap: 0.32 },
     margin: { l: 88, r: 18, t: 46, b: 42 },
     annotations: model.centroids.map((centroid, index) => ({
       xref: 'paper', yref: 'paper', showarrow: false,
@@ -205,7 +209,8 @@ export function Dynamics() {
   }
   model.centroids.forEach((_, index) => {
     const suffix = index === 0 ? '' : String(index + 1)
-    profileLayout[`xaxis${suffix}`] = { range: [-maxProfileZ, maxProfileZ], zeroline: true, zerolinewidth: 1.5, tickfont: { size: 9 } }
+    const rowIndex = Math.floor(index / profileColumns)
+    profileLayout[`xaxis${suffix}`] = { range: [-maxProfileZ, maxProfileZ], zeroline: true, zerolinewidth: 1.5, showticklabels: rowIndex === profileRows - 1, tickfont: { size: 9 } }
     profileLayout[`yaxis${suffix}`] = { automargin: true, autorange: 'reversed', showticklabels: index % profileColumns === 0, tickfont: { size: 9 } }
   })
   const profileView = (height: number) => <CartesianChart title="Đặc trưng chuẩn hóa của từng hồ sơ" summary="Mỗi panel dùng cùng trục z-score; thanh phải cao hơn và thanh trái thấp hơn mặt bằng năm." data={profileData} height={height} onHover={(event) => { const raw = event.points?.[0]?.customdata; if (Array.isArray(raw) && typeof raw[0] === 'string') setHoveredProfile(raw[0]) }} onUnhover={() => setHoveredProfile(null)} onClick={(event) => { const raw = event.points?.[0]?.customdata; if (Array.isArray(raw)) selectProfile(raw[0]) }} layout={profileLayout as Partial<Layout>}>
@@ -251,7 +256,7 @@ export function Dynamics() {
   })
   const pcaData = [...segmentData, ...endpointData]
   const pcaVariance = model.pcaVariance.reduce((sum, item) => sum + item, 0)
-  const pcaView = (height: number) => <CartesianChart title="Dịch chuyển PCA đầu–cuối" summary={`PC1 và PC2 giải thích ${percentFmt.format(pcaVariance * 100)}% phương sai; trục không biểu thị tốt hoặc xấu.`} data={pcaData} height={height} onHover={(event) => { const raw = event.points?.[0]?.customdata; if (Array.isArray(raw) && typeof raw[0] === 'string') setHoveredProvince(raw[0]) }} onUnhover={() => setHoveredProvince(null)} onClick={(event) => { const raw = event.points?.[0]?.customdata; if (Array.isArray(raw)) pinProvince(raw[0]) }} layout={{ xaxis: { title: { text: 'PC1' }, zeroline: true }, yaxis: { title: { text: 'PC2' }, zeroline: true }, legend: { orientation: 'h', y: -0.2, groupclick: 'togglegroup' }, margin: { l: 62, r: 28, t: 24, b: 92 } }}>
+  const pcaView = (height: number) => <CartesianChart title="Dịch chuyển PCA đầu–cuối" summary={`PC1 và PC2 giải thích ${percentFmt.format(pcaVariance * 100)}% phương sai; trục không biểu thị tốt hoặc xấu.`} data={pcaData} height={height} onHover={(event) => { const raw = event.points?.[0]?.customdata; if (Array.isArray(raw) && typeof raw[0] === 'string') setHoveredProvince(raw[0]) }} onUnhover={() => setHoveredProvince(null)} onClick={(event) => { const raw = event.points?.[0]?.customdata; if (Array.isArray(raw)) pinProvince(raw[0]) }} layout={{ xaxis: { title: { text: 'PC1' }, zeroline: true }, yaxis: { title: { text: 'PC2' }, zeroline: true }, legend: height < 500 ? { orientation: 'h', y: 1.08, groupclick: 'togglegroup' } : { orientation: 'h', y: -0.2, groupclick: 'togglegroup' }, margin: height < 500 ? { l: 62, r: 28, t: 54, b: 54 } : { l: 62, r: 28, t: 24, b: 92 } }}>
     <div className="chart-table-scroll"><table><caption className="sr-only">Tọa độ PCA đầu và cuối theo tỉnh</caption><thead><tr><th>Tỉnh</th><th>Hồ sơ đầu</th><th>Hồ sơ cuối</th><th>Khoảng cách</th></tr></thead><tbody>{model.assignments.map((row) => <tr key={row.provinceVi}><th scope="row"><button type="button" aria-pressed={selectedProvince === row.provinceVi} onClick={() => pinProvince(row.provinceVi)}>{row.provinceVi}</button></th><td>{row.startCluster}</td><td>{row.endCluster}</td><td>{scoreFmt.format(row.pcaDistance ?? 0)}</td></tr>)}</tbody></table></div>
   </CartesianChart>
 

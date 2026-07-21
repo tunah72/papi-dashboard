@@ -16,16 +16,17 @@ thay đổi dữ liệu, báo cáo hay hành vi của Streamlit fallback. Execut
 ## State machine
 
 ```text
-hidden ── mở ──> open ── thu nhỏ ──> minimized
-  ^                │                     │
-  └──── đóng ──────┴──────── mở lại ─────┘
+hidden ── mở ──> open/default ⇄ open/maximized
+  ^                   │
+  └────── đóng ───────┘
 
 idle → sending → answer | clarification | pending_approval
 pending_approval → revising → pending_approval
 pending_approval → approving → succeeded | failed
 ```
 
-- Thu nhỏ tạo pill trạng thái; Đóng chỉ ẩn panel. Cả hai giữ nguyên phiên.
+- Launcher là điểm mở lại duy nhất; không có thêm nút Thu nhỏ hoặc pill trùng chức năng.
+- Đóng chỉ ẩn panel và giữ nguyên phiên. Phóng to/Khôi phục chỉ đổi kích thước bề mặt.
 - `sessionStorage` giữ phiên khi đổi route hoặc refresh trong cùng tab.
 - “Cuộc trò chuyện mới” là action duy nhất xóa state UI và tạo `sessionId` mới.
 - Proposal mới đánh dấu proposal cũ là `superseded`; proposal cũ không còn action thực thi.
@@ -68,7 +69,8 @@ contract bounded như response để tránh log tăng không kiểm soát.
 - Desktop: launcher 56×56 px, cách phải/dưới 24 px; panel 420–460 px, tối đa 620–680 px.
 - Mobile: cách mép 16 px cộng safe area; panel là bottom sheet 80–88dvh, header/composer sticky.
 - Dialog không có backdrop tối, không làm đổi chart grid và click ngoài không xóa hoặc đóng state.
-- `Esc`, nút Đóng hoặc Thu nhỏ trả focus về launcher. Focus ring và vùng bấm tối thiểu 44×44 px.
+- `Esc` khi phóng to khôi phục kích thước; `Esc` tiếp theo hoặc nút Đóng trả focus về launcher. Focus
+  ring và vùng bấm tối thiểu 44×44 px.
 - Code read-only; revision gửi mô tả tự nhiên và nhận lại toàn bộ code mới.
 - Chỉ proposal mới nhất hiển thị nút “Đồng ý và chạy local”.
 - Câu trả lời kiến thức ghi `Nguồn: UNDP Việt Nam · CECODES · RTA`.
@@ -88,8 +90,8 @@ contract bounded như response để tránh log tăng không kiểm soát.
 ## Bằng chứng nghiệm thu
 
 - Python: 112 test đạt.
-- Frontend unit: 38 test đạt; ESLint và TypeScript/Vite build đạt.
-- Browser: 39 Playwright test đạt trên desktop, tablet và mobile; kiểm tra launcher ở đủ năm route,
+- Frontend unit: 39 test đạt; ESLint và TypeScript/Vite build đạt.
+- Browser: 43 Playwright test đạt trên desktop, tablet và mobile; kiểm tra launcher ở đủ năm route,
   deep-link cũ, keyboard, reduced motion, overflow và luồng proposal/revision/approval.
 - OpenAPI: TypeScript schema sinh lại ổn định, không có drift.
 - Live Groq: đúng một request kiến thức trả `kind="answer"`, có nguồn và chỉ ghi lifecycle
@@ -97,7 +99,7 @@ contract bounded như response để tránh log tăng không kiểm soát.
 
 ## Acceptance criteria
 
-1. Mở/đóng/thu nhỏ trợ lý không phát request AI, không dịch layout và không mất hội thoại.
+1. Mở/đóng/phóng to trợ lý không phát request AI, không dịch layout và không mất hội thoại.
 2. Câu hỏi kiến thức trả answer có nguồn; câu hỏi cần tính mới trả full code đang chờ duyệt.
 3. Revision sinh proposal mới; endpoint execution từ chối proposal cũ bằng `409`.
 4. Chỉ sau `approved: true` mới có event approval và execution/result/error.

@@ -56,14 +56,15 @@ export function FloatingAssistant() {
     navigate({ pathname: location.pathname, search: params.toString() ? `?${params}` : '' }, { replace: true })
   }
   const open = () => { state.setMode('open'); updateUrl(true); window.setTimeout(() => composer.current?.focus(), 0) }
-  const leave = (mode: 'hidden' | 'minimized') => { state.setMode(mode); updateUrl(false); window.setTimeout(() => launcher.current?.focus(), 0) }
+  const close = () => { state.setMaximized(false); state.setMode('hidden'); updateUrl(false); window.setTimeout(() => launcher.current?.focus(), 0) }
+  const escape = () => { if (state.isMaximized) state.setMaximized(false); else close() }
 
   useEffect(() => { if (queryOpen) useAssistantStore.getState().setMode('open') }, [queryOpen])
   useEffect(() => {
     if (state.mode !== 'open') return
     const onEscape = (event: KeyboardEvent) => {
       if (event.key !== 'Escape' || document.querySelector('dialog[open], .sidebar.is-open')) return
-      event.preventDefault(); leave('hidden')
+      event.preventDefault(); escape()
     }
     document.addEventListener('keydown', onEscape)
     return () => document.removeEventListener('keydown', onEscape)
@@ -89,18 +90,18 @@ export function FloatingAssistant() {
     finally { state.setBusy(null) }
   }
 
-  const latestPending = [...state.turns].reverse().find((turn): turn is AssistantTurn => turn.role === 'assistant' && turn.response.kind === 'proposal' && !turn.superseded && !turn.execution)
-  const pill = latestPending ? 'Chờ duyệt' : state.turns.some((turn) => turn.role === 'assistant' && turn.execution) ? 'Đã có kết quả' : 'Mở lại cuộc trò chuyện'
-
-  return <div className="floating-assistant">
-    {state.mode === 'minimized' && <button className="assistant-pill" type="button" onClick={open}><span aria-hidden="true" />Trợ lý AI · {pill}</button>}
-    {state.mode === 'open' && <section className="assistant-dialog" role="dialog" aria-modal="false" aria-labelledby="assistant-title" onKeyDown={(event) => { if (event.key === 'Escape') { event.stopPropagation(); leave('hidden') } }}>
+  return <div className="floating-assistant" data-maximized={state.mode === 'open' && state.isMaximized}>
+    {state.mode === 'open' && <section className={`assistant-dialog${state.isMaximized ? ' is-maximized' : ''}`} role="dialog" aria-modal="false" aria-labelledby="assistant-title" onKeyDown={(event) => { if (event.key === 'Escape') { event.preventDefault(); event.stopPropagation(); escape() } }}>
       <header className="assistant-header">
         <div><h2 id="assistant-title">Trợ lý AI</h2><p>{label}</p></div>
         <div className="assistant-header-actions">
-          <button type="button" onClick={() => state.reset()} aria-label="Bắt đầu cuộc trò chuyện mới">Mới</button>
-          <button type="button" onClick={() => leave('minimized')}>Thu nhỏ</button>
-          <button type="button" onClick={() => leave('hidden')} aria-label="Đóng Trợ lý AI">×</button>
+          <button type="button" className="assistant-new-conversation" onClick={() => state.reset()} aria-label="Bắt đầu cuộc trò chuyện mới" title="Cuộc trò chuyện mới">+</button>
+          <button type="button" className="assistant-size-toggle" onClick={() => state.setMaximized(!state.isMaximized)} aria-label={state.isMaximized ? 'Khôi phục kích thước Trợ lý AI' : 'Phóng to Trợ lý AI'} title={state.isMaximized ? 'Khôi phục kích thước' : 'Phóng to'} aria-pressed={state.isMaximized}>
+            {state.isMaximized
+              ? <svg aria-hidden="true" viewBox="0 0 24 24"><path d="M8 8V5a1 1 0 0 1 1-1h10a1 1 0 0 1 1 1v10a1 1 0 0 1-1 1h-3" /><rect x="4" y="8" width="12" height="12" rx="1" /></svg>
+              : <svg aria-hidden="true" viewBox="0 0 24 24"><rect x="4" y="4" width="16" height="16" rx="2" /></svg>}
+          </button>
+          <button type="button" onClick={close} aria-label="Đóng Trợ lý AI" title="Đóng">×</button>
         </div>
       </header>
       <div className="assistant-conversation" aria-live="polite">
