@@ -8,9 +8,9 @@ const renderSidebar = (route = '/overview') => render(<MemoryRouter initialEntri
 
 beforeEach(() => { useNavigationStore.setState({ desktopCollapsed: false }) })
 
-it('hiển thị sáu mục, đúng thứ tự và active route', () => {
+it('hiển thị năm route phân tích, đúng thứ tự và active route', () => {
   renderSidebar('/overview')
-  expect(screen.getAllByRole('link').map((link) => link.textContent?.replace(/\d+/g, '').trim())).toEqual(['Tổng quan', 'Diễn biến theo thời gian', 'Vùng & tỉnh', 'Mối quan hệ lĩnh vực', 'Thay đổi & phân nhóm', 'Trợ lý AI'])
+  expect(screen.getAllByRole('link').map((link) => link.textContent?.replace(/\d+/g, '').trim())).toEqual(['Tổng quan', 'Diễn biến theo thời gian', 'Vùng & tỉnh', 'Mối quan hệ lĩnh vực', 'Thay đổi & phân nhóm'])
   expect(screen.getByRole('link', { name: /Tổng quan/ })).toHaveClass('is-active')
 })
 

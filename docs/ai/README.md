@@ -1,75 +1,61 @@
 # AI human-in-the-loop
 
-## Mục tiêu
+## Trạng thái React + FastAPI
 
-AI đóng vai trò đề xuất phương pháp, code và giải thích. Người dùng giữ quyền định hướng, sửa code,
-phê duyệt và quyết định có thực thi hay không. Code được chạy local trên dữ liệu đã xử lý.
+Trợ lý AI là floating panel dùng chung trên năm trang phân tích React. Sidebar không có route AI;
+`/ai-assistant` chỉ là redirect tương thích đến `/overview?assistant=open`. Mở panel không gọi Groq và
+không chạy code.
 
-## Thành phần đang có
+Ba HTTP API local:
 
-| Module | Trách nhiệm thực tế |
+| API | Trách nhiệm |
 |---|---|
-| `app/ai/api_ai.py` | tạo prompt, gọi Groq, parse và chuẩn hóa code |
-| `app/ai/api_exec.py` | chạy code đã duyệt trong process local có guard/timeout |
-| `app/ai/api_logs.py` | ghi và đọc JSONL |
-| `app/ai/registry.py` | discover technique plugin |
-| `app/pages/ai_assistant.py` | UI nhập yêu cầu, sửa, duyệt, chạy, xem kết quả/log |
+| `POST /api/v1/assistant/messages` | nhận câu hỏi/context, trả answer, clarification hoặc code proposal |
+| `POST /api/v1/assistant/executions` | xác nhận và chạy đúng proposal mới nhất đã được người dùng duyệt |
+| `GET /api/v1/assistant/logs` | truy xuất lifecycle event theo `sessionId` |
 
-Đây là ba API logic nội bộ theo đề bài, không phải HTTP endpoint.
-
-## Technique hiện có
-
-- Thống kê mô tả (`example_describe.py`) — plugin ví dụ/đường kiểm tra cơ bản.
-- Phân loại xu hướng (`trend_classification.py`).
-- Phát hiện tỉnh bất thường (`anomaly.py`).
-- Nhận xét một lĩnh vực (`insight.py`).
-- Gom nhóm tỉnh (`clustering.py`).
-
-Plugin cung cấp prompt mặc định và hướng dẫn chuyên môn; LLM vẫn sinh code cụ thể. Vì vậy người dùng
-phải đọc code và kiểm tra biến, filter, phương pháp trước khi phê duyệt.
+Groq dùng knowledge context ngắn từ `docs/data/README.md`, metadata D1–D8, schema dữ liệu và context đã
+được FastAPI canonicalize. Hệ thống không dùng vector database, embeddings, RAG server hoặc indexing.
 
 ## Luồng sử dụng
 
-1. Chọn technique hoặc tự nhập yêu cầu.
-2. Có thể chỉnh câu hỏi mẫu và thêm yêu cầu bổ sung.
-3. Bấm **Sinh code (AI đề xuất)**.
-4. Đọc giải thích và toàn bộ code ở trạng thái chờ duyệt.
-5. Sửa code nếu cần.
-6. Bấm **Phê duyệt và thực thi**.
-7. Kiểm tra result/figure/error và nhật ký; diff thể hiện phần người dùng đã sửa.
+1. Mở launcher ở góc dưới bên phải và nhập câu hỏi.
+2. Câu hỏi kiến thức nhận answer trực tiếp kèm nguồn.
+3. Phân tích cần tính mới nhận explanation và toàn bộ code ở trạng thái **Chờ duyệt**.
+4. Nếu cần sửa, chọn **Yêu cầu chỉnh lại** và mô tả bằng ngôn ngữ tự nhiên; AI sinh toàn bộ code mới.
+5. Chỉ proposal mới nhất có action **Đồng ý và chạy local**.
+6. FastAPI xác nhận proposal/checksum, ghi approval rồi mới chạy local và trả table/figure/stdout/error.
 
-Các trang phân tích có thể seed yêu cầu từ biểu đồ. Context gồm page/filter/data scope/chart được đưa
-vào prompt để AI Assistant nhận đúng phạm vi đang xem.
+Frontend không gửi code tùy ý vào API execution. Proposal cũ bị superseded và execution trả `409`.
+Phiên UI được giữ trong `sessionStorage` khi đổi route hoặc refresh cùng tab.
 
-## Guard thực thi
+## Knowledge và nguồn
 
-Executor hiện:
+Knowledge context gồm ý nghĩa PAPI, tên/định nghĩa D1–D8, 2011–2024, D7/D8 từ 2018, nguồn UNDP Việt
+Nam · CECODES · RTA và giới hạn diễn giải. Không tự bịa số liệu, không so tổng 6 với tổng 8 lĩnh vực qua
+2018, không diễn giải tương quan/hồi quy/phân cụm thành nhân quả hoặc xếp hạng chính thức.
 
-- loại import và một số built-in nguy hiểm;
-- chỉ cung cấp pandas/numpy/plotly/scipy/sklearn cần thiết;
-- copy DataFrame trước khi chạy;
-- chạy process riêng và dừng sau 8 giây;
-- giới hạn stdout 4.000 ký tự;
-- trả result, fig, stdout, warning và error về UI.
+## Executor và log
 
-Các guard này giảm lỗi cho demo local nhưng không cô lập filesystem/process/network ở cấp hệ điều
-hành. Không triển khai công khai để chạy code không tin cậy. Object GeoJSON hiện không được copy.
+Executor chạy process con, timeout 8 giây, giới hạn stdout, dùng bản sao DataFrame và chỉ cấp pandas,
+numpy, Plotly, scipy, sklearn cần thiết. FastAPI kiểm AST để chặn import còn lại, dunder và thao tác
+file/process phổ biến. Đây là guard cho demo local, **không phải security sandbox công khai**.
 
-## Khoảng trống so với yêu cầu lưu trữ
+JSONL ghi request/context, answer/clarification, pending/superseded proposal, approval và execution.
+Result table/log giới hạn 500 hàng nhưng luôn có shape, `totalRows` và `truncated`; figure lưu Plotly JSON.
+Không ghi API key hoặc internal reasoning.
 
-Log được tạo khi AI sinh code, khi thực thi và khi reset. Khi thực thi, log giữ code, context, stdout
-preview, error, shape kết quả và loại figure; nó chưa lưu đầy đủ bảng kết quả hay artifact biểu đồ.
-
-Roadmap ưu tiên chuyển log sang event lifecycle và lưu artifact có thể truy xuất. Cho đến khi hoàn
-thiện, không mô tả hệ thống là đã “lưu toàn bộ yêu cầu, code, kết quả và giải thích”.
+Streamlit trong `app/` vẫn là frozen fallback. Các module `app/ai/` tiếp tục chạy độc lập nhưng không là
+bề mặt AI đích của React.
 
 ## Kiểm thử
 
-Test offline:
-
 ```bash
-python -m pytest tests/test_api_ai.py tests/test_api_exec.py tests/test_ai_assistant.py -q
+python3 -m pytest tests/test_assistant_http.py tests/test_api_ai.py tests/test_api_exec.py -q
+cd frontend
+npm test -- --run
+npm run lint
+npm run build
 ```
 
-Test này không gọi Groq. Nghiệm thu live dùng [manual-test-cases.md](manual-test-cases.md), cần API
-key và phải do con người quyết định thực hiện vì có dùng quota bên ngoài.
+Live Groq smoke chỉ thực hiện khi có chủ đích và dùng một câu kiến thức, không tự chạy code AI.

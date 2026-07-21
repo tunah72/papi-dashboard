@@ -1,13 +1,15 @@
 """Entrypoint FastAPI local: ``uvicorn server.main:app --host 127.0.0.1 --port 8000``."""
 from typing import Annotated, Literal
 
-from fastapi import FastAPI, Query, Request
+from fastapi import FastAPI, HTTPException, Query, Request
 from fastapi.exceptions import RequestValidationError
 from fastapi.middleware.cors import CORSMiddleware
 from fastapi.responses import JSONResponse
 
-from server import services
+from server import assistant, services
 from server.schemas import (
+    AssistantExecutionRequest, AssistantExecutionResponse, AssistantLogsResponse,
+    AssistantMessageRequest, AssistantMessageResponse,
     DimensionsResponse, DynamicsResponse, ErrorResponse, GeojsonResponse,
     MetadataResponse, OverviewResponse, ProvincesResponse, TrendsResponse,
 )
@@ -16,11 +18,11 @@ Scale = Literal["six", "eight"]
 
 
 def create_app() -> FastAPI:
-    app = FastAPI(title="PAPI Dashboard Local API", version="1.0.0", description="Dashboard data API Phase 1; chưa có AI/executor HTTP.")
+    app = FastAPI(title="PAPI Dashboard Local API", version="1.1.0", description="Dashboard data và Floating AI Assistant chạy local.")
     app.add_middleware(
         CORSMiddleware,
         allow_origins=["http://localhost:5173", "http://127.0.0.1:5173", "http://localhost:3000", "http://127.0.0.1:3000"],
-        allow_credentials=False, allow_methods=["GET"], allow_headers=["*"],
+        allow_credentials=False, allow_methods=["GET", "POST"], allow_headers=["*"],
     )
 
     @app.exception_handler(services.ContractError)
@@ -67,6 +69,31 @@ def create_app() -> FastAPI:
         to: int | None = None,
         k: Annotated[int | None, Query(ge=2, le=6)] = None,
     ): return services.dynamics_view(scale, from_, to, k)
+
+    @app.post("/api/v1/assistant/messages", response_model=AssistantMessageResponse, responses={409: {"model": ErrorResponse}, 502: {"model": ErrorResponse}}, tags=["assistant"])
+    def post_assistant_message(payload: AssistantMessageRequest):
+        try:
+            return assistant.handle_message(
+                session_id=payload.sessionId, message=payload.message.strip(), route=payload.context.route,
+                search=payload.context.search, revision_of=payload.revisionOf,
+            )
+        except assistant.AssistantConflict as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+        except assistant.ProviderError as exc:
+            raise HTTPException(status_code=502, detail=str(exc)) from exc
+        except assistant.AssistantError as exc:
+            raise HTTPException(status_code=422, detail=str(exc)) from exc
+
+    @app.post("/api/v1/assistant/executions", response_model=AssistantExecutionResponse, responses={409: {"model": ErrorResponse}}, tags=["assistant"])
+    def post_assistant_execution(payload: AssistantExecutionRequest):
+        try:
+            return assistant.execute_proposal(session_id=payload.sessionId, proposal_id=payload.proposalId)
+        except assistant.AssistantConflict as exc:
+            raise HTTPException(status_code=409, detail=str(exc)) from exc
+
+    @app.get("/api/v1/assistant/logs", response_model=AssistantLogsResponse, tags=["assistant"])
+    def get_assistant_logs(session_id: Annotated[str, Query(alias="sessionId", min_length=1)]):
+        return {"sessionId": session_id, "events": assistant.read_events(session_id)}
 
     return app
 

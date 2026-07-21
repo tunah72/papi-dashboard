@@ -18,9 +18,9 @@ dữ liệu hoặc quyền quyết định của người dùng.
 
 ## Quyết định
 
-1. **UI đích:** React + TypeScript `strict`, tiếng Việt nhất quán. Sáu nhãn sidebar target, theo đúng
-   thứ tự, là: **Tổng quan; Diễn biến theo thời gian; Vùng & tỉnh; Mối quan hệ lĩnh vực; Thay đổi &
-   phân nhóm; Trợ lý AI**. Tên legacy Streamlit chỉ là baseline đối chiếu, không phải nhãn target.
+1. **UI đích:** React + TypeScript `strict`, tiếng Việt nhất quán. Năm nhãn sidebar target là:
+   **Tổng quan; Diễn biến theo thời gian; Vùng & tỉnh; Mối quan hệ lĩnh vực; Thay đổi & phân nhóm**.
+   Trợ lý AI là floating assistant dùng chung; route AI legacy chỉ redirect để giữ deep-link.
 2. **Backend đích:** FastAPI chạy local và bind `127.0.0.1`, là ranh giới HTTP cho dữ liệu đã xử lý và
    API AI, API Thực thi, API Logs. React không đọc `data/raw/`, secrets, hoặc tự tính/sửa dữ liệu nguồn.
    Logic trong `src/analysis/` phải được tái sử dụng/đối chiếu ở Python, không sao chép công thức sang UI.
@@ -33,9 +33,9 @@ dữ liệu hoặc quyền quyết định của người dùng.
    sau hành động phê duyệt rõ ràng. Executor vẫn chạy process con có timeout và giới hạn stdout; đây chỉ
    là guard demo local, **không phải public security sandbox**. API Logs lưu request, code, explanation,
    context, approval, kết quả hoặc lỗi; không lưu/hiển thị internal reasoning của model.
-6. **Sidebar trái là invariant:** sáu route dùng cùng sidebar trái, có active state, không bị thay bằng
-   top navigation. Ở màn hình hẹp sidebar có thể thu gọn, nhưng phải có nút mở lại có nhãn truy cập được
-   và không làm mất route.
+6. **Sidebar trái là invariant:** năm route phân tích dùng cùng sidebar trái, có active state, không bị
+   thay bằng top navigation. Floating assistant có launcher ở cả năm trang. Ở màn hình hẹp sidebar có
+   thể thu gọn nhưng phải có nút mở lại có nhãn truy cập được.
 7. Streamlit ở `app/` là **legacy fallback frozen** đến cutover. Chỉ sửa lỗi tối thiểu để fallback chạy
    được; capability mới thuộc React/FastAPI sau phase được phê duyệt.
 

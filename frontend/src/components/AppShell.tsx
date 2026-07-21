@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react'
 import { Sidebar } from './Sidebar'
 import { useNavigationStore } from '../state/navigation'
 import { navigation } from './navigation'
+import { FloatingAssistant } from './FloatingAssistant'
 
 export function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false)
@@ -19,5 +20,6 @@ export function AppShell() {
     <a className="skip-link" href="#noi-dung">Bỏ qua điều hướng</a>
     <Sidebar drawerOpen={drawerOpen} closeDrawer={() => setDrawerOpen(false)} onOpenDrawer={() => setDrawerOpen(true)} />
     <main id="noi-dung" className={`main${isRedesignedDashboard ? ' main-overview' : ''}`}>{!isRedesignedDashboard && <header className="page-header"><p className="product-context"><span aria-hidden="true" />PAPI Việt Nam · 2011–2024</p><p className="breadcrumb">Khám phá dữ liệu <span aria-hidden="true">/</span> <strong>{active}</strong></p></header>}<Outlet /></main>
+    {isRedesignedDashboard && <FloatingAssistant />}
   </div>
 }

@@ -16,7 +16,7 @@ trong các phase bên dưới.
 **Trạng thái:** implementation hoàn tất; chỉ được gọi hoàn tất chính thức sau review gate.
 
 - Chốt ADR React TypeScript strict + FastAPI local, sidebar trái và fallback Streamlit frozen.
-- Chốt matrix sáu route, numeric/content parity tách với UX improvements, semantic view-model và cutover/rollback.
+- Chốt matrix năm trang phân tích và capability AI, numeric/content parity tách với UX improvements, semantic view-model và cutover/rollback.
 - Đồng bộ current docs theo code/test baseline, xóa bốn artifact untracked bị bác bỏ.
 - Gate: python3 -m pytest -q, git diff --check, audit vùng cấm và review độc lập.
 
@@ -35,7 +35,7 @@ trong các phase bên dưới.
 
 **Trạng thái:** implementation hoàn tất, chờ review gate.
 
-- Tạo React TypeScript strict shell, sidebar trái sáu route với nhãn target tiếng Việt.
+- Tạo React TypeScript strict shell; sidebar ban đầu có sáu mục, đến Phase 5 được chuẩn hóa còn năm route và floating assistant.
 - Implement /overview với content/numeric parity và map-linked ranking.
 - Bổ sung loading/empty/error/retry, metadata semantic, keyboard/focus và responsive theo matrix.
 - Giữ Streamlit Overview làm fallback độc lập.
@@ -58,14 +58,13 @@ trong các phase bên dưới.
 
 ## Phase 5 — AI qua HTTP
 
-**Trạng thái:** chưa triển khai. Route React chỉ công bố boundary và hướng người dùng về Streamlit fallback;
-không sinh hoặc thực thi code.
+**Trạng thái:** đã triển khai floating assistant cơ bản trên năm trang React; chờ review/runtime gate trước cutover.
 
-- Chuyển API AI, API Thực thi và API Logs sang FastAPI local mà không bỏ human approval.
-- Hiển thị bốn bước: yêu cầu sinh; code + giải thích; diff + hash-reset; phê duyệt rồi mới có kết quả/log.
+- API AI, API Thực thi và API Logs đã có contract FastAPI local, giữ human approval bằng proposal ID/checksum.
+- Câu hỏi kiến thức trả answer; tính mới trả code read-only; revision bằng ngôn ngữ tự nhiên sinh toàn bộ code mới.
 - Executor vẫn là process con timeout/stdout guard local, không được mô tả là sandbox public.
-- Log pending có request/code/explanation/context; execution có code_run/stdout/error/shape/fig type; không
-  hiển thị internal reasoning. Chỉ bổ sung full result artifact khi contract/path/checksum được chốt.
+- Log pending có request/code/explanation/context; execution có bounded result (500 hàng), Plotly JSON,
+  stdout/error/shape; không hiển thị internal reasoning.
 
 ## Phase 6 — QA, one-command demo và cutover
 
@@ -76,7 +75,7 @@ không sinh hoặc thực thi code.
 
 ## Ngoài scope migration nhưng chưa hoàn tất
 
-- Full result artifact cho AI logs và hardening executor sâu hơn vẫn là việc thật sự còn lại.
+- Full result artifact không giới hạn và hardening executor ở cấp OS vẫn là việc thật sự còn lại.
 - Browser QA/cutover evidence chỉ được tạo ở Phase 6.
-- Notebook cross-check, live Groq smoke test, rehearsal vấn đáp và báo cáo thuộc công việc dự án rộng hơn;
+- Notebook cross-check, rehearsal vấn đáp và báo cáo thuộc công việc dự án rộng hơn;
   không được sửa report/ trong migration này.

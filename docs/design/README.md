@@ -25,6 +25,8 @@ Trang Tổng quan chỉ tóm tắt bốn hướng bằng bốn hình thức tr�
   interaction, accessibility và trạng thái.
 - [`chart_focus_mode.md`](chart_focus_mode.md): nút phóng to trên mỗi chart card, popup xem riêng,
   responsive, accessibility và đồng bộ trạng thái.
+- [`floating_ai_assistant.md`](floating_ai_assistant.md): launcher dùng chung, dialog/bottom sheet,
+  state human-in-the-loop, URL, responsive và accessibility.
 - [`overview.md`](overview.md): trang Tổng quan.
 - [`time_series.md`](time_series.md): trang Diễn biến theo thời gian.
 - [`regional_province.md`](regional_province.md): trang Khác biệt giữa vùng và tỉnh.
@@ -78,7 +80,7 @@ Không đặt một khối “Tín hiệu cần đọc” lớn trước grid. B
 người xem không phải ghép kết luận với một hình ở vị trí khác.
 
 Không đặt khối hoặc CTA “Bước đọc tiếp” ở cuối trang. Người dùng chuyển trang qua sidebar hoặc
-interaction drill-through có ngữ cảnh ngay trên biểu đồ; Trợ lý AI luôn là route độc lập trong sidebar.
+interaction drill-through có ngữ cảnh ngay trên biểu đồ; Trợ lý AI mở từ floating launcher dùng chung.
 
 ## 6. Phạm vi implementation
 
@@ -87,8 +89,8 @@ interaction drill-through có ngữ cảnh ngay trên biểu đồ; Trợ lý AI
 - Insight động phải được backend/view-model trả về hoặc được tạo từ cùng artifact bằng hàm đã test;
   không hard-code một tỉnh/năm cụ thể.
 - Các lựa chọn phải phản ánh trên URL để refresh, chia sẻ link và drill-through không mất ngữ cảnh.
-- Module AI đứng ngoài bốn chart card. Mọi code AI sinh ra vẫn phải hiển thị rõ ở trạng thái chờ duyệt
-  và chỉ chạy local sau khi người dùng phê duyệt.
+- Module AI đứng ngoài bốn chart card và không làm đổi grid. Mọi code AI sinh ra phải hiển thị đầy đủ ở
+  trạng thái chờ duyệt; revision sinh toàn bộ code mới và chỉ proposal mới nhất được chạy local sau duyệt.
 
 ### Khoảng trống cần xử lý khi triển khai
 

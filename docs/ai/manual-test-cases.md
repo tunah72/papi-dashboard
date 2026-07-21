@@ -1,134 +1,33 @@
-# Manual test cases cho AI Engine
+# Manual test cases — Floating AI Assistant
 
-Ngày rà soát theo UI hiện tại: 2026-07-17
+## 1. Mở panel không gọi AI
 
-Mục tiêu: kiểm tra luồng AI human-in-the-loop trong trang `AI Assistant`, đặc biệt các thay đổi mới:
+1. Mở từng route phân tích và click launcher `Mở Trợ lý AI`.
+2. Kiểm tra panel mở tại chỗ, chart grid không đổi kích thước và Network không có POST assistant.
+3. Thu nhỏ thành pill, mở lại, Đóng rồi mở lại; câu hỏi/kết quả cũ phải còn.
+4. Mở `/ai-assistant`; URL phải thành `/overview?assistant=open` và panel mở.
 
-- Chọn kỹ thuật phân tích sẽ tự reset code/kết quả cũ.
-- Câu hỏi gợi ý có thể chỉnh sửa và được gửi làm yêu cầu chính.
-- Yêu cầu phân tích bổ sung được ghép vào prompt AI, không thay thế câu hỏi chính.
-- AI phải ưu tiên câu hỏi người dùng đã chỉnh, không quay về default của plugin.
+## 2. Câu hỏi kiến thức
 
-## Test case 1: Đổi chủ đề trong cùng kỹ thuật và thêm góp ý
+Gửi `Chỉ số PAPI là gì?`. Kỳ vọng response là answer, không có code/action thực thi, có dòng
+`Nguồn: UNDP Việt Nam · CECODES · RTA` và log có request + answer.
 
-**Mục tiêu:** xác nhận AI dùng câu hỏi gợi ý đã chỉnh sửa, không dùng default của kỹ thuật.
+## 3. Proposal, revision và approval
 
-**Bước thực hiện:**
+1. Gửi `Lĩnh vực nào có điểm trung bình cao nhất trong năm 2024?`.
+2. Xác nhận explanation và toàn bộ code ở trạng thái `CHỜ DUYỆT`; chưa có execution log/result.
+3. Chọn `Yêu cầu chỉnh lại`, nhập `Chỉ tính cho các tỉnh thuộc Tây Nguyên và trả thêm biểu đồ cột`.
+4. Xác nhận code mới hiển thị đầy đủ, code cũ mang nhãn đã thay thế và không còn nút chạy.
+5. Duyệt code mới; chỉ lúc này mới có approval, execution và result/figure hoặc lỗi rõ ràng.
 
-1. Mở `http://localhost:8501/ai_assistant`.
-2. Ở `Chọn kỹ thuật phân tích`, chọn `Gom nhóm tỉnh theo hồ sơ lĩnh vực`.
-3. Trong ô `Câu hỏi gợi ý (có thể chỉnh sửa)`, thay toàn bộ nội dung bằng:
+## 4. Context và câu hỏi mơ hồ
 
-   ```text
-   Hãy gom nhóm các tỉnh miền Nam thành 3 cụm dựa trên điểm của 8 lĩnh vực PAPI trong năm mới nhất, sau đó vẽ scatter plot so sánh giữa D1 và D8.
-   ```
+Mở `/time-trend?scale=six&from=2015&to=2024`, hỏi `Yếu tố nào cao nhất?`. Context header và request log
+phải giữ đúng trang/range. Nếu chưa rõ phạm vi, AI chỉ hỏi tối đa một câu làm rõ; lượt sau phải trả answer
+hoặc proposal.
 
-4. Trong ô `Yêu cầu phân tích bổ sung (tuỳ chọn)`, nhập:
+## 5. Responsive và accessibility
 
-   ```text
-   Chỉ dùng region thật trong dữ liệu. Nếu sau khi lọc không đủ tỉnh để gom nhóm thì trả về bảng giải thích thay vì báo lỗi.
-   ```
-
-5. Bấm `Sinh code (AI đề xuất)`.
-6. Đọc phần `Code phân tích — Chờ duyệt`.
-7. Nếu code hợp lý, bấm `Phê duyệt và thực thi`.
-
-**Kỳ vọng đạt:**
-
-- Code dùng `n_clusters=3`, không phải `4`.
-- Code vẽ trục `D1` và `D8`, không quay về default `D4` và `D8`.
-- Code lọc miền Nam bằng region thật, ưu tiên `Đông Nam Bộ` và `Đồng bằng sông Cửu Long`.
-- Code có guard khi dữ liệu rỗng hoặc không đủ dòng trước `StandardScaler`/`KMeans`.
-- Khi chạy, không xuất hiện lỗi `Found array with 0 sample(s)`.
-- Nhật ký phiên AI ghi đúng request đã chỉnh và phần yêu cầu bổ sung.
-
-**Dấu hiệu lỗi:**
-
-- Code vẫn dùng `n_clusters=4`.
-- Code vẫn dùng `D4` dù câu hỏi đã đổi sang `D1`.
-- Code lọc bằng nhãn không có thật như `Miền Đông Nam Bộ`, `Miền Tây Nam Bộ`.
-- Kết quả thực thi báo lỗi từ `StandardScaler` hoặc `KMeans` do DataFrame rỗng.
-
-## Test case 2: Đổi kỹ thuật phải reset trạng thái cũ
-
-**Mục tiêu:** xác nhận khi đổi kỹ thuật, app không giữ code/kết quả của kỹ thuật trước.
-
-**Bước thực hiện:**
-
-1. Mở `AI Assistant`.
-2. Chọn `Phát hiện tỉnh bất thường`.
-3. Giữ câu hỏi gợi ý mặc định hoặc chỉnh nhẹ, bấm `Sinh code (AI đề xuất)`.
-4. Bấm `Phê duyệt và thực thi` để tạo kết quả.
-5. Đổi `Chọn kỹ thuật phân tích` sang `Gom nhóm tỉnh theo hồ sơ lĩnh vực`.
-
-**Kỳ vọng đạt:**
-
-- Vùng `Code phân tích` và `Kết quả thực thi` của kỹ thuật cũ biến mất.
-- Ô `Câu hỏi gợi ý` được nạp prompt mặc định của kỹ thuật gom nhóm.
-- Ô `Yêu cầu phân tích bổ sung` trở về rỗng.
-- Bấm `Sinh code` sau đó sẽ sinh code cho kỹ thuật gom nhóm, không còn code phát hiện bất thường.
-
-**Dấu hiệu lỗi:**
-
-- Code hoặc kết quả cũ vẫn còn hiển thị sau khi đổi kỹ thuật.
-- Ô câu hỏi vẫn giữ prompt của kỹ thuật trước.
-- AI sinh code theo kỹ thuật cũ dù dropdown đã đổi.
-
-## Test case 3: Câu hỏi ngoài default của plugin insight
-
-**Mục tiêu:** xác nhận AI suy luận theo câu hỏi đã chỉnh, không bị khóa vào lĩnh vực default của plugin.
-
-**Bước thực hiện:**
-
-1. Mở `AI Assistant`.
-2. Chọn `Nhận xét tự động cho một lĩnh vực`.
-3. Trong ô `Câu hỏi gợi ý`, đổi nội dung thành:
-
-   ```text
-   Hãy phân tích và nhận xét các điểm nổi bật của lĩnh vực D8 (Quản trị điện tử) trong năm mới nhất, so sánh các tỉnh có điểm cao nhất và thấp nhất.
-   ```
-
-4. Trong ô `Yêu cầu phân tích bổ sung`, nhập:
-
-   ```text
-   Trả về bảng top 10 tỉnh cao nhất và top 10 tỉnh thấp nhất, kèm biểu đồ cột nếu phù hợp.
-   ```
-
-5. Bấm `Sinh code (AI đề xuất)`.
-6. Kiểm tra code trước khi duyệt, sau đó bấm `Phê duyệt và thực thi`.
-
-**Kỳ vọng đạt:**
-
-- Code phân tích cột `D8`, không dùng default `D4`.
-- `result` có nhóm tỉnh điểm cao và thấp theo D8.
-- Nếu có biểu đồ, trục/nhãn thể hiện D8 hoặc Quản trị điện tử.
-- Nhật ký phiên AI ghi cả câu hỏi chính về D8 và yêu cầu bổ sung top 10.
-
-**Dấu hiệu lỗi:**
-
-- Code vẫn dùng `D4` hoặc “Kiểm soát tham nhũng”.
-- Kết quả không có top cao/thấp như yêu cầu bổ sung.
-- AI trả code thiếu `result` hoặc thiếu `fig` trong khi có yêu cầu biểu đồ.
-
-## Test case 4: Context từ biểu đồ và quyền phê duyệt
-
-**Mục tiêu:** xác nhận AI nhận đúng chart/filter context và không thực thi trước quyết định của người dùng.
-
-**Bước thực hiện:**
-
-1. Mở trang `Diễn biến theo thời gian`, chọn phạm vi 6 lĩnh vực và khoảng năm 2015–2024.
-2. Bấm `Giải thích Diễn biến tổng điểm`.
-3. Xác nhận AI Assistant mở với câu hỏi đã được seed theo biểu đồ.
-4. Bấm `Sinh code (AI đề xuất)` nhưng chưa bấm phê duyệt.
-5. Kiểm tra code/giải thích hiển thị và chưa có `Kết quả thực thi` mới.
-6. Sửa một dòng comment hoặc tham số hợp lệ, sau đó bấm `Phê duyệt và thực thi`.
-
-**Kỳ vọng đạt:**
-
-- Prompt gửi đi có page, chế độ 6 lĩnh vực, khoảng 2015–2024 và chart ID.
-- Không chạy code ở bước 4–5.
-- Sau phê duyệt mới xuất hiện result/fig/error.
-- Nhật ký thực thi hiển thị diff giữa code AI và code người dùng đã duyệt.
-
-**Lưu ý về giới hạn hiện tại:** nếu chỉ sinh code rồi rời trang mà không thực thi, hệ thống chưa tạo
-bản ghi log. Đây là backlog đã ghi trong `docs/roadmap.md`, không phải kết quả mong đợi của test.
+Kiểm ở 1440×900, 1024×768, 390×844, keyboard-only, zoom 200% và reduced motion. Launcher/panel không
+gây horizontal overflow; mobile có safe area; header/composer còn nhìn thấy; conversation cuộn độc lập.
+`Esc` đóng panel và trả focus về launcher. Click ngoài không làm mất hoặc đóng state.

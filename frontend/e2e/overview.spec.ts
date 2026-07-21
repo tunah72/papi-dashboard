@@ -82,19 +82,15 @@ test('canonical route Mối quan hệ lĩnh vực redirect từ alias', async ({
   await expect(page).toHaveURL(/\/dimension$/)
 })
 
-test('Trợ lý AI React công bố ranh giới và không gọi API thực thi', async ({ page }) => {
+test('route AI cũ redirect sang Tổng quan và mở floating assistant mà không gọi AI', async ({ page }) => {
   const writes: string[] = []
   page.on('request', (request) => {
     if (request.method() !== 'GET') writes.push(`${request.method()} ${request.url()}`)
   })
   await page.goto('/ai-assistant?scale=eight&year=2024')
-
-  await expect(page.getByRole('heading', { name: 'Quyền chạy code vẫn thuộc về bạn' })).toBeVisible()
-  await expect(page.getByText(/mở trang không sinh code và không chạy/)).toBeVisible()
-  await expect(page.getByText('Xem code và giải thích')).toBeVisible()
-  await expect(page.getByText('Sửa và quyết định')).toBeVisible()
-  await expect(page.getByText('Chạy local và lưu log')).toBeVisible()
-  await expect(page.getByRole('button', { name: /thực thi/i })).toHaveCount(0)
-  await expect(page.getByRole('link', { name: 'Quay lại Tổng quan' })).toHaveAttribute('href', '/overview?scale=eight&year=2024')
+  await expect(page).toHaveURL(/\/overview\?assistant=open/)
+  await expect(page.getByRole('dialog', { name: 'Trợ lý AI' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Mở Trợ lý AI' })).toBeVisible()
+  await expect(page.getByRole('button', { name: 'Đồng ý và chạy local' })).toHaveCount(0)
   expect(writes).toEqual([])
 })

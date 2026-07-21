@@ -4,7 +4,8 @@
 
 ```bash
 pip install -r requirements-dev.txt
-streamlit run app/main.py
+python -m uvicorn server.main:app --host 127.0.0.1 --port 8000
+cd frontend && npm run dev
 ```
 
 Không commit `.streamlit/secrets.toml` hoặc `logs/ai_sessions.jsonl`.
@@ -19,9 +20,9 @@ Không commit `.streamlit/secrets.toml` hoặc `logs/ai_sessions.jsonl`.
 
 ## Demo AI human-in-the-loop
 
-1. Mở một nút **Giải thích** dưới biểu đồ hoặc nhập câu hỏi ở AI Assistant.
-2. AI chỉ **đề xuất** code và giải thích; trạng thái là *chờ duyệt*.
-3. Sửa code hoặc giữ nguyên, sau đó bấm **Phê duyệt và thực thi**.
+1. Mở floating launcher ở góc dưới bên phải và nhập câu hỏi.
+2. AI trả answer kiến thức hoặc **đề xuất** code và giải thích ở trạng thái *chờ duyệt*.
+3. Nếu cần sửa, mô tả bằng ngôn ngữ tự nhiên để nhận full code mới; sau đó bấm **Đồng ý và chạy local**.
 4. Code chạy local trên bản sao dữ liệu; xem bảng/biểu đồ kết quả và nhật ký.
 5. Nhật ký phân biệt rõ code mới sinh chưa duyệt với lần chạy sau phê duyệt, kể cả log cũ.
 
@@ -36,5 +37,5 @@ Không commit `.streamlit/secrets.toml` hoặc `logs/ai_sessions.jsonl`.
 
 - Chạy `python -m pytest -q`.
 - Mở app local và thử Overview cùng H1–H4 ở cả 6 và 8 lĩnh vực.
-- Mở AI Assistant; kiểm tra code chỉ chạy sau nút phê duyệt.
+- Mở floating AI Assistant; kiểm tra code chỉ chạy sau nút phê duyệt và proposal cũ không chạy được.
 - Không cần API key để xem Dashboard; AI sinh code live cần cấu hình secret cục bộ.
