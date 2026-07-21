@@ -8,7 +8,7 @@ export function AppShell() {
   const [drawerOpen, setDrawerOpen] = useState(false)
   const collapsed = useNavigationStore((state) => state.desktopCollapsed)
   const location = useLocation()
-  const isRedesignedDashboard = location.pathname === '/overview' || location.pathname === '/time-trend'
+  const isRedesignedDashboard = ['/overview', '/time-trend', '/provincial'].includes(location.pathname)
   const active = navigation.find(([, href]) => href === location.pathname)?.[0] ?? 'Không tìm thấy'
   useEffect(() => {
     const escape = (event: KeyboardEvent) => { if (event.key === 'Escape' && drawerOpen) { setDrawerOpen(false); window.setTimeout(() => document.querySelector<HTMLButtonElement>('.menu-trigger')?.focus(), 0) } }

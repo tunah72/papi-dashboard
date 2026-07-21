@@ -18,6 +18,8 @@ bộ mẫu ở những lĩnh vực nào?
 - Vùng.
 - Tỉnh; danh sách tỉnh phụ thuộc vùng và chỉ gồm tỉnh có tổng hợp lệ.
 - Trạng thái: `Đang xem: Quảng Ninh · Đồng bằng sông Hồng · 2024 · 8 lĩnh vực`.
+- Không lặp snapshot, số tỉnh hoặc phạm vi cạnh tiêu đề trang; cỡ mẫu chỉ xuất hiện trong metadata
+  của biểu đồ và KPI benchmark tương ứng.
 
 ### KPI
 
@@ -49,6 +51,9 @@ Cả bốn card có button phóng to ở góc phải header và dùng chung popu
 [`chart_focus_mode.md`](chart_focus_mode.md). Popup giữ đồng bộ tỉnh, vùng, năm và benchmark đang bật
 trên card nguồn.
 
+Không đặt khối “Đọc nhanh hồ sơ” riêng trước grid. Mỗi câu trả lời nằm trong `ChartInsight` ngay dưới
+biểu đồ tương ứng.
+
 ## 4. Biểu đồ 01 — Boxplot kết hợp beeswarm theo vùng
 
 ### Câu hỏi
@@ -58,6 +63,8 @@ Vùng nào có mặt bằng cao/thấp và vùng nào phân hóa nhiều nhất 
 ### Dữ liệu và mã hóa
 
 - Dữ liệu: `distribution.rows`.
+- Quartile phục vụ insight lấy từ `regionMeans.q1`, `regionMeans.q3` và `regionMeans.iqr`; frontend
+  không tự tính lại định nghĩa này.
 - Y: sáu vùng; X: tổng điểm cùng một năm/phạm vi.
 - Boxplot: median, Q1–Q3 và whisker; overlay jittered dot cho từng tỉnh.
 - Tỉnh đang chọn: marker lớn hơn, viền ink và nhãn trực tiếp.
@@ -120,6 +127,8 @@ Nếu dẫn đầu: `{province} dẫn đầu vùng, cao hơn vị trí thứ hai
 ### Dữ liệu và mã hóa
 
 - Dữ liệu: `benchmark` cùng min/max từ `distribution`.
+- Contract benchmark cung cấp `nationalMin`, `nationalMax`, `nationalQ1`, `nationalQ3` để card và
+  popup dùng cùng một range.
 - Một horizontal range từ min đến max toàn bộ mẫu.
 - Marker chính: điểm tỉnh; marker phụ khác hình: trung bình vùng và trung bình toàn bộ mẫu.
 - Dải nền có thể biểu thị Q1–Q3 toàn bộ mẫu nếu backend cung cấp; không dùng tier màu như đánh giá tốt/xấu.
@@ -134,6 +143,7 @@ Nó không lặp radar vì chỉ so tổng điểm, còn radar so cấu trúc l�
 
 - Hover marker: giá trị, delta với tỉnh và n của benchmark.
 - Click marker vùng/toàn mẫu đổi đường benchmark active trên radar.
+- Control `Benchmark` trong header là kênh bàn phím tương đương cho thao tác nhấn marker.
 - Focus bằng bàn phím theo thứ tự tỉnh → vùng → toàn mẫu.
 
 ### Insight động
@@ -187,3 +197,9 @@ số trục ít và chỉ có ba chuỗi; bảng bên dưới vẫn là kênh đ
 - Radar có tối đa ba series, domain cố định và bảng thay thế.
 - Cả bốn chart mở được trong popup xem riêng; radar vẫn có bảng thay thế và tối đa ba series.
 - Insight công bố giá trị, chênh lệch và n thích hợp.
+
+## 10. Contract triển khai
+
+`GET /api/v1/provinces` trả thêm `insights.distribution`, `insights.ranking`, `insights.benchmark` và
+`insights.profile`. Đây là câu kết luận xác định từ artifact đã xử lý, không phải nội dung do AI sinh.
+Mở trang hoặc popup không gọi API AI và không thực thi code.

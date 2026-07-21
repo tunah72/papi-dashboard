@@ -161,6 +161,12 @@ def test_h2_benchmark_and_profile_parity_and_province_only_filter(client):
     assert all(row["regionN"] > 0 and row["nationalN"] > 0 for row in province_only["data"]["profile"]["rows"])
     assert province_only["data"]["benchmark"]["rankRegion"] >= 1
     assert province_only["data"]["benchmark"]["regionTotal"] == len(region_only["data"]["ranking"]["rows"])
+    assert province_only["data"]["benchmark"]["nationalMin"] <= province_only["data"]["benchmark"]["nationalQ1"]
+    assert province_only["data"]["benchmark"]["nationalQ1"] <= province_only["data"]["benchmark"]["nationalQ3"]
+    assert province_only["data"]["benchmark"]["nationalQ3"] <= province_only["data"]["benchmark"]["nationalMax"]
+    assert set(province_only["data"]["insights"]) == {"distribution", "ranking", "benchmark", "profile"}
+    assert all({"q1", "q3", "iqr"} <= set(row) for row in province_only["data"]["regionMeans"]["rows"])
+    assert all(row["rank"] >= 1 for row in province_only["data"]["distribution"]["rows"])
     _artifact(province_only["data"]["distribution"])
     _artifact(province_only["data"]["regionMeans"])
     _artifact(province_only["data"]["ranking"])

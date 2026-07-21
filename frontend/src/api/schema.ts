@@ -196,6 +196,14 @@ export interface components {
             regionMean: number | null;
             /** Nationalmean */
             nationalMean: number | null;
+            /** Nationalmin */
+            nationalMin: number | null;
+            /** Nationalmax */
+            nationalMax: number | null;
+            /** Nationalq1 */
+            nationalQ1: number | null;
+            /** Nationalq3 */
+            nationalQ3: number | null;
             /** Vsregion */
             vsRegion: number | null;
             /** Vsnational */
@@ -596,6 +604,8 @@ export interface components {
             score: number | null;
             /** Year */
             year: number;
+            /** Rank */
+            rank: number;
         };
         /** DynamicsData */
         DynamicsData: {
@@ -1007,6 +1017,17 @@ export interface components {
             /** Province */
             province: string;
         };
+        /** ProvinceInsights */
+        ProvinceInsights: {
+            /** Distribution */
+            distribution: string;
+            /** Ranking */
+            ranking: string;
+            /** Benchmark */
+            benchmark: string;
+            /** Profile */
+            profile: string;
+        };
         /** ProvincesData */
         ProvincesData: {
             measure: components["schemas"]["Measure"];
@@ -1016,6 +1037,7 @@ export interface components {
             benchmark: components["schemas"]["Benchmark"];
             profile: components["schemas"]["ProfileArtifact"];
             availability: components["schemas"]["ProvinceAvailability"];
+            insights: components["schemas"]["ProvinceInsights"];
         };
         /** ProvincesMeta */
         ProvincesMeta: {
@@ -1138,6 +1160,12 @@ export interface components {
             meanScore: number | null;
             /** Medianscore */
             medianScore: number | null;
+            /** Q1 */
+            q1: number | null;
+            /** Q3 */
+            q3: number | null;
+            /** Iqr */
+            iqr: number | null;
             /** Minscore */
             minScore: number | null;
             /** Maxscore */

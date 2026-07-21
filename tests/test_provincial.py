@@ -1,7 +1,7 @@
 import pandas as pd
 import pytest
 
-from analysis import provincial
+from src.analysis import provincial
 
 
 @pytest.fixture
@@ -25,6 +25,9 @@ def test_snapshot_and_region_summary_only_count_available_scores(panel):
     bac = summary.set_index("region").loc["Bắc"]
     assert bac.n_provinces == 2
     assert bac.mean_score == pytest.approx(9.0)
+    assert bac.q1 == pytest.approx(8.5)
+    assert bac.q3 == pytest.approx(9.5)
+    assert bac.iqr == pytest.approx(1.0)
     assert bac.spread == pytest.approx(2.0)
 
 
@@ -48,3 +51,14 @@ def test_dimension_benchmarks_compare_same_year(panel):
     # Benchmark theo từng lĩnh vực giữ lại mọi tỉnh có điểm lĩnh vực, kể cả khi
     # điểm tổng của tỉnh đó khuyết vì một lĩnh vực khác không có dữ liệu.
     assert profile.national_mean.tolist() == [2.5, 3.5]
+
+
+def test_ranking_uses_min_rank_for_ties(panel):
+    tied = panel.copy()
+    tied.loc[tied.province_vi.eq("B") & tied.year.eq(2024), "score"] = 10.0
+
+    ranking = provincial.ranking_in_region(
+        provincial.snapshot_for_year(tied, 2024, "score"), "Bắc", "score"
+    )
+
+    assert ranking.rank_region.tolist() == [1, 1]

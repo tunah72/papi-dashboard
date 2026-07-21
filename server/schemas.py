@@ -365,12 +365,16 @@ class TrendsResponse(ApiModel):
 
 class DistributionRow(ScoreRow):
     year: int
+    rank: int = Field(ge=1)
 
 
 class RegionMeanRow(ApiModel):
     region: str
     mean_score: float | None = Field(alias="meanScore")
     median_score: float | None = Field(alias="medianScore")
+    q1: float | None
+    q3: float | None
+    iqr: float | None
     min_score: float | None = Field(alias="minScore")
     max_score: float | None = Field(alias="maxScore")
     n: int
@@ -384,6 +388,10 @@ class Benchmark(ApiModel):
     province_score: float | None = Field(alias="provinceScore")
     region_mean: float | None = Field(alias="regionMean")
     national_mean: float | None = Field(alias="nationalMean")
+    national_min: float | None = Field(alias="nationalMin")
+    national_max: float | None = Field(alias="nationalMax")
+    national_q1: float | None = Field(alias="nationalQ1")
+    national_q3: float | None = Field(alias="nationalQ3")
     vs_region: float | None = Field(alias="vsRegion")
     vs_national: float | None = Field(alias="vsNational")
     region_n: int = Field(alias="regionN")
@@ -422,6 +430,13 @@ class ProvinceAvailability(ApiModel):
     provinces: list[str]
 
 
+class ProvinceInsights(ApiModel):
+    distribution: str
+    ranking: str
+    benchmark: str
+    profile: str
+
+
 class ProvincesData(ApiModel):
     measure: Measure
     distribution: DistributionArtifact
@@ -430,6 +445,7 @@ class ProvincesData(ApiModel):
     benchmark: Benchmark
     profile: ProfileArtifact
     availability: ProvinceAvailability
+    insights: ProvinceInsights
 
 
 class ProvincesResponse(ApiModel):

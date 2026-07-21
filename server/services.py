@@ -435,14 +435,65 @@ def provinces(scale="eight", year=None, region=None, province=None):
     profile["national_n"] = [int(data()["prov_year"].loc[data()["prov_year"].year.eq(year), code].notna().sum()) for code in cfg["dims"]]
     summary = summary.rename(columns={"n_provinces": "n"})
     distribution = snapshot.rename(columns={total: "score"})
+    distribution["rank"] = distribution["score"].rank(method="min", ascending=False).astype(int)
     ranking_rows = ranking.rename(columns={total: "score"})
+    national_scores = snapshot[total].dropna()
     benchmarks.update({
         "unit": cfg["unit"], "source": SOURCE, "caveats": ["So sánh cùng năm và cùng phạm vi scale."],
         "region_n": int(snapshot.loc[snapshot.region.eq(chosen_region), total].notna().sum()),
         "national_n": int(snapshot[total].notna().sum()),
+        "national_min": float(national_scores.min()),
+        "national_max": float(national_scores.max()),
+        "national_q1": float(national_scores.quantile(0.25)),
+        "national_q3": float(national_scores.quantile(0.75)),
         "rank_region": int(ranking.loc[ranking.province_vi.eq(chosen_province), "rank_region"].iloc[0]),
         "region_total": len(ranking),
     })
+    highest_region = summary.loc[summary.median_score.idxmax()]
+    widest_region = summary.loc[summary.iqr.idxmax()]
+    distribution_insight = (
+        f"{highest_region.region} có trung vị cao nhất ({_vi_number(highest_region.median_score)}); "
+        f"{widest_region.region} phân hóa rộng nhất với IQR {_vi_number(widest_region.iqr)} điểm."
+    )
+    selected_rank = int(benchmarks["rank_region"])
+    leader = ranking.iloc[0]
+    selected_score = float(benchmarks["province_score"])
+    if selected_rank == 1:
+        peers = ranking.loc[ranking[total].lt(selected_score)]
+        if ranking[total].eq(selected_score).sum() > 1:
+            ranking_insight = f"{chosen_province} đồng hạng dẫn đầu vùng với {_vi_number(selected_score)} điểm."
+        elif peers.empty:
+            ranking_insight = f"{chosen_province} là tỉnh duy nhất có dữ liệu trong vùng."
+        else:
+            ranking_insight = (
+                f"{chosen_province} dẫn đầu vùng, cao hơn vị trí kế tiếp "
+                f"{_vi_number(selected_score - float(peers.iloc[0][total]))} điểm."
+            )
+    else:
+        ranking_insight = (
+            f"{chosen_province} đứng hạng {selected_rank}/{len(ranking)}, thấp hơn {leader.province_vi} "
+            f"{_vi_number(float(leader[total]) - selected_score)} điểm."
+        )
+    benchmark_insight = (
+        f"{chosen_province} {'cao hơn' if benchmarks['vs_region'] >= 0 else 'thấp hơn'} vùng "
+        f"{_vi_number(abs(benchmarks['vs_region']))} điểm và "
+        f"{'cao hơn' if benchmarks['vs_national'] >= 0 else 'thấp hơn'} toàn bộ mẫu "
+        f"{_vi_number(abs(benchmarks['vs_national']))} điểm."
+    )
+    profile_valid = profile.dropna(subset=["province_score", "region_mean"]).copy()
+    profile_valid["delta"] = profile_valid.province_score - profile_valid.region_mean
+    if profile_valid.empty:
+        profile_insight = "Không đủ dữ liệu lĩnh vực để so sánh tỉnh với vùng."
+    else:
+        labels = _labels()
+        strongest = profile_valid.loc[profile_valid.delta.idxmax()]
+        weakest = profile_valid.loc[profile_valid.delta.idxmin()]
+        strong_phrase = "vượt vùng nhiều nhất" if strongest.delta >= 0 else "gần vùng nhất"
+        weak_phrase = "thấp hơn vùng nhiều nhất" if weakest.delta < 0 else "vượt vùng ít nhất"
+        profile_insight = (
+            f"{labels.get(strongest.code, strongest.code)} {strong_phrase} ({_vi_number(strongest.delta)}); "
+            f"{labels.get(weakest.code, weakest.code)} {weak_phrase} ({_vi_number(weakest.delta)})."
+        )
     return response({
         "measure": {"id": total, "label": cfg["label"], "unit": cfg["unit"]},
         "distribution": _artifact(distribution, cfg["unit"]),
@@ -451,6 +502,12 @@ def provinces(scale="eight", year=None, region=None, province=None):
         "benchmark": benchmarks,
         "profile": _artifact(profile, "điểm lĩnh vực PAPI"),
         "availability": {"regions": available_regions, "provinces": available_provinces},
+        "insights": {
+            "distribution": distribution_insight,
+            "ranking": ranking_insight,
+            "benchmark": benchmark_insight,
+            "profile": profile_insight,
+        },
     }, n=len(snapshot), filters={"scale": scale, "year": year, "region": chosen_region, "province": chosen_province}, unit=cfg["unit"],
        caveats=["Benchmark toàn quốc chỉ dùng các tỉnh có dữ liệu của snapshot; profile dùng cùng năm."])
 
