@@ -33,14 +33,19 @@ layout.story_route(2)
 
 # ── Control bar ────────────────────────────────────────────────────────────────────────
 with st.container(border=True):
-    scale_col, year_col = st.columns([1.35, 1])
+    scale_col, year_col, pair_col = st.columns([1.15, 1, 1.25])
     with scale_col:
         mode = filters.scale_segmented("Phạm vi so sánh")
     cfg = config.scale_config(mode)
     with year_col:
         year = filters.year_inline(d, "Năm so sánh", year_min=cfg["year_min"])
+    with pair_col:
+        year_start, year_end = filters.year_range_inline(
+            d, "Hai mốc để so thay đổi", year_min=cfg["year_min"]
+        )
 
 total_col = cfg["total_col"]
+metric_label = "tổng 6 lĩnh vực gốc" if total_col == "total_papi_6dim" else "tổng PAPI (8 lĩnh vực)"
 snapshot = provincial.snapshot_for_year(d["prov_year"], year, total_col)
 summary = provincial.region_summary(snapshot, total_col, config.REGION_ORDER)
 
@@ -51,14 +56,47 @@ if snapshot.empty or summary.empty:
 available_regions = [region for region in config.REGION_ORDER if region in set(summary.region.astype(str))]
 default_region = str(summary.iloc[0].region)
 
+layout.section_header(
+    f"Bản đồ điểm PAPI theo tỉnh, {year}",
+    "Bấm một tỉnh trên bản đồ để đồng bộ phần đối chiếu bên dưới. Màu biểu thị điểm, không phải thứ hạng hành chính.",
+)
+with st.container(border=True):
+    fig_map = charts.choropleth(
+        snapshot, d["geojson"], total_col,
+        title=f"Điểm {metric_label} theo tỉnh, {year}",
+        subtitle=f"{len(snapshot)} tỉnh có dữ liệu ở cùng năm và cùng thước đo", source=None, height=570,
+    )
+    map_event = st.plotly_chart(
+        fig_map, on_select="rerun", selection_mode="points", key="h2_map",
+        config={"displayModeBar": False}, width="stretch",
+    )
+    st.caption(config.SOURCE_DEFAULT)
+
+selected_map_id = None
+try:
+    points = map_event.selection.points
+    if points:
+        selected_map_id = points[0].get("location")
+except Exception:
+    pass
+if selected_map_id is not None:
+    selected_map = snapshot.loc[snapshot.province_id.astype(str).eq(str(selected_map_id))]
+    if not selected_map.empty:
+        st.session_state["h2_region"] = selected_map.iloc[0].region
+        st.session_state["h2_province"] = selected_map.iloc[0].province_vi
+
+if st.session_state.get("h2_region") not in available_regions:
+    st.session_state["h2_region"] = default_region
+
 with st.container(border=True):
     region = st.selectbox(
-        "Đi sâu vào vùng", available_regions,
-        index=available_regions.index(default_region), key="h2_region",
+        "Đi sâu vào vùng", available_regions, key="h2_region",
     )
 
 ranking = provincial.ranking_in_region(snapshot, region, total_col)
 province_options = ranking.province_vi.tolist()
+if st.session_state.get("h2_province") not in province_options:
+    st.session_state["h2_province"] = province_options[0]
 province = st.selectbox("Tỉnh cần đối chiếu", province_options, key="h2_province")
 benchmarks = provincial.province_benchmarks(snapshot, region, province, total_col)
 
@@ -83,8 +121,6 @@ st.session_state["dash_context"] = {
 top_region = summary.iloc[0]
 bottom_region = summary.iloc[-1]
 selected_region = summary.loc[summary.region.astype(str).eq(region)].iloc[0]
-metric_label = "tổng 6 lĩnh vực gốc" if total_col == "total_papi_6dim" else "tổng PAPI (8 lĩnh vực)"
-
 layout.kpi_cards([
     {"label": "Vùng có điểm trung bình cao nhất", "value": str(top_region.region), "big": False,
      "delta": (f"{top_region.mean_score:.2f} điểm", "pos")},
@@ -162,6 +198,67 @@ with mean_col:
             tickvals=plot_summary.region.astype(str), tickfont=dict(size=10.5),
         )
         layout.chart(fig_means)
+        st.caption(config.SOURCE_DEFAULT)
+
+# ── Cực trị và thay đổi giữa hai mốc ──────────────────────────────────────────────────
+layout.section_header(
+    f"Những tỉnh ở hai đầu phân bố và thay đổi từ {year_start} đến {year_end}",
+    "Top/bottom và ngoại lệ đều được tính trong cùng năm đang xem; slopegraph chỉ nối các tỉnh có đủ cả hai mốc.",
+)
+top, bottom = provincial.top_bottom(snapshot, total_col, n=10)
+outliers = provincial.zscore_outliers(snapshot, total_col)
+top_col, bottom_col, outlier_col = st.columns(3)
+with top_col:
+    with st.container(border=True):
+        fig_top = charts.bar_ranking(
+            top, total_col, "province_vi", title=f"10 tỉnh điểm cao nhất, {year}",
+            subtitle=f"{metric_label.capitalize()} · chỉ tỉnh có dữ liệu", source=None,
+            color="#4C6A9C", height=450,
+        )
+        layout.chart(fig_top)
+        st.caption(config.SOURCE_DEFAULT)
+with bottom_col:
+    with st.container(border=True):
+        fig_bottom = charts.bar_ranking(
+            bottom, total_col, "province_vi", title=f"10 tỉnh điểm thấp nhất, {year}",
+            subtitle=f"Không trùng nhóm top · {metric_label}", source=None,
+            color=config.ACCENT, ascending=True, height=450,
+        )
+        layout.chart(fig_bottom)
+        st.caption(config.SOURCE_DEFAULT)
+with outlier_col:
+    with st.container(border=True):
+        flagged = outliers.loc[outliers.is_outlier]
+        st.markdown("#### Ngoại lệ thống kê")
+        st.caption("z-score mẫu trong toàn bộ tỉnh có dữ liệu cùng năm · ngưỡng |z| > 2.")
+        if flagged.empty:
+            st.info("Không có tỉnh nào vượt ngưỡng ngoại lệ z-score trong năm này.")
+        else:
+            st.dataframe(
+                flagged[["province_vi", "region", total_col, "z_score"]].rename(columns={
+                    "province_vi": "Tỉnh", "region": "Vùng", total_col: "Điểm", "z_score": "z-score",
+                }),
+                hide_index=True, width="stretch",
+            )
+        st.caption(config.SOURCE_DEFAULT)
+
+slope = provincial.slope_pair(d["prov_year"], year_start, year_end, total_col)
+with st.container(border=True):
+    if slope.empty:
+        st.info(f"Không có tỉnh nào có đủ {metric_label} ở cả hai năm {year_start} và {year_end}.")
+    else:
+        slope_source = d["prov_year"].loc[
+            d["prov_year"].province_id.isin(slope.province_id)
+            & d["prov_year"].year.isin([year_start, year_end]),
+            ["province_id", "province_vi", "year", total_col],
+        ]
+        fig_slope = charts.slopegraph(
+            slope_source, "province_vi", "year", total_col, year_start, year_end,
+            title=f"Điểm tỉnh thay đổi giữa {year_start} và {year_end}",
+            subtitle="Mỗi đường là một tỉnh có đủ hai quan sát; không nội suy dữ liệu thiếu.",
+            source=None, height=560,
+        )
+        layout.chart(fig_slope)
         st.caption(config.SOURCE_DEFAULT)
 
 # ── Drill-down vùng/tỉnh ───────────────────────────────────────────────────────────────

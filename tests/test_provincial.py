@@ -48,3 +48,51 @@ def test_dimension_benchmarks_compare_same_year(panel):
     # Benchmark theo từng lĩnh vực giữ lại mọi tỉnh có điểm lĩnh vực, kể cả khi
     # điểm tổng của tỉnh đó khuyết vì một lĩnh vực khác không có dữ liệu.
     assert profile.national_mean.tolist() == [2.5, 3.5]
+
+
+def test_top_bottom_keeps_non_overlapping_ranked_provinces(panel):
+    snapshot = provincial.snapshot_for_year(panel, 2024, "score")
+
+    top, bottom = provincial.top_bottom(snapshot, "score", n=2)
+
+    assert top.province_vi.tolist() == ["A", "C"]
+    assert bottom.province_vi.tolist() == ["B"]
+    assert set(top.province_id).isdisjoint(bottom.province_id)
+
+
+def test_zscore_outliers_returns_boolean_flags_and_handles_zero_variance():
+    snapshot = pd.DataFrame({
+        "province_id": [1, 2, 3, 4],
+        "province_vi": ["A", "B", "C", "D"],
+        "score": [10.0, 10.0, 10.0, 30.0],
+    })
+
+    result = provincial.zscore_outliers(snapshot, "score", threshold=1.0)
+    constant = provincial.zscore_outliers(snapshot.assign(score=10.0), "score")
+
+    assert result.loc[result.province_vi.eq("D"), "is_outlier"].item() is True
+    assert result.is_outlier.dtype == bool
+    assert constant.is_outlier.eq(False).all()
+    assert constant.z_score.isna().all()
+
+
+def test_zscore_outliers_rejects_non_positive_threshold(panel):
+    snapshot = provincial.snapshot_for_year(panel, 2024, "score")
+
+    with pytest.raises(ValueError, match="threshold"):
+        provincial.zscore_outliers(snapshot, "score", threshold=0)
+
+
+def test_slope_pair_only_returns_provinces_available_in_both_years(panel):
+    slope = provincial.slope_pair(panel, 2023, 2024, "score")
+
+    assert slope.province_vi.tolist() == ["A"]
+    assert slope.score_start.tolist() == [7.0]
+    assert slope.score_end.tolist() == [10.0]
+    assert slope.delta.tolist() == [3.0]
+
+
+@pytest.mark.parametrize("year_start, year_end", [(2024, 2024), (2024, 2023)])
+def test_slope_pair_rejects_invalid_year_order(panel, year_start, year_end):
+    with pytest.raises(ValueError, match="year_start"):
+        provincial.slope_pair(panel, year_start, year_end, "score")

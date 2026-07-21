@@ -46,6 +46,79 @@ def ranking_in_region(snapshot, region, total_col):
     return ranked
 
 
+def top_bottom(snapshot, total_col, n=10):
+    """Trả về các tỉnh điểm cao nhất và thấp nhất, không trùng nhau.
+
+    ``snapshot`` phải là lát cắt của cùng một năm và cùng một thước đo. Khi
+    số quan sát không đủ cho hai nhóm ``n``, ưu tiên nhóm điểm cao và nhóm còn
+    lại là các quan sát thấp nhất chưa xuất hiện ở nhóm đó.
+    """
+    if n <= 0:
+        raise ValueError("n phải lớn hơn 0")
+
+    ordered_high = snapshot.sort_values([total_col, "province_vi"], ascending=[False, True])
+    top = ordered_high.head(n).copy()
+    bottom = (
+        snapshot.loc[~snapshot.index.isin(top.index)]
+        .sort_values([total_col, "province_vi"], ascending=[True, True])
+        .head(n)
+        .copy()
+    )
+    return top.reset_index(drop=True), bottom.reset_index(drop=True)
+
+
+def zscore_outliers(snapshot, total_col, threshold=2.0):
+    """Gắn cờ ngoại lệ z-score trong một snapshot cùng năm.
+
+    Dùng độ lệch chuẩn mẫu (``ddof=1``). Nếu không đủ hai quan sát có điểm
+    hoặc mọi điểm bằng nhau, không có căn cứ để gắn cờ và ``z_score`` giữ NaN.
+    """
+    if threshold <= 0:
+        raise ValueError("threshold phải lớn hơn 0")
+
+    result = snapshot.copy()
+    result["z_score"] = float("nan")
+    result["is_outlier"] = False
+    scores = result[total_col].dropna()
+    if len(scores) < 2:
+        return result
+
+    std = scores.std(ddof=1)
+    if pd.isna(std) or std == 0:
+        return result
+
+    result.loc[scores.index, "z_score"] = (scores - scores.mean()) / std
+    result["is_outlier"] = result["z_score"].abs().gt(threshold).fillna(False).astype(bool)
+    return result
+
+
+def slope_pair(prov_year, year_start, year_end, total_col):
+    """Ghép điểm một tỉnh ở hai năm để vẽ slopegraph, không suy diễn dữ liệu thiếu."""
+    if year_start >= year_end:
+        raise ValueError("year_start phải nhỏ hơn year_end")
+
+    cols = ["province_id", "province_vi", "year", total_col]
+    paired = (
+        prov_year.loc[prov_year.year.isin([year_start, year_end]), cols]
+        .dropna(subset=[total_col])
+        .copy()
+    )
+    counts = paired.groupby("province_id", observed=True)["year"].nunique()
+    paired = paired.loc[paired.province_id.isin(counts[counts.eq(2)].index)]
+    if paired.empty:
+        return pd.DataFrame(columns=["province_id", "province_vi", "score_start", "score_end", "delta"])
+
+    scores = paired.pivot(index="province_id", columns="year", values=total_col)
+    names = paired.drop_duplicates("province_id").set_index("province_id")["province_vi"]
+    result = scores.rename(columns={year_start: "score_start", year_end: "score_end"}).join(names)
+    result["delta"] = result["score_end"] - result["score_start"]
+    return (
+        result.reset_index()[["province_id", "province_vi", "score_start", "score_end", "delta"]]
+        .sort_values(["delta", "province_vi"], ascending=[False, True])
+        .reset_index(drop=True)
+    )
+
+
 def province_benchmarks(snapshot, region, province, total_col):
     """So sánh một tỉnh với trung bình vùng và trung bình toàn bộ snapshot."""
     province_rows = snapshot.loc[snapshot.province_vi.eq(province), ["province_vi", "region", total_col]]
