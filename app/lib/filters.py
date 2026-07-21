@@ -9,9 +9,10 @@ def select_scale_mode(label="Thước đo"):
     return st.sidebar.radio(label, config.SCALE_MODES, index=0)
 
 
-def scale_segmented(label="Phạm vi so sánh"):
+def scale_segmented(label="Phạm vi so sánh", default=None, key=None):
     """Chọn phạm vi so sánh dạng segmented control, render tại vị trí gọi (không phải sidebar)."""
-    mode = st.segmented_control(label, config.SCALE_MODES, default=config.SCALE_MODES[0])
+    default = default if default in config.SCALE_MODES else config.SCALE_MODES[0]
+    mode = st.segmented_control(label, config.SCALE_MODES, default=default, key=key)
     return mode or config.SCALE_MODES[0]
 
 

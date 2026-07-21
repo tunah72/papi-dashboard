@@ -119,6 +119,23 @@ def slope_pair(prov_year, year_start, year_end, total_col):
     )
 
 
+def largest_absolute_changes(prov_year, year_start, year_end, total_col, n=7):
+    """Chọn tối đa ``n`` tỉnh đổi điểm mạnh nhất giữa hai mốc quan sát được."""
+    if n <= 0:
+        raise ValueError("n phải lớn hơn 0")
+
+    paired = slope_pair(prov_year, year_start, year_end, total_col)
+    if paired.empty:
+        return paired
+    return (
+        paired.assign(abs_delta=paired["delta"].abs())
+        .sort_values(["abs_delta", "province_vi"], ascending=[False, True])
+        .head(n)
+        .drop(columns="abs_delta")
+        .reset_index(drop=True)
+    )
+
+
 def province_benchmarks(snapshot, region, province, total_col):
     """So sánh một tỉnh với trung bình vùng và trung bình toàn bộ snapshot."""
     province_rows = snapshot.loc[snapshot.province_vi.eq(province), ["province_vi", "region", total_col]]

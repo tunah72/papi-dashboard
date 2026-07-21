@@ -16,7 +16,8 @@ def test_provincial_page_boots_with_default_data():
 
     assert not app.exception
     assert len(app.select_slider) >= 2
-    assert len(app.get("plotly_chart")) >= 6
+    assert len(app.get("plotly_chart")) == 6
+    assert app.segmented_control[1].value == "Cực trị"
 
 
 def test_provincial_page_switches_to_eight_dimension_scale():
@@ -28,3 +29,13 @@ def test_provincial_page_switches_to_eight_dimension_scale():
 
     assert not app.exception
     assert app.session_state["dash_context"]["total_col"] == "total_papi"
+
+
+def test_provincial_page_only_renders_delta_chart_when_change_view_is_selected():
+    app = AppTest.from_file(str(ROOT / "app" / "pages" / "provincial.py"))
+
+    app.run(timeout=30)
+    app.segmented_control[1].set_value("Thay đổi").run(timeout=30)
+
+    assert not app.exception
+    assert len(app.get("plotly_chart")) == 5

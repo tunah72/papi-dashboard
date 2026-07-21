@@ -96,3 +96,24 @@ def test_slope_pair_only_returns_provinces_available_in_both_years(panel):
 def test_slope_pair_rejects_invalid_year_order(panel, year_start, year_end):
     with pytest.raises(ValueError, match="year_start"):
         provincial.slope_pair(panel, year_start, year_end, "score")
+
+
+def test_largest_absolute_changes_limits_to_biggest_observed_pairs(panel):
+    changed = pd.concat([
+        panel,
+        pd.DataFrame({
+            "province_id": [2, 3], "province_vi": ["B", "C"],
+            "region": ["Bắc", "Nam"], "year": [2023, 2023],
+            "score": [12.0, 8.0], "D1": [1.0, 1.0], "D2": [2.0, 2.0],
+        }),
+    ], ignore_index=True)
+
+    result = provincial.largest_absolute_changes(changed, 2023, 2024, "score", n=2)
+
+    assert result.province_vi.tolist() == ["B", "A"]
+    assert result.delta.tolist() == [-4.0, 3.0]
+
+
+def test_largest_absolute_changes_rejects_non_positive_limit(panel):
+    with pytest.raises(ValueError, match="n"):
+        provincial.largest_absolute_changes(panel, 2023, 2024, "score", n=0)
