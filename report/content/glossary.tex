@@ -1,15 +1,47 @@
 \section*{Bảng thuật ngữ}
 \addcontentsline{toc}{section}{Bảng thuật ngữ}
 
-\begin{longtable}{@{}p{0.22\textwidth}p{0.72\textwidth}@{}}
+Các thuật ngữ và viết tắt chính được sử dụng trong báo cáo được giải thích tại Bảng~\ref{tab:glossary}.
+
+\small
+\begin{longtable}{@{}p{0.20\textwidth}p{0.25\textwidth}p{0.49\textwidth}@{}}
+\caption{Thuật ngữ tiếng Anh - tiếng Việt dùng trong đồ án}
+\label{tab:glossary}\\
 \toprule
-\textbf{Thuật ngữ} & \textbf{Ý nghĩa} \\
+\textbf{Thuật ngữ hoặc viết tắt} & \textbf{Tên tiếng Việt} & \textbf{Ý nghĩa trong đồ án} \\
 \midrule
 \endfirsthead
+\caption[]{Thuật ngữ tiếng Anh - tiếng Việt dùng trong đồ án (tiếp theo)}\\
 \toprule
-\textbf{Thuật ngữ} & \textbf{Ý nghĩa} \\
+\textbf{Thuật ngữ hoặc viết tắt} & \textbf{Tên tiếng Việt} & \textbf{Ý nghĩa trong đồ án} \\
 \midrule
 \endhead
-% TODO: Bổ sung PAPI, D1--D8, API, PCA, K-Means và các thuật ngữ được dùng trong báo cáo.
+\midrule
+\multicolumn{3}{r}{\textit{Còn tiếp ở trang sau}}\\
+\endfoot
+\bottomrule
+\endlastfoot
+PAPI & Chỉ số Hiệu quả Quản trị và Hành chính công cấp tỉnh & Bộ chỉ số phản ánh trải nghiệm, cảm nhận và mức độ hài lòng của người dân về quản trị và hành chính công. \\
+UNDP & Chương trình Phát triển Liên Hợp Quốc & Cơ quan phối hợp thực hiện và công bố PAPI tại Việt Nam. \\
+CECODES & Trung tâm Nghiên cứu Phát triển và Hỗ trợ Cộng đồng & Đơn vị nghiên cứu phối hợp thực hiện PAPI. \\
+RTA & Phân tích Thời gian thực & Đơn vị phối hợp khảo sát, xử lý và phân tích dữ liệu PAPI. \\
+D1\textendash D8 & Tám lĩnh vực PAPI & Mã tám lĩnh vực quản trị; D1\textendash D6 có từ 2011, D7\textendash D8 có từ 2018. \\
+Microdata & Dữ liệu vi mô & Dữ liệu ở cấp từng người trả lời; không được sử dụng trong đồ án. \\
+Panel data & Dữ liệu bảng & Dữ liệu theo dõi cùng các tỉnh qua nhiều năm. \\
+Grain & Mức chi tiết của dữ liệu & Tổ hợp khóa xác định một quan sát; bảng dữ liệu chính có mức tỉnh $\times$ năm $\times$ lĩnh vực. \\
+Unweighted score & Điểm không trọng số & Loại điểm lĩnh vực được dự án sử dụng thống nhất từ các tệp PAPI. \\
+Missing value & Giá trị thiếu & Quan sát không có dữ liệu hợp lệ; được giữ ở trạng thái thiếu, không điền 0 hay nội suy. \\
+EDA & Phân tích dữ liệu khám phá & Bước mô tả phân phối, xu hướng, quan hệ và trường hợp bất thường trước khi trực quan hóa. \\
+API & Giao diện lập trình ứng dụng & Cách thức trao đổi dữ liệu và yêu cầu giữa bảng điều khiển với dịch vụ chạy cục bộ. \\
+GeoJSON & Định dạng dữ liệu địa lý dựa trên JSON & Tệp chứa ranh giới địa lý của các tỉnh để dựng bản đồ. \\
+Choropleth & Bản đồ tô màu theo giá trị & Bản đồ mã hóa điểm số hoặc mức thay đổi theo khu vực địa lý. \\
+Correlation & Tương quan & Mức độ hai biến cùng biến thiên; không tự chứng minh quan hệ nhân quả. \\
+Regression & Hồi quy & Mô hình mô tả xu hướng quan hệ giữa các biến trong phạm vi dữ liệu. \\
+Residual & Phần dư & Chênh lệch giữa giá trị quan sát và giá trị do mô hình hồi quy dự đoán. \\
+Standard deviation & Độ lệch chuẩn & Thước đo mức phân tán của điểm số quanh giá trị trung bình. \\
+PCA & Phân tích thành phần chính & Phương pháp giảm chiều dùng để biểu diễn gần đúng đặc trưng nhiều lĩnh vực trên ít trục hơn. \\
+K-Means & Phân cụm K-Means & Thuật toán nhóm các tỉnh có hồ sơ điểm PAPI tương đồng; nhóm không phải phân loại chính thức. \\
+Human-in-the-loop & Con người trong vòng lặp & Cơ chế yêu cầu người dùng xem, sửa và phê duyệt đề xuất trước khi mã do AI tạo ra được chạy cục bộ. \\
 \bottomrule
 \end{longtable}
+\normalsize

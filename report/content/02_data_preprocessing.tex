@@ -2,25 +2,164 @@
 \label{sec:data-preprocessing}
 
 \subsection{Nguồn dữ liệu}
-% TODO: Ghi rõ UNDP Việt Nam, CECODES, RTA, đường dẫn và thời điểm truy cập.
+
+PAPI do Chương trình Phát triển Liên Hợp Quốc tại Việt Nam (UNDP Việt Nam), Trung tâm Nghiên cứu Phát triển và Hỗ trợ Cộng đồng (CECODES) và RTA phối hợp thực hiện, với sự hỗ trợ điều phối khảo sát của Mặt trận Tổ quốc Việt Nam. Chương trình tạo bằng chứng từ tiếng nói người dân để theo dõi chất lượng quản trị, hành chính công và dịch vụ công ở địa phương \cite{undpPapiProject,undpPapi2024}.
+
+Dữ liệu sử dụng gồm các bảng chỉ tiêu và điểm PAPI công khai cho giai đoạn 2011\textendash 2024 trên cổng dữ liệu PAPI \cite{papiDataPortal}. Đây là kết quả đã tổng hợp ở cấp tỉnh, không phải dữ liệu cá nhân.
 
 \subsection{Phương pháp khảo sát và thu thập dữ liệu PAPI}
-% TODO: Trình bày cách PAPI khảo sát người dân dựa trên tài liệu nguồn chính thức.
+
+PAPI bắt đầu từ những người dân được chọn vào mẫu khảo sát. Câu trả lời ghi nhận trải nghiệm và cảm nhận thực tế về quản trị, thủ tục hành chính và dịch vụ công, sau đó được tổng hợp thành chỉ tiêu, trục thành phần và điểm lĩnh vực cấp tỉnh. Điểm số phản ánh đánh giá của người dân trong mẫu, không đồng nhất với dữ liệu hành chính.
+
+Theo báo cáo PAPI 2024, 18.894 công dân được chọn ngẫu nhiên đã tham gia khảo sát năm 2024; tổng cộng 216.673 lượt người dân Việt Nam đã được phỏng vấn trực tiếp từ năm 2009 đến hết năm 2024 \cite{undpPapi2024}.
 
 \subsection{Đối tượng, phạm vi và thời gian khảo sát}
-% TODO: Nêu đơn vị quan sát, phạm vi tỉnh thành và giai đoạn 2011--2024.
 
-\subsection{Ý nghĩa của các lĩnh vực D1--D8}
-% TODO: Giải thích ngắn ý nghĩa từng lĩnh vực và lưu ý D7--D8 chỉ có từ năm 2018.
+Phạm vi dữ liệu được xác định như sau:
+
+\begin{itemize}
+    \setlength{\itemsep}{0.2em}
+    \setlength{\parskip}{0pt}
+    \item Thời gian: 14 năm, từ 2011 đến 2024.
+    \item Không gian: 63 tỉnh, thành phố thuộc 6 vùng kinh tế - xã hội; toàn bộ quan sát thuộc Việt Nam.
+    \item Mức quan sát chính: tỉnh $\times$ năm $\times$ lĩnh vực.
+    \item Bảng tỉnh - năm: đủ $63 \times 14 = 882$ tổ hợp; tổ hợp không có điểm hợp lệ được giữ là thiếu.
+\end{itemize}
+
+\subsection{Ý nghĩa của các lĩnh vực D1\textendash D8}
+
+Điểm lĩnh vực nằm trên thang 1\textendash 10; điểm cao hơn biểu thị trải nghiệm hoặc cảm nhận tích cực hơn. Bảng~\ref{tab:papi-dimensions} tóm tắt tám lĩnh vực của tập dữ liệu.
+
+\begin{table}[htbp]
+    \centering
+    \caption{Ý nghĩa khái quát của tám lĩnh vực PAPI}
+    \label{tab:papi-dimensions}
+    \small
+    \begin{tabularx}{\textwidth}{@{}p{0.06\textwidth}p{0.27\textwidth}p{0.10\textwidth}X@{}}
+        \toprule
+        \textbf{Mã} & \textbf{Tên tiếng Việt} & \textbf{Bắt đầu} & \textbf{Nội dung phản ánh} \\
+        \midrule
+        D1 & Tham gia của người dân ở cấp cơ sở & 2011 & Tri thức công dân, cơ hội tham gia, bầu cử cơ sở và đóng góp tự nguyện. \\
+        D2 & Công khai, minh bạch trong ra quyết định & 2011 & Tiếp cận thông tin, danh sách hộ nghèo, ngân sách và kế hoạch sử dụng đất. \\
+        D3 & Trách nhiệm giải trình với người dân & 2011 & Tương tác với chính quyền, phản ánh hoặc khiếu nại và tiếp cận tư pháp. \\
+        D4 & Kiểm soát tham nhũng trong khu vực công & 2011 & Vòi vĩnh, hối lộ, công bằng trong tuyển dụng và quyết tâm chống tham nhũng. \\
+        D5 & Thủ tục hành chính công & 2011 & Trải nghiệm làm chứng thực, giấy phép, giấy chứng nhận quyền sử dụng đất và thủ tục cấp xã. \\
+        D6 & Cung ứng dịch vụ công & 2011 & Y tế, giáo dục, hạ tầng căn bản và an ninh, trật tự. \\
+        D7 & Quản trị môi trường & 2018 & Chất lượng không khí, nước và phản ứng với vấn đề môi trường. \\
+        D8 & Quản trị điện tử & 2018 & Tiếp cận Internet, thông tin và dịch vụ công trực tuyến. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+D1\textendash D6 có từ năm 2011; D7 và D8 có từ năm 2018 và phải để thiếu trước thời điểm đó. Dự án dùng tổng sáu lĩnh vực cho so sánh dài hạn và tổng tám lĩnh vực cho giai đoạn 2018\textendash 2024. Không nối trực tiếp hai tổng qua mốc 2018 vì bước nhảy chủ yếu phản ánh thay đổi cấu trúc chỉ số.
 
 \subsection{Cấu trúc và đặc điểm dữ liệu}
-% TODO: Mô tả grain, biến chính, số dòng, kiểu dữ liệu và các dạng bảng nguồn.
+
+Các bảng nguồn không có cấu trúc hoàn toàn đồng nhất. Trong giai đoạn 2011\textendash 2017, tỉnh được trình bày theo hàng và sáu lĩnh vực theo cột; từ năm 2018, chỉ tiêu được trình bày theo hàng, tỉnh theo cột và có tám lĩnh vực. Tên tỉnh, nhãn chỉ tiêu và cách trình bày tổng điểm cũng thay đổi giữa các năm.
+
+Sau chuẩn hóa, bảng điểm lĩnh vực dạng dài có 6.094 dòng, gồm mã tỉnh, năm, mã lĩnh vực và điểm số. Bảng tổng hợp tỉnh - năm có 882 dòng, với D1\textendash D8 được trình bày thành các cột. Bảng~\ref{tab:processed-artifacts} tóm tắt các bảng dữ liệu chính; định nghĩa biến đầy đủ nằm ở phụ lục.
+
+\begin{table}[H]
+    \centering
+    \caption{Các bảng dữ liệu chính sau tiền xử lý}
+    \label{tab:processed-artifacts}
+    \small
+    \begin{tabularx}{\textwidth}{@{}p{0.30\textwidth}p{0.25\textwidth}p{0.12\textwidth}X@{}}
+        \toprule
+        \textbf{Bảng dữ liệu} & \textbf{Mức chi tiết} & \textbf{Quy mô} & \textbf{Vai trò} \\
+        \midrule
+        Điểm lĩnh vực dạng dài & Tỉnh $\times$ năm $\times$ lĩnh vực & 6.094 & Phân tích xu hướng, phân phối, mối quan hệ và phân nhóm. \\
+        Tổng hợp tỉnh - năm & Tỉnh $\times$ năm & 882 & Tính tổng điểm, xếp hạng, lập bản đồ và so sánh hai mốc. \\
+        Thống kê theo năm và lĩnh vực & Năm $\times$ lĩnh vực & 112 & Trung bình, giá trị nhỏ nhất, lớn nhất và độ lệch chuẩn. \\
+        Danh mục tỉnh & Một tỉnh & 63 & Mã, tên tỉnh, vùng và mã vùng. \\
+        Danh mục lĩnh vực & Một lĩnh vực & 8 & Tên, mã, màu, thứ tự và năm bắt đầu. \\
+        Ranh giới địa lý tỉnh & Một tỉnh & 63 mã tỉnh & Thể hiện ranh giới tỉnh trên bản đồ. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+Các bảng trong Bảng~\ref{tab:processed-artifacts} không chứa câu trả lời cá nhân hoặc biến nhân khẩu học.
 
 \subsection{Quy trình làm sạch, chuẩn hóa và hợp nhất}
-% TODO: Trình bày pipeline từ Excel raw đến các bảng processed, không bỏ qua bước xử lý.
+
+Hình~\ref{fig:data-pipeline} khái quát quy trình làm sạch, chuẩn hóa và hợp nhất dữ liệu, gồm các bước:
+
+\begin{enumerate}
+    \setlength{\itemsep}{0.15em}
+    \setlength{\parskip}{0pt}
+    \item Chọn nguồn dữ liệu cho từng năm để tránh trùng lặp.
+    \item Đọc riêng hai dạng cấu trúc của giai đoạn 2011\textendash 2017 và 2018\textendash 2024.
+    \item Chuẩn hóa tên tỉnh về mã cố định và nhãn lĩnh vực về D1\textendash D8.
+    \item Sử dụng thống nhất điểm không trọng số giữa các năm.
+    \item Chuyển các bản ghi có điểm bằng 0 không hợp lệ thành dữ liệu thiếu.
+    \item Tách tổng điểm khỏi bảng điểm lĩnh vực để mỗi dòng chỉ biểu diễn một lĩnh vực.
+    \item Khử trùng theo khóa tỉnh $\times$ năm $\times$ lĩnh vực và ép kiểu dữ liệu thống nhất.
+    \item Tạo bảng đầy đủ 63 tỉnh $\times$ 14 năm, không loại bỏ tổ hợp chỉ vì thiếu điểm.
+    \item Giữ nguyên dữ liệu thiếu, không điền 0 và không nội suy.
+    \item Khi đủ lĩnh vực yêu cầu, tính tổng, hạng, tứ phân vị theo năm và thống kê toàn quốc.
+    \item Kiểm tra chất lượng và xuất các bảng dữ liệu sau xử lý.
+\end{enumerate}
+
+\begin{figure}[H]
+    \centering
+    \resizebox{\textwidth}{!}{%
+    \begin{tikzpicture}[
+        node distance=0.55cm,
+        stage/.style={rectangle, rounded corners, draw=black, align=center, minimum height=1.25cm, text width=3.0cm, font=\sffamily\small},
+        flow/.style={thick, -{Stealth[length=2.5mm]}}
+    ]
+        \node[stage, fill=blue!15] (raw) {Dữ liệu PAPI\\2011\textendash 2024};
+        \node[stage, fill=gray!15, right=of raw] (parse) {Đọc hai cấu trúc\\2011\textendash 2017 và 2018\textendash 2024};
+        \node[stage, fill=green!15, right=of parse] (clean) {Chuẩn hóa, lọc\\và khử trùng};
+        \node[stage, fill=yellow!15, right=of clean] (panel) {Bảng tỉnh - năm,\\giữ dữ liệu thiếu};
+        \node[stage, fill=orange!15, right=of panel] (output) {Tổng hợp, kiểm tra\\và xuất dữ liệu};
+        \draw[flow] (raw) -- (parse);
+        \draw[flow] (parse) -- (clean);
+        \draw[flow] (clean) -- (panel);
+        \draw[flow] (panel) -- (output);
+    \end{tikzpicture}%
+    }
+    \caption{Luồng tiền xử lý dữ liệu PAPI có thể tái lập}
+    \label{fig:data-pipeline}
+\end{figure}
+
+Quy trình không sửa dữ liệu gốc, không điều chỉnh điểm bằng thao tác thủ công và không tạo giá trị thay thế cho dữ liệu thiếu. Các quy tắc xử lý được áp dụng thống nhất cho toàn bộ giai đoạn để bảo đảm khả năng tái lập.
 
 \subsection{Xử lý dữ liệu thiếu}
-% TODO: Nêu quy tắc giữ giá trị thiếu, không nội suy và cách loại mẫu theo từng phép tính.
+
+Các nguyên tắc xử lý dữ liệu thiếu gồm:
+
+\begin{itemize}
+    \setlength{\itemsep}{0.2em}
+    \setlength{\parskip}{0pt}
+    \item Không điền 0, không nội suy và không thay bằng trung bình tỉnh hoặc vùng.
+    \item Chuyển 28 giá trị 0 không hợp lệ thành thiếu, gồm 24 điểm lĩnh vực và 4 tổng điểm.
+    \item Chỉ tính tổng khi đủ sáu hoặc tám lĩnh vực; 13 tổ hợp tỉnh - năm không có tổng hợp lệ được giữ là thiếu.
+    \item Mỗi phép tính chỉ dùng các tỉnh có dữ liệu hợp lệ và phải công bố số quan sát thực tế $n$.
+\end{itemize}
+
+Danh sách chi tiết các tổ hợp thiếu nằm trong phụ lục tiền xử lý.
 
 \subsection{Dữ liệu sau tiền xử lý và giới hạn diễn giải}
-% TODO: Tóm tắt các artifact đầu ra, kiểm tra chất lượng và caveat khi dùng dữ liệu.
+
+Kết quả kiểm tra dữ liệu sau tiền xử lý:
+
+\begin{itemize}
+    \setlength{\itemsep}{0.2em}
+    \setlength{\parskip}{0pt}
+    \item Quy mô: 6.094 điểm lĩnh vực, 882 tổ hợp tỉnh - năm và 60\textendash 63 tỉnh mỗi năm.
+    \item Phạm vi: điểm lĩnh vực từ 1,93 đến 8,46; tổng hợp lệ từ 31,7 đến 48,8.
+    \item Chất lượng: không trùng khóa; 369 tổng tám lĩnh vực khớp với tổng công bố, sai lệch lớn nhất là 0,0000.
+\end{itemize}
+
+Giới hạn diễn giải:
+
+\begin{itemize}
+    \setlength{\itemsep}{0.2em}
+    \setlength{\parskip}{0pt}
+    \item Điểm số phản ánh cảm nhận ở cấp tỉnh, không đại diện cho toàn bộ hiệu quả quản trị hoặc các nhóm dân cư.
+    \item D7 và D8 chỉ có từ năm 2018; nhóm tứ phân vị theo năm không phải phân loại chính thức của PAPI.
+    \item Các quan hệ thống kê không chứng minh quan hệ nhân quả hoặc tác động chính sách.
+\end{itemize}
+
+Vì vậy, kết quả chỉ phục vụ phân tích mô tả và so sánh.

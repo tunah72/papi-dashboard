@@ -5,10 +5,172 @@
 % lý do chọn biểu đồ; cách đọc; kết quả và nhận xét. Tránh lặp lại mô tả giao diện Dashboard.
 
 \subsection{Bức tranh tổng quan về PAPI}
-% TODO: Phân tích bản đồ, thay đổi theo năm, phân nhóm tương quan và phân phối thay đổi.
+
+Phần tổng quan sử dụng tổng tám lĩnh vực để mô tả mặt cắt năm 2024 và mức thay đổi từ năm 2018. Bốn biểu đồ lần lượt trả lời các câu hỏi về phân bố không gian, nhịp thay đổi theo năm, mối liên hệ giữa hai lĩnh vực nổi bật và mức thay đổi của các tỉnh. Mỗi kết quả chỉ dùng địa phương có dữ liệu hợp lệ ở phép tính tương ứng \cite{papiDataPortal}.
+
+\subsubsection{Phân bố điểm PAPI theo địa phương}
+
+Hình~\ref{fig:overview-papi-map} là bản đồ tô màu theo giá trị. Mỗi tỉnh được mã hóa bằng tổng điểm tám lĩnh vực trên một thang màu liên tục; màu càng đậm biểu thị điểm càng cao. Kỹ thuật này phù hợp với dữ liệu địa lý vì giúp nhận ra đồng thời vị trí, mức điểm và các cụm không gian. Hai tỉnh thiếu tổng hợp lệ không được gán điểm giả hoặc xếp vào mức thấp nhất.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/overview/overview_papi_map_2024.png}
+    \caption{Phân bố tổng điểm PAPI tám lĩnh vực theo tỉnh năm 2024}
+    \label{fig:overview-papi-map}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: màu đậm biểu thị điểm cao hơn; vùng không có màu là địa phương không đủ dữ liệu.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Trong 61 tỉnh có dữ liệu năm 2024, Quảng Ninh đạt 47,82 điểm và Kiên Giang đạt 39,91 điểm; khoảng cách giữa hai tỉnh là 7,91 điểm.
+    \item \textit{Ưu tiên phân tích:} Xác định lĩnh vực có điểm thấp tại từng địa phương và đối chiếu với nhóm tỉnh có điểm cao để lựa chọn nội dung cần cải thiện.
+\end{itemize}
+
+\subsubsection{Mức thay đổi trung bình theo năm}
+
+Hình~\ref{fig:overview-annual-change} sử dụng biểu đồ thác nước. Thanh đầu tiên biểu diễn mức gốc năm 2018; các thanh sau biểu diễn chênh lệch so với năm trước. Vị trí thanh thể hiện mức cộng dồn, trong khi màu, hướng và dấu của nhãn giúp phân biệt tăng với giảm mà không chỉ phụ thuộc vào màu sắc. Cách mã hóa này làm rõ năm nào đóng góp nhiều nhất vào thay đổi của toàn giai đoạn.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/overview/overview_annual_change_2018_2024.png}
+    \caption{Mức thay đổi trung bình của tổng điểm tám lĩnh vực, giai đoạn 2018\textendash 2024}
+    \label{fig:overview-annual-change}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: thanh xanh biểu thị tăng, thanh cam biểu thị giảm; dấu cộng hoặc trừ cho biết hướng thay đổi so với năm trước.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Tổng điểm giảm liên tiếp từ năm 2019 đến năm 2022, gần như ổn định năm 2023 và tăng 1,01 điểm năm 2024. Mức giảm lớn nhất là 0,84 điểm vào năm 2020.
+    \item \textit{Ưu tiên phân tích:} Phân rã mức thay đổi năm 2020 và năm 2024 theo vùng, tỉnh và lĩnh vực để xác định thành phần tạo ra hai biến động lớn nhất.
+\end{itemize}
+
+\subsubsection{Cơ cấu bốn nhóm D1 và D2}
+
+Hình~\ref{fig:overview-d1-d2-groups} là biểu đồ thanh chồng 100\%. Ngưỡng trung bình của D1 - Tham gia của người dân ở cấp cơ sở và D2 - Công khai, minh bạch trong ra quyết định được dùng để chia các tỉnh thành bốn nhóm. Độ dài mỗi đoạn biểu diễn tỷ lệ tỉnh, còn nhãn trực tiếp cho biết nhóm và số lượng. Hệ số tương quan Pearson được đặt cạnh biểu đồ để bổ sung mức độ liên hệ tuyến tính giữa hai lĩnh vực.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/overview/overview_d1_d2_groups_2024.png}
+    \caption{Cơ cấu bốn nhóm D1 và D2 của các tỉnh năm 2024}
+    \label{fig:overview-d1-d2-groups}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: độ dài mỗi đoạn biểu thị tỷ lệ tỉnh; nhãn trong đoạn cho biết nhóm và số tỉnh.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} D1 và D2 có tương quan dương, với $r \approx 0{,}72$. Nhóm cao - cao có 25 tỉnh và nhóm thấp - thấp có 24 tỉnh, tổng cộng 49 trong 61 tỉnh.
+    \item \textit{Ưu tiên phân tích:} Nhóm thấp - thấp cần được xem xét đồng thời ở D1 và D2; nhóm cao - thấp hoặc thấp - cao cần tập trung vào lĩnh vực còn hạn chế.
+\end{itemize}
+
+\subsubsection{Phân phối mức thay đổi của tỉnh}
+
+Hình~\ref{fig:overview-change-distribution} sử dụng biểu đồ tần suất để thể hiện phân phối chênh lệch tổng điểm giữa năm 2018 và năm 2024. Trục ngang là mức thay đổi, trục dọc là số tỉnh trong từng khoảng; mốc 0 phân tách tăng và giảm, còn đường đứt biểu diễn trung vị. Kỹ thuật gom khoảng giúp nhận ra hình dạng phân phối và xu hướng chung mà không biến phần tổng quan thành bảng xếp hạng từng tỉnh.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/overview/overview_province_change_distribution_2018_2024.png}
+    \caption{Phân phối mức thay đổi tổng điểm tám lĩnh vực của tỉnh, giai đoạn 2018\textendash 2024}
+    \label{fig:overview-change-distribution}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: cột cam biểu thị các khoảng giảm, cột xanh biểu thị các khoảng tăng; đường đứt đánh dấu trung vị.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Trong 59 tỉnh đủ dữ liệu ở hai mốc, 40 tỉnh giảm và 19 tỉnh tăng; tỷ lệ tăng là 32,2\%. Trung vị bằng $-0{,}94$ điểm.
+    \item \textit{Ưu tiên phân tích:} Xác định các lĩnh vực cùng suy giảm ở nhóm 40 tỉnh và đối chiếu với 19 tỉnh tăng điểm để tìm khác biệt nổi bật.
+\end{itemize}
 
 \subsection{Phân tích Diễn biến theo thời gian}
-% TODO: Phân tích line chart, heatmap năm-kề-năm, bump chart và slopegraph.
+
+Phần này sử dụng tổng điểm sáu lĩnh vực D1--D6 để theo dõi nhất quán toàn bộ giai đoạn 2011\textendash 2024. Bốn biểu đồ làm rõ mức điểm, hướng biến động, sự thay đổi thứ hạng vùng và đóng góp của từng lĩnh vực. Tổng tám lĩnh vực không được sử dụng vì D7 và D8 chỉ xuất hiện từ năm 2018.
+
+\subsubsection{Xu hướng điểm trung bình toàn quốc và sáu vùng}
+
+Hình~\ref{fig:time-series-total-regions} là biểu đồ đường. Trục ngang biểu diễn năm, trục dọc biểu diễn tổng điểm sáu lĩnh vực; màu phân biệt sáu vùng, còn đường toàn quốc được nhấn bằng nét đậm và điểm đánh dấu. Vị trí và độ dốc của đường giúp nhận biết mức điểm, hướng thay đổi và thời điểm đảo chiều.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/time_series/time_series_total_and_regions_2011_2024.png}
+    \caption{Diễn biến tổng điểm sáu lĩnh vực của toàn quốc và sáu vùng, giai đoạn 2011\textendash 2024}
+    \label{fig:time-series-total-regions}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: mỗi đường màu biểu diễn một vùng; đường đậm có điểm đánh dấu biểu diễn trung bình toàn quốc. Kết quả chỉ tính trên các tỉnh có đủ dữ liệu ở từng năm.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Điểm toàn quốc tăng từ 35,75 năm 2011 lên 36,74 năm 2013, giảm xuống 35,58 năm 2015 và đạt 36,40 năm 2024. Các vùng biến động khác nhau dù đường toàn quốc tương đối ổn định.
+    \item \textit{Ưu tiên phân tích:} Tập trung vào năm 2015 và các vùng lệch rõ khỏi đường toàn quốc để xác định nơi xuất hiện biến động cục bộ.
+\end{itemize}
+
+\subsubsection{Mức thay đổi hằng năm theo vùng}
+
+Hình~\ref{fig:time-series-regional-change} là bản đồ nhiệt. Mỗi ô biểu diễn chênh lệch điểm của một vùng so với năm trước; sắc xanh và dấu cộng thể hiện tăng, sắc cam và dấu trừ thể hiện giảm, còn độ đậm biểu diễn độ lớn. Cách mã hóa theo ma trận giúp nhận ra nhanh những năm nhiều vùng cùng chiều và các biến động khác thường.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/time_series/time_series_regional_yearly_change_2012_2024.png}
+    \caption{Mức thay đổi tổng điểm sáu lĩnh vực theo vùng so với năm trước, giai đoạn 2012\textendash 2024}
+    \label{fig:time-series-regional-change}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: xanh biểu thị tăng, cam biểu thị giảm; con số trong ô là mức thay đổi so với năm trước.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Năm 2015, cả sáu vùng đều giảm; Tây Nguyên giảm mạnh nhất, 1,98 điểm. Năm 2024, cả sáu vùng đều tăng; Đông Nam Bộ tăng mạnh nhất, 2,22 điểm.
+    \item \textit{Ưu tiên phân tích:} Đối chiếu cơ cấu lĩnh vực giữa năm 2015 và năm 2024, đồng thời xem xét Đông Nam Bộ để làm rõ mức phục hồi nổi bật.
+\end{itemize}
+
+\subsubsection{Sự thay đổi thứ hạng giữa sáu vùng}
+
+Hình~\ref{fig:time-series-regional-rank} là biểu đồ thứ hạng theo thời gian. Trục dọc đảo chiều để hạng 1 nằm trên cùng; mỗi đường nối thứ hạng của một vùng qua các năm và nhãn cuối đường cho biết vị trí năm 2024. Kỹ thuật này tập trung vào chuyển dịch vị thế tương đối, thay vì chênh lệch điểm tuyệt đối.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/time_series/time_series_regional_rank_2011_2024.png}
+    \caption{Thay đổi thứ hạng tổng điểm sáu lĩnh vực của các vùng, giai đoạn 2011\textendash 2024}
+    \label{fig:time-series-regional-rank}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: vị trí càng cao tương ứng thứ hạng càng tốt; mỗi đường biểu diễn một vùng và nhãn bên phải là thứ hạng năm 2024. Thứ hạng được tính trong từng năm, không phải phân loại chính thức của PAPI.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Đồng bằng sông Hồng chuyển từ hạng 4 năm 2011 lên hạng 1 năm 2024 và dẫn đầu từ năm 2017. Đông Nam Bộ chuyển từ hạng 1 xuống hạng 3; Tây Nguyên phần lớn ở nhóm cuối.
+    \item \textit{Ưu tiên phân tích:} So sánh hồ sơ lĩnh vực của Đồng bằng sông Hồng với Tây Nguyên để xác định những lĩnh vực có chênh lệch điểm lớn.
+\end{itemize}
+
+\subsubsection{Thay đổi theo từng lĩnh vực}
+
+Hình~\ref{fig:time-series-dimension-change} là biểu đồ nối hai mốc. Mỗi đường nối điểm trung bình của một lĩnh vực giữa năm 2011 và năm 2024; hướng dốc biểu thị tăng hoặc giảm, còn nhãn cuối đường ghi trực tiếp mức thay đổi. Hai mốc đầu và cuối làm nổi bật lĩnh vực đóng góp nhiều nhất vào thay đổi dài hạn mà không tạo ra quá nhiều đường theo năm.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/time_series/time_series_dimension_change_2011_2024.png}
+    \caption{Thay đổi điểm trung bình D1--D6 giữa năm 2011 và năm 2024}
+    \label{fig:time-series-dimension-change}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: đường hướng lên biểu thị tăng, đường hướng xuống biểu thị giảm; nhãn bên phải cho biết mức thay đổi của lĩnh vực. Số tỉnh có dữ liệu hợp lệ lần lượt là 63 và 61.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} D4 tăng 1,30 điểm, D6 tăng 0,95 điểm và D5 tăng 0,33 điểm. D3 giảm 1,30 điểm; D1 và D2 lần lượt giảm 0,38 và 0,25 điểm.
+    \item \textit{Ưu tiên phân tích:} Xác định các tỉnh đóng góp nhiều nhất vào mức giảm của D3 và đối chiếu với những tỉnh cải thiện rõ ở D4, D6.
+\end{itemize}
 
 \subsection{Phân tích Khác biệt giữa vùng và tỉnh}
 % TODO: Phân tích phân phối vùng, xếp hạng tỉnh, benchmark và profile lĩnh vực.
