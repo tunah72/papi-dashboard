@@ -1,97 +1,99 @@
 # PAPI Dashboard
 
 Đồ án cuối kỳ môn Trực quan hóa Dữ liệu (CSC10108), trực quan hóa Chỉ số Hiệu quả Quản trị và
-Hành chính công cấp tỉnh (PAPI) của Việt Nam giai đoạn 2011–2024. Sản phẩm gồm dashboard Streamlit,
-pipeline dữ liệu có thể tái lập và module AI human-in-the-loop: AI đề xuất code, người dùng xem/sửa/
-phê duyệt, sau đó code mới được chạy tại máy.
+Hành chính công cấp tỉnh (PAPI) của Việt Nam giai đoạn 2011–2024.
 
-## Trạng thái hiện tại
+Sản phẩm chính gồm năm trang phân tích React, FastAPI local và một Floating AI Assistant
+human-in-the-loop. AI có thể trả lời kiến thức hoặc đề xuất code; code chỉ được chạy local sau khi
+người dùng phê duyệt proposal mới nhất.
 
-- Đã hoàn thiện pipeline dữ liệu, EDA, trang Tổng quan và trang Diễn biến theo thời gian.
-- Ba trang So sánh tỉnh, Phân tích theo lĩnh vực và Động lực/phân nhóm vẫn là trang chờ.
-- AI Assistant đã có luồng sinh code → duyệt → chạy local, bốn plugin phân tích và test offline.
-- Báo cáo LaTeX mới ở mức khung ban đầu.
-- Lần rà soát gần nhất: 17/07/2026, toàn bộ 45 test offline đạt.
+## Tính năng
 
-Chi tiết và các khoảng trống đã xác minh: [Trạng thái dự án](docs/project-status.md).
+- Năm trang: Tổng quan, Diễn biến theo thời gian, Vùng & tỉnh, Mối quan hệ lĩnh vực, Thay đổi & phân nhóm.
+- 20 biểu đồ có insight, nguồn, đơn vị, cỡ mẫu, bảng truy cập được và chế độ phóng to.
+- Filter/selection quan trọng được giữ trong URL để refresh và chia sẻ liên kết.
+- Floating AI Assistant dùng chung, hỗ trợ answer, clarification, proposal, revision, approval và log.
+- Pipeline dữ liệu tái lập từ 14 file Excel nguồn; không nội suy dữ liệu thiếu.
+- Streamlit trong `app/` được giữ như fallback đóng băng, không phải giao diện phát triển chính.
 
-## Chạy nhanh
+## Chạy local
 
-Yêu cầu Python 3.11 trở lên. Từ thư mục gốc dự án:
+Yêu cầu Python 3.11+, Node.js 20+ và npm.
 
 ```bash
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
 python -m pip install -r requirements-dev.txt
-streamlit run app/main.py
 ```
 
-Trên Windows PowerShell, kích hoạt môi trường bằng `.venv\Scripts\Activate.ps1`.
-
-Dashboard không cần API key để xem các trang trực quan. Để dùng AI Assistant:
+Terminal 1:
 
 ```bash
-cp .streamlit/secrets.toml.example .streamlit/secrets.toml
+python -m uvicorn server.main:app --host 127.0.0.1 --port 8000
 ```
 
-Sau đó điền `GROQ_API_KEY` vào file vừa tạo. Không commit file secrets.
+Terminal 2:
+
+```bash
+cd frontend
+npm ci
+npm run dev
+```
+
+Mở `http://127.0.0.1:5173`. Dashboard không cần API key; để gửi câu hỏi AI, sao chép
+`.streamlit/secrets.toml.example` thành `.streamlit/secrets.toml` và điền `GROQ_API_KEY` local.
+
+## Kiểm thử
+
+```bash
+python -m pytest -q
+cd frontend
+npm test
+npm run lint
+npm run build
+npx playwright test
+```
+
+Live Groq smoke không nằm trong test mặc định vì sử dụng quota bên ngoài.
 
 ## Dữ liệu
 
-- Nguồn chính: PAPI, do UNDP Việt Nam, CECODES và RTA công bố tại [papi.org.vn](https://papi.org.vn/).
-- Phạm vi: 63 tỉnh/thành, 14 năm (2011–2024), 8 lĩnh vực PAPI; D7–D8 chỉ có từ 2018.
-- Bảng long đã xử lý có 6.094 dòng; panel tỉnh-năm có 882 dòng.
-- Dữ liệu thiếu tại nguồn được giữ là thiếu, không nội suy hay bịa số.
+- Nguồn: PAPI Việt Nam, UNDP Việt Nam, CECODES và RTA.
+- Phạm vi: 63 tỉnh/thành, 2011–2024; D7–D8 có từ 2018.
+- Bảng long đã xử lý: 6.094 dòng; panel tỉnh–năm: 882 dòng.
+- Nguồn và quy trình xử lý: [docs/data/README.md](docs/data/README.md).
 
-Build lại dữ liệu:
+Chỉ chạy lại pipeline khi thật sự cần thay đổi dữ liệu:
 
 ```bash
 python src/build_dataset.py
 ```
 
-Lệnh này đọc `data/raw/`, ghi `data/processed/` và cập nhật
-[`docs/data/processing-log.md`](docs/data/processing-log.md). Không chỉnh sửa dữ liệu raw.
-
-## Kiểm thử
-
-`requirements-dev.txt` bao gồm dependency runtime và `pytest` cho môi trường phát triển:
-
-```bash
-python -m pytest -q
-```
-
-Các test hiện tại tập trung vào AI API/executor, trạng thái AI Assistant và phân tích xu hướng.
-
 ## Tài liệu
 
-Bắt đầu tại [docs/README.md](docs/README.md). Đây là chỉ mục phân biệt tài liệu nguồn sự thật, hướng
-dẫn đang dùng và tài liệu lịch sử. Không dùng trực tiếp nội dung trong `docs/archive/` để quyết định
-trạng thái hiện tại.
-
-Các điểm vào chính:
-
+- [Chỉ mục tài liệu](docs/README.md)
 - [Trạng thái dự án](docs/project-status.md)
-- [Kiến trúc thực tế](docs/architecture.md)
+- [Kiến trúc](docs/architecture.md)
 - [Hướng dẫn cài đặt và phát triển](docs/guides/getting-started.md)
-- [Roadmap còn lại](docs/roadmap.md)
-- [Dữ liệu PAPI: nguồn gốc, nội dung, xử lý và kết quả](docs/data/README.md)
+- [Đặc tả thiết kế](docs/design/README.md)
 - [AI human-in-the-loop](docs/ai/README.md)
-- [Quy ước thiết kế](docs/guides/design-system.md)
+- [Hướng dẫn demo/vấn đáp](docs/dashboard-handoff.md)
 
-## Cấu trúc chính
+## Cấu trúc
 
 ```text
-app/                 Streamlit dashboard và AI Assistant
-src/                 pipeline dữ liệu và hàm phân tích thuần
-data/raw/            14 file Excel nguồn, chỉ đọc
-data/processed/      các bảng đã xử lý và GeoJSON
-notebooks/           data understanding, preprocessing, EDA
-tests/               test offline
-docs/                tài liệu dự án đang dùng và archive
-report/              khung báo cáo LaTeX HCMUS
-reports/figures/      biểu đồ EDA đã xuất
-logs/                log JSONL của AI Assistant, không commit dữ liệu phiên
+frontend/       React + TypeScript và browser tests
+server/         FastAPI, view-model và orchestration AI
+src/            pipeline dữ liệu và logic phân tích thuần
+app/            Streamlit legacy fallback
+tests/          Python tests
+data/           dữ liệu raw/processed
+notebooks/      data understanding, preprocessing và EDA
+docs/           tài liệu nguồn sự thật và thiết kế
+report/         báo cáo LaTeX
+slides/         slide Beamer
+logs/           lifecycle log local của AI
 ```
 
 ## Nhóm thực hiện

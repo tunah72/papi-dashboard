@@ -1,1 +1,1 @@
-"""FastAPI local cho migration; không chứa API AI/executor của Phase 5."""
+"""FastAPI local phục vụ Dashboard và Floating AI Assistant."""

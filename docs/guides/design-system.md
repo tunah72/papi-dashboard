@@ -9,8 +9,8 @@ quy ước được **enforce bằng code** trong `app/lib/` và `.streamlit/con
 viên chủ yếu chỉ thêm nội dung, không tự đặt style.
 
 ## 1. Nguyên tắc
-- Dashboard **thiết kế tổng quát**, không in câu hỏi lên màn hình. Câu hỏi định hướng trong
-  [`docs/roadmap.md`](../roadmap.md) chỉ để dẫn dắt phân tích; người xem **quan sát biểu đồ để tự trả lời**.
+- Dashboard legacy trình bày câu hỏi phân tích qua tiêu đề/section và để người xem quan sát biểu đồ để
+  tự trả lời; không chèn kế hoạch triển khai vào giao diện.
 - "Đẹp" = phục vụ đọc dữ liệu nhanh và trung thực, không trang trí.
 - Ít biểu đồ nhưng to và rõ; nhiều khoảng trắng.
 
@@ -35,7 +35,7 @@ viên chủ yếu chỉ thêm nội dung, không tự đặt style.
 Header chung + toggle scale (hạ tầng)        # app/main.py, không sửa
 Sidebar filter (trái)                        # filters.* — mỗi trang chọn filter cần
 layout.page_header(title, desc)              # tiêu đề serif + mô tả 1 dòng
-layout.kpi_strip([...])                      # hàng số liệu nổi bật
+layout.kpi_cards([...])                      # hàng số liệu nổi bật
 layout.section_header("Chủ đề")              # section trung tính theo nội dung
 layout.chart(charts.X(...), note_text="...") # biểu đồ đã style + nhận xét
 ... lặp lại theo số section ...
@@ -87,8 +87,7 @@ gắn chặt với câu hỏi của từng hướng nên khó (và không cần)
 ## 6b. Vị trí filter và tương tác (đặt theo phạm vi tác động)
 - **Page-level** (ảnh hưởng cả trang: thước đo, khoảng năm) → top control bar `st.container(border=True)`
   với `filters.scale_segmented()` + `filters.year_range_inline()`. Không giấu trong sidebar.
-- **Chart-level** (chỉ ảnh hưởng một biểu đồ: chọn lĩnh vực) → đặt ngay trên biểu đồ đó bằng
-  `filters.dimension_pills()`.
+- **Chart-level** (chỉ ảnh hưởng một biểu đồ) → đặt control ngay trên biểu đồ đó, không đưa vào sidebar.
 - **Điểm dữ liệu** (hover, range zoom) → trong biểu đồ: `rangeslider=True`, `hovermode="x unified"`.
 - **Sidebar** → chỉ giữ điều hướng giữa các trang.
 
@@ -105,5 +104,5 @@ gắn chặt với câu hỏi của từng hướng nên khó (và không cần)
 - **Annotation điểm cuối:** đường tổng ở Hàng A dùng `fig.add_annotation` để hiện giá trị mới nhất tại điểm cuối chuỗi.
 
 ## 8. Tham chiếu
-Trang mẫu hoàn chỉnh: `app/pages/time_trend.py` (Hướng 1) và `app/pages/overview.py`.
-Ba thành viên còn lại copy khung từ đây.
+Trang tham chiếu fallback: `app/pages/time_trend.py` và `app/pages/overview.py`. Không sao chép thêm
+page mới từ khung legacy; capability mới thuộc React/FastAPI.

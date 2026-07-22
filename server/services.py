@@ -1,4 +1,4 @@
-"""Use cases dashboard Phase 1. Tái sử dụng logic nghiệp vụ trong ``src.analysis``."""
+"""Use case Dashboard, tái sử dụng logic nghiệp vụ trong ``src.analysis``."""
 from __future__ import annotations
 
 from functools import lru_cache

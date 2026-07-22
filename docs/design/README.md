@@ -1,8 +1,8 @@
-# Đặc tả thiết kế lại PAPI Dashboard
+# Đặc tả thiết kế PAPI Dashboard
 
-Thư mục này là nguồn sự thật cho lần thiết kế lại năm trang Dashboard React. Đặc tả tập trung vào
-kiến trúc thông tin, layout, lựa chọn biểu đồ, insight dưới biểu đồ và interaction; chưa phải bằng
-chứng rằng giao diện đã được triển khai.
+Thư mục này là nguồn sự thật cho năm trang Dashboard React. Đặc tả tập trung vào kiến trúc thông tin,
+layout, lựa chọn biểu đồ, insight dưới biểu đồ, interaction và acceptance. Trạng thái triển khai và
+kết quả test hiện tại nằm trong `docs/project-status.md`.
 
 Tài liệu dữ liệu chuẩn: [`../data/README.md`](../data/README.md). Khi đặc tả và dữ liệu mâu thuẫn,
 phải sửa đặc tả theo dữ liệu, không tự tạo thêm số liệu hoặc biến phân tích ở frontend.
@@ -82,7 +82,7 @@ người xem không phải ghép kết luận với một hình ở vị trí kh
 Không đặt khối hoặc CTA “Bước đọc tiếp” ở cuối trang. Người dùng chuyển trang qua sidebar hoặc
 interaction drill-through có ngữ cảnh ngay trên biểu đồ; Trợ lý AI mở từ floating launcher dùng chung.
 
-## 6. Phạm vi implementation
+## 6. Hợp đồng implementation
 
 - Giữ React + TypeScript strict, FastAPI local, React Router và Plotly.
 - Frontend không tự sửa dữ liệu nguồn hoặc tính một định nghĩa nghiệp vụ mới.
@@ -92,19 +92,17 @@ interaction drill-through có ngữ cảnh ngay trên biểu đồ; Trợ lý AI
 - Module AI đứng ngoài bốn chart card và không làm đổi grid. Mọi code AI sinh ra phải hiển thị đầy đủ ở
   trạng thái chờ duyệt; revision sinh toàn bộ code mới và chỉ proposal mới nhất được chạy local sau duyệt.
 
-### Khoảng trống cần xử lý khi triển khai
+### Trách nhiệm theo lớp
 
-| Hạng mục | Hiện có | Cần bổ sung |
-|---|---|---|
-| Tổng quan | map, trend, strongest pair, toàn bộ delta tỉnh | annual delta summary, quadrant counts và histogram summary trong view-model |
-| Diễn biến | total/regional series, vùng năm-kề-năm, delta lĩnh vực | hạng vùng theo năm cho bump chart và insight bốn chart |
-| Vùng và tỉnh | distribution, ranking, benchmark, profile | `regionMeans.q1/q3/iqr`, range toàn mẫu và bốn insight nằm trong contract FastAPI |
-| Quan hệ | matrix, pair, OLS, residual, mean/SD, min/max, n từng cặp và bốn insight | — đã đủ contract cho bốn card |
-| Phân nhóm | change rows, centroid, PCA assignment/distance, transition/share, retention và bốn insight | — đã đủ contract cho bốn card |
-| Chart component | click, hover/unhover, responsive, bảng fallback, `ChartInsight`, `ChartFocusDialog`, waterfall/polar/Sankey lazy bundle | selected/legend events chuyên biệt khi từng chart cần |
+| Lớp | Trách nhiệm |
+|---|---|
+| `src/analysis/` | thống kê, benchmark, regression, KMeans/PCA và insight từ artifact |
+| `server/` | resolve filter, typed view-model, source/unit/`n`/caveat và JSON null |
+| `frontend/src/pages/` | mã hóa view-model thành đúng bốn chart và quản lý URL interaction |
+| chart components | hover/click, responsive, bảng fallback, focus dialog và Plotly bundles |
 
-Các thống kê trên nên được tính ở `src/analysis`/FastAPI và có test. Frontend chỉ mã hóa artifact thành
-biểu đồ và quản lý interaction; không sao chép công thức nghiệp vụ vào page component.
+Không sao chép công thức nghiệp vụ vào page component. Selected/legend event chỉ được mở rộng khi một
+interaction đã có acceptance cụ thể; không thêm API component “để dành”.
 
 ## 7. Tiêu chí hoàn thành cấp Dashboard
 

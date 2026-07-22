@@ -1,51 +1,49 @@
 # Tài liệu PAPI Dashboard
 
-Đây là điểm bắt đầu duy nhất cho tài liệu dự án. Tài liệu được chia theo mục đích để tránh nhầm kế
-hoạch lịch sử với trạng thái code hiện tại.
+Đây là điểm vào chính cho tài liệu đang dùng. Khi có mâu thuẫn, ưu tiên code/runtime/test hiện tại,
+sau đó đến tài liệu dữ liệu và thiết kế, kiến trúc, rồi mới đến tài liệu lịch sử trong `archive/`.
 
-## Thứ bậc authority
+## Bắt đầu
 
-Khi có mâu thuẫn, ưu tiên **code/runtime/test hiện tại** → ADR và parity matrix migration → status docs
-hiện hành → `archive/`. Các trang trạng thái là snapshot; archive chỉ để truy vết, không phải bằng chứng
-về tính năng đang chạy.
+1. [Trạng thái dự án](project-status.md) — capability và bằng chứng kiểm thử hiện tại.
+2. [Kiến trúc](architecture.md) — luồng dữ liệu, React, FastAPI, AI và Streamlit fallback.
+3. [Cài đặt và phát triển](guides/getting-started.md) — lệnh chạy, test và quy tắc sửa đổi.
+4. [Hướng dẫn demo/vấn đáp](dashboard-handoff.md) — mạch trình bày và checklist trước demo.
 
-## Đọc theo thứ tự
+## Nguồn sự thật theo chủ đề
 
-1. [Trạng thái dự án](project-status.md) — baseline code/test hiện tại và các khoảng trống trước cutover.
-2. [Kiến trúc thực tế](architecture.md) — data flow, dashboard, AI và ranh giới kỹ thuật.
-3. [Hướng dẫn cài đặt và phát triển](guides/getting-started.md) — lệnh chạy, test và quy trình sửa đổi.
-4. [Roadmap migration](roadmap.md) — trạng thái và thứ tự Phase 0–6 đến cutover React + FastAPI.
-5. [ADR migration React + FastAPI](adr/2026-07-20-react-fastapi-local-migration.md) — quyết định kiến trúc, cutover và rollback.
-6. [Ma trận parity React + FastAPI](react-fastapi-parity-matrix.md) — acceptance source cho năm trang và floating assistant trước cutover.
+### Dữ liệu
 
-## Theo chủ đề
+- [Nguồn, định nghĩa và giới hạn dữ liệu PAPI](data/README.md)
+- [Nhật ký pipeline](data/processing-log.md)
 
-### Dữ liệu và phân tích
+### Giao diện
 
-- [Nguồn gốc, nội dung, cách thu thập, xử lý và kết quả dữ liệu PAPI](data/README.md)
-- [Nhật ký pipeline gần nhất](data/processing-log.md)
-
-### Dashboard và làm việc nhóm
-
-- [Đặc tả thiết kế lại năm trang Dashboard](design/README.md)
-- [Quy ước thiết kế legacy Streamlit](guides/design-system.md)
-- [Hướng dẫn thành viên](guides/team-guide.md)
+- [Thiết kế tổng thể và ma trận 20 biểu đồ](design/README.md)
+- [Chế độ phóng to biểu đồ](design/chart_focus_mode.md)
+- [Floating AI Assistant](design/floating_ai_assistant.md)
+- Các đặc tả trang nằm cùng thư mục `design/`.
 
 ### AI
 
-- [Thiết kế và trạng thái AI human-in-the-loop](ai/README.md)
-- [Execution contract Floating AI Assistant](ai/floating-ai-assistant-execution.md)
+- [AI human-in-the-loop](ai/README.md)
 - [Manual test cases](ai/manual-test-cases.md)
 
-### Tài liệu lịch sử
+### Làm việc nhóm
 
-Các kế hoạch/checklist tháng 06/2026 nằm trong [archive](archive/README.md). Chúng được giữ để truy
-vết quyết định ban đầu, không phải nguồn sự thật về tiến độ hiện tại.
+- [Hướng dẫn thành viên](guides/team-guide.md)
+- [Design system Streamlit legacy](guides/design-system.md)
+- [Quy ước báo cáo và slides](notes/NOTES.md)
+
+### Quyết định và lịch sử
+
+- [ADR React + FastAPI local](adr/2026-07-20-react-fastapi-local-migration.md)
+- [Tài liệu lịch sử](archive/README.md) — chỉ dùng để truy vết, không dùng làm trạng thái hiện tại.
 
 ## Quy ước duy trì
 
-- `project-status.md` phản ánh code trên `main` và phải được cập nhật khi một chức năng đổi trạng thái.
-- `roadmap.md` giữ trạng thái từng phase migration và các việc chưa hoàn tất; không lặp lại backlog legacy đã có code.
-- Nhật ký pipeline do `src/build_dataset.py` tạo; không sửa số liệu trong log bằng tay.
-- Tài liệu đã hết hiệu lực chuyển vào `archive/`, không để song song với tài liệu hiện hành.
-- README gốc chỉ là trang giới thiệu và đường dẫn; chi tiết kỹ thuật nằm trong `docs/`.
+- `project-status.md` chỉ ghi trạng thái đã kiểm chứng và kết quả test gần nhất.
+- Thay đổi dữ liệu phải cập nhật `data/README.md` và để pipeline sinh `processing-log.md`.
+- Thay đổi hành vi UI phải cập nhật đặc tả tương ứng trong `design/`.
+- Thay đổi contract AI phải cập nhật `ai/README.md`, manual tests và OpenAPI schema.
+- Tài liệu kế hoạch đã hoàn tất được tóm tắt trong `archive/`, không để lẫn với tài liệu vận hành.

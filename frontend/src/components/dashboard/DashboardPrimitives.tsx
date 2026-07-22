@@ -69,10 +69,6 @@ export function ChartInsight({ children }: { children: ReactNode }) {
   return <aside className="chart-insight" aria-label="Insight biểu đồ" aria-live="polite"><strong>Insight</strong><p>{children}</p></aside>
 }
 
-export function InsightCard({ label, value, children }: { label: string; value?: ReactNode; children: ReactNode }) {
-  return <article className="insight-card"><p className="eyebrow">{label}</p>{value && <strong>{value}</strong>}<div>{children}</div></article>
-}
-
 export function ChartMeta({ source, unit, n, caveats = [] }: {
   source: string
   unit: string

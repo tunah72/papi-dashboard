@@ -1,52 +1,57 @@
 # Trạng thái dự án
 
-Ngày rà soát migration Phase 0–4: **20/07/2026**
+- Rà soát gần nhất: **22/07/2026**
+- Bề mặt chính: **React + FastAPI local**
 
-Baseline code: `main` tại `697f5b2`
+## Dashboard
 
-Baseline test tại commit trên: `python3 -m pytest -q` — **62 passed**
-
-## Thứ bậc authority
-
-Khi tài liệu mâu thuẫn, ưu tiên: **code/runtime/test hiện tại** → ADR và parity matrix migration →
-trạng thái trong file này → `docs/archive/`. File này là snapshot để định hướng, không phải bằng chứng
-thay thế cho runtime hoặc test. Archive chỉ để truy vết lịch sử.
-
-## Tóm tắt
-
-| Khối | Trạng thái tại baseline | Bằng chứng chính |
+| Khối | Trạng thái | Bằng chứng |
 |---|---|---|
-| Dữ liệu raw → processed | Có pipeline và dữ liệu đã xử lý | `src/build_dataset.py`, `src/papi_lib.py`, `data/processed/` |
-| Dashboard năm route + floating AI | React có năm route phân tích; Streamlit sáu trang là legacy fallback | `frontend/`, `app/pages/` |
-| Tổng quan | Có KPI, bản đồ, ranking và context AI | `app/pages/overview.py` |
-| H1 — Diễn biến | Có trend, COVID, heatmap, drill-down | `app/pages/time_trend.py`, `src/analysis/trend.py` |
-| H2 — Vùng & tỉnh | Có phân phối, ranking, benchmark, profile | `app/pages/provincial.py`, `src/analysis/provincial.py` |
-| H3 — Mối quan hệ lĩnh vực | Có correlation, scatter và phân tán | `app/pages/dimension.py`, `src/analysis/dimensions.py` |
-| H4 — Thay đổi & phân nhóm | Có delta và KMeans profile | `app/pages/dynamics.py`, `src/analysis/dynamics.py` |
-| Floating AI Assistant | Có answer/proposal/revision → duyệt proposal mới nhất → thực thi local → lifecycle log | `frontend/src/components/FloatingAssistant.tsx`, `server/assistant.py` |
-| Test offline | 112 Python, 39 frontend unit và 43 browser E2E pass; E2E bao phủ thêm lỗi nhãn/đường/clip của 20 biểu đồ ở card, tablet, mobile và chế độ xem riêng | `pytest`, Vitest, Playwright |
-| FastAPI local API | Có health, 7 dashboard endpoint và 3 contract assistant messages/executions/logs | `server/`, `tests/test_assistant_http.py` |
-| React target | Sidebar 5 route dữ liệu thật và floating assistant dùng chung; route AI cũ chỉ redirect | `frontend/` |
-| Báo cáo LaTeX | Ngoài scope migration | `report/` |
+| Năm route phân tích | Hoàn thiện | `frontend/src/pages/`, `frontend/src/router.tsx` |
+| 20 biểu đồ + 20 insight | Hoàn thiện | page components và `frontend/e2e/chart-label-layout.spec.ts` |
+| Focus dialog | Hoàn thiện | `ChartFocusDialog.tsx`, query `focus=` và browser tests |
+| Responsive/accessibility | Hoàn thiện trong phạm vi đồ án | desktop/tablet/mobile, keyboard, reduced motion và overflow tests |
+| FastAPI dashboard | Hoàn thiện | 7 endpoint dữ liệu, typed OpenAPI, null/error contract |
+| Floating AI Assistant | Hoàn thiện luồng cơ bản | answer/clarification/proposal/revision/approval/result/log |
+| Legacy deep-link | Hoàn thiện | `/ai-assistant` redirect; `/dimensions` alias |
+| Streamlit fallback | Đóng băng, vẫn chạy độc lập | `app/` |
 
-## Ranh giới đang áp dụng
+## Dữ liệu
 
-- Data gốc và processed là bất biến trong migration; app/target UI không đọc Excel raw trực tiếp.
-- Code AI phải được hiện; người dùng yêu cầu sửa bằng ngôn ngữ tự nhiên và duyệt proposal mới nhất rồi mới chạy local; executor không phải sandbox public.
-- Streamlit là fallback frozen đến khi React/FastAPI đạt acceptance trong parity matrix.
-- UI target dùng năm nhãn tiếng Việt trong sidebar và floating launcher; legacy labels không quyết định target UX.
+- 14 file Excel nguồn PAPI trong `data/raw/`.
+- Phạm vi 63 tỉnh/thành, 2011–2024; D7–D8 từ 2018.
+- Bảng long đã xử lý có 6.094 dòng; panel tỉnh–năm có 882 dòng.
+- Pipeline và toàn bộ quy tắc xử lý nằm trong `src/` và `docs/data/README.md`.
+- Không nội suy dữ liệu thiếu và không so trực tiếp tổng 6 với tổng 8 lĩnh vực qua mốc 2018.
 
-## Khoảng trống trước cutover
+## Kiểm thử gần nhất
 
-React đã phủ shell, Tổng quan, H1–H4 và floating AI cơ bản qua FastAPI. Production-like one-command
-demo/cutover và browser evidence đầy đủ vẫn chưa hoàn tất; Streamlit tiếp tục là frozen fallback.
+| Suite | Kết quả |
+|---|---|
+| Python | 112 passed |
+| Frontend unit | 39 passed |
+| Browser E2E | 43 passed |
+| ESLint | đạt |
+| TypeScript/Vite build | đạt |
 
-## Chạy API Phase 1
+Browser tests bao phủ năm route, 20 card tại 1440×900, 1024×768 và 390×844, 20 dialog phóng to,
+sidebar, URL state và luồng Floating AI Assistant. Live Groq không nằm trong suite mặc định.
 
-```bash
-python3 -m uvicorn server.main:app --host 127.0.0.1 --port 8000
-curl http://127.0.0.1:8000/health
-```
+## Giới hạn công bố rõ
 
-Để xem contract: `http://127.0.0.1:8000/docs` hoặc `/openapi.json`. API chỉ đọc snapshot
-`data/processed/`; Streamlit vẫn là fallback frozen, chạy độc lập bằng lệnh legacy.
+- Executor chỉ dùng cho demo local; timeout/AST guard không biến nó thành sandbox công khai.
+- AI live cần `GROQ_API_KEY` local và phụ thuộc availability/quota của Groq.
+- Table/result log bị giới hạn 500 hàng để bảo vệ UI và JSONL; response vẫn ghi tổng số hàng và trạng thái cắt.
+- Streamlit là fallback bảo toàn, không phải bề mặt UX cần phát triển tiếp.
+
+## Tài liệu hiện hành
+
+- Kiến trúc: `docs/architecture.md`
+- Dữ liệu: `docs/data/README.md`
+- Thiết kế: `docs/design/README.md`
+- AI: `docs/ai/README.md`
+- Cài đặt: `docs/guides/getting-started.md`
+- Demo/vấn đáp: `docs/dashboard-handoff.md`
+
+Roadmap, parity matrix và execution checklist đã hoàn tất được hợp nhất thành bản tóm tắt lịch sử tại
+`docs/archive/2026-07-react-fastapi-migration.md`.

@@ -92,13 +92,13 @@ state với card gốc; việc hover, bật/tắt legend hoặc chọn đối t�
 1. Người dùng click nút phóng to; button phản hồi pressed ngắn trước khi backdrop xuất hiện.
 2. Dialog mở trong 200–260 ms bằng opacity và scale nhẹ `0.98 → 1`; nội dung không bay xa khỏi vị trí
    chart vì có thể gây mất định hướng.
-3. Focus chuyển tới tiêu đề dialog hoặc nút `Thu nhỏ và đóng` theo implementation dialog chuẩn.
-4. Người dùng đóng bằng nút `Thu nhỏ`, nút `×`, phím `Esc` hoặc Back của trình duyệt nếu URL có
+3. Focus chuyển vào dialog theo implementation semantic dialog chuẩn.
+4. Người dùng đóng bằng một nút `Thu nhỏ ×`, phím `Esc` hoặc Back của trình duyệt nếu URL có
    `focus={chart_id}`.
 5. Khi đóng, focus trở lại đúng button đã mở popup và trang giữ nguyên vị trí cuộn.
 
-Click backdrop có thể đóng trên desktop nhưng không phải cách đóng duy nhất. Nếu chart đang có thao tác
-brush/lasso chưa hoàn tất, click trong plot không được lan ra backdrop.
+Click backdrop có thể đóng trên desktop nhưng không phải cách đóng duy nhất. Event từ plot, modebar hoặc
+brush/lasso không được lan ra backdrop.
 
 ### URL và deep link
 
@@ -124,7 +124,7 @@ brush/lasso chưa hoàn tất, click trong plot không được lan ra backdrop.
 - Dialog có `role="dialog"`, `aria-modal="true"`, `aria-labelledby` trỏ tới tiêu đề và
   `aria-describedby` trỏ tới phụ đề/insight ngắn.
 - Giữ focus trong dialog; nội dung nền là `inert` trong lúc popup mở.
-- Có nút đóng bằng chữ hoặc tooltip rõ, không phụ thuộc duy nhất vào ký hiệu `×`.
+- Có một nút đóng gồm chữ `Thu nhỏ` và ký hiệu `×`, không tạo hai action trùng chức năng.
 - Thứ tự tab: đóng/thu nhỏ → chart controls → legend/control thay thế → bảng/details.
 - Chart vẫn phải có bảng dữ liệu hoặc control tương đương cho người dùng bàn phím; tooltip không phải
   kênh duy nhất chứa số liệu.
