@@ -2,47 +2,50 @@
 
 ## Nguồn sự thật
 
-- Trạng thái code: [project-status.md](../project-status.md).
-- Việc tiếp theo: [roadmap.md](../roadmap.md).
-- Kiến trúc: [architecture.md](../architecture.md).
-- Quy ước giao diện: [design-system.md](design-system.md).
-- Kế hoạch tháng 06/2026 chỉ dùng để tham khảo lịch sử trong `docs/archive/`.
+- Trạng thái: `docs/project-status.md`
+- Kiến trúc: `docs/architecture.md`
+- Dữ liệu: `docs/data/README.md`
+- Thiết kế React: `docs/design/README.md`
+- AI: `docs/ai/README.md`
 
-Không đánh dấu một hạng mục “xong” chỉ vì file hoặc plugin đã tồn tại. Một trang chỉ hoàn thiện khi có
-nội dung thật, test logic, boot được và được kiểm tra bằng dữ liệu thực.
+Tài liệu trong `docs/archive/` chỉ dùng để truy vết migration đã hoàn tất.
 
-## Phân công theo vertical slice
+## Bản đồ module
 
-| Thành viên | Hướng | Page | Analysis module | AI technique | Trạng thái 17/07 |
-|---|---|---|---|---|---|
-| Dương Tuấn Anh | H1 Xu hướng | `time_trend.py` | `trend.py` | `trend_classification.py` | Page + logic + plugin đã có |
-| Lê Xuân Trí | H2 So sánh tỉnh | `provincial.py` | `spatial.py` | `anomaly.py` | Page/module chưa có; plugin đã có |
-| Nguyễn Trần Trung Kiên | H3 Theo lĩnh vực | `dimension.py` | `dimension.py` | `insight.py` | Page/module chưa có; plugin đã có |
-| Lê Đức Phúc | H4 Động lực/phân nhóm | `dynamics.py` | `dynamics.py` | `clustering.py` | Page/module chưa có; plugin đã có |
+| Hướng | React page | FastAPI/analysis | Streamlit fallback |
+|---|---|---|---|
+| Tổng quan | `Overview.tsx` | `server/services.py` | `overview.py` |
+| Diễn biến | `TimeTrend.tsx` | `src/analysis/trend.py` | `time_trend.py` |
+| Vùng & tỉnh | `Provincial.tsx` | `src/analysis/provincial.py` | `provincial.py` |
+| Quan hệ lĩnh vực | `Dimension.tsx` | `src/analysis/dimensions.py` | `dimension.py` |
+| Thay đổi & phân nhóm | `Dynamics.tsx` | `src/analysis/dynamics.py` | `dynamics.py` |
+| Trợ lý AI | `FloatingAssistant.tsx` | `server/assistant.py` | `ai_assistant.py` |
 
-Các module H2–H4 trong bảng là đích cần tạo, không phải file đang tồn tại.
+Capability mới thuộc React/FastAPI. Chỉ sửa Streamlit khi cần giữ fallback chạy đúng.
 
-## Definition of Done cho một trang phân tích
+## Definition of Done
 
-- Có câu hỏi phân tích rõ và dùng đúng grain dữ liệu.
-- Có control/filter phù hợp, KPI và ít nhất ba biểu đồ có vai trò khác nhau.
-- Tiêu đề/nhận xét bám số liệu; luôn ghi nguồn và xử lý dữ liệu thiếu.
-- Tên lĩnh vực hiển thị đầy đủ, palette và layout theo design system.
-- Logic thống kê/phân tích được tách khỏi Streamlit và có unit test.
-- Có ít nhất một tương tác có ý nghĩa.
-- Publish `dash_context` đủ cụ thể để AI Assistant hiểu page/filter/chart.
-- Page boot sạch và toàn bộ test repository vẫn đạt.
-- `project-status.md`/`roadmap.md` được cập nhật theo bằng chứng thực tế.
-
-## Phạm vi file
-
-Mỗi vertical slice ưu tiên sửa page và analysis module của mình. Chỉ sửa `app/lib/`, theme hoặc bảng
-lookup dùng chung khi thay đổi đã được thống nhất và có kiểm tra hồi quy. Không đổi chữ ký helper đang
-được page khác dùng nếu chưa cập nhật tất cả call site.
+- Câu hỏi phân tích và grain dữ liệu rõ ràng.
+- Số liệu được tính tại Python boundary và có test.
+- UI có loading, empty, error, partial-data và metadata nguồn/đơn vị/`n`.
+- Filter/selection cam kết được giữ trong URL.
+- Biểu đồ có tooltip, nhãn không chồng, keyboard fallback và focus dialog.
+- AI không chạy code trước phê duyệt; proposal cũ không thực thi được.
+- Unit, lint, build và browser tests liên quan đều đạt.
+- Tài liệu nguồn sự thật được cập nhật, không tạo file kế hoạch trùng lặp.
 
 ## Git và review
 
-- Một branch cho một mục tiêu nhỏ: `feat/<scope>` hoặc `docs/<scope>`.
-- Commit file liên quan trực tiếp; không đưa secrets, log phiên hay cache vào commit.
-- PR mô tả dữ liệu dùng, hành vi trước/sau, test đã chạy và hạn chế còn lại.
-- Reviewer kiểm tra code/data/UI thật; không dựa vào checkbox hoặc ảnh chụp duy nhất.
+- Một branch cho một mục tiêu nhỏ; kiểm tra worktree trước khi sửa.
+- Stage file rõ ràng, không dùng broad add khi worktree có thay đổi khác.
+- Không commit secrets, logs, cache, `dist/` hoặc Playwright artifacts.
+- PR/commit mô tả dữ liệu, hành vi trước/sau, test đã chạy và giới hạn còn lại.
+- Reviewer đối chiếu code và runtime; test pass không tự chứng minh chất lượng giao diện.
+
+## Ranh giới dữ liệu và AI
+
+- Không sửa `data/raw/` và không điền dữ liệu thiếu bằng phỏng đoán.
+- Không so tổng 6 lĩnh vực với tổng 8 lĩnh vực qua mốc 2018.
+- Không diễn giải tương quan, hồi quy hoặc KMeans thành quan hệ nhân quả/xếp hạng chính thức.
+- Secrets chỉ nằm local; lifecycle log không chứa API key hoặc internal reasoning.
+- Executor là guard demo local, không phải sandbox công khai.

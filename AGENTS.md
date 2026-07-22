@@ -14,13 +14,13 @@ Một **dashboard trực quan hóa + phân tích dữ liệu Việt Nam**, có *
 - **≥ 7 biến độc lập**, **≥ 2000 dòng**, **> 50%** dữ liệu liên quan Việt Nam.
 - Ghi rõ mọi bước xử lý dữ liệu (không bỏ sót / không xử lý ngầm).
 
-## 3. Tech stack và trạng thái migration
+## 3. Tech stack hiện tại
 
-- **UI đích:** React + TypeScript `strict`; dashboard có năm trang phân tích và một floating AI Assistant dùng chung để chat, xem code, yêu cầu sửa bằng ngôn ngữ tự nhiên, duyệt và xem kết quả.
-- **Backend đích:** FastAPI chạy **local**, là ranh giới HTTP cho dữ liệu đã xử lý và ba API bắt buộc: **API AI**, **API Thực thi**, **API Logs**.
+- **UI chính:** React + TypeScript `strict`; dashboard có năm trang phân tích và một floating AI Assistant dùng chung để chat, xem code, yêu cầu sửa bằng ngôn ngữ tự nhiên, duyệt và xem kết quả.
+- **Backend:** FastAPI chạy **local**, là ranh giới HTTP cho dữ liệu đã xử lý và ba API bắt buộc: **API AI**, **API Thực thi**, **API Logs**.
 - Phân tích/visualize giữ Python: pandas, matplotlib/plotly, seaborn. React chỉ hiển thị dữ liệu/figure do backend local trả về, không được tự thay đổi dữ liệu gốc.
-- LLM gọi qua API (Gemini/OpenAI) — **code thực thi luôn chạy LOCAL**, không thực thi online.
-- **Streamlit là legacy fallback bị đóng băng:** `app/` tiếp tục là bề mặt demo dự phòng cho đến khi cutover đạt parity theo `docs/react-fastapi-parity-matrix.md`. Không thêm tính năng hay thay đổi hành vi vào Streamlit ngoài sửa lỗi cần thiết để giữ fallback hoạt động.
+- LLM gọi Groq qua API — **code thực thi luôn chạy LOCAL**, không thực thi online.
+- **Streamlit là legacy fallback bị đóng băng:** `app/` chỉ còn là bề mặt demo dự phòng. Không thêm tính năng hay thay đổi hành vi ngoài sửa lỗi cần thiết để giữ fallback hoạt động.
 - Sidebar điều hướng bên trái là bất biến sản phẩm; UI React chỉ có năm route phân tích trong sidebar. Trợ lý AI mở bằng launcher cố định trên cả năm trang, không phải mục điều hướng hoặc trang riêng.
 
 ## 4. Nguồn sự thật và bất biến thiết kế Dashboard
@@ -79,7 +79,7 @@ Một **dashboard trực quan hóa + phân tích dữ liệu Việt Nam**, có *
 ## 6. Ba API bắt buộc
 
 - **API AI:** nhận yêu cầu từ frontend + ngữ cảnh (cấu trúc dữ liệu) → trả về code + giải thích.
-- **API Thực thi:** nhận code đã được người sửa & duyệt → chạy trên dữ liệu tại máy → thu biểu đồ/bảng/logs trả về.
+- **API Thực thi:** chỉ nhận `sessionId`, `proposalId`, `approved: true`; server xác nhận proposal mới nhất đã duyệt rồi chạy code đã lưu trên dữ liệu tại máy → thu biểu đồ/bảng/logs trả về.
 - **API Logs:** lưu toàn bộ yêu cầu, mã nguồn, kết quả, giải thích.
 
 ## 7. Vấn đáp

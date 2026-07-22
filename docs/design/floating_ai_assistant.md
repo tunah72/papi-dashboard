@@ -46,7 +46,7 @@ chỉ chạy proposal mới nhất đang chờ duyệt. Revision chỉ nhận m�
 
 ## 5. Accessibility và acceptance
 
-- Launcher, pill và header action có vùng bấm ít nhất 44×44 px, focus ring rõ và tên truy cập được.
+- Launcher và header action có vùng bấm ít nhất 44×44 px, focus ring rõ và tên truy cập được.
 - Đóng và `Esc` ở kích thước mặc định trả focus về launcher; click ngoài không đóng hoặc làm mất state.
 - Dialog non-modal trên desktop nên không inert dashboard; chart focus dialog native luôn nằm lớp trên.
 - Code và bảng có vùng cuộn riêng; bảng có caption, header và trạng thái truncation.

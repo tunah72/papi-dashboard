@@ -1,14 +1,13 @@
 # ADR: Migration React TypeScript strict + FastAPI local
 
-- **Trạng thái:** Accepted
+- **Trạng thái:** Accepted, implemented
 - **Ngày:** 20/07/2026
-- **Phạm vi:** quyết định kiến trúc và acceptance Phase 0; chưa khởi tạo FastAPI hoặc React.
+- **Phạm vi:** quyết định kiến trúc migration; implementation đã hoàn tất trong 07/2026.
 
 ## Thứ bậc authority
 
-Khi có mâu thuẫn, ưu tiên theo thứ tự: **code/runtime/test hiện tại** → ADR và parity matrix
-cho migration → status docs hiện hành → `docs/archive/`. Tài liệu archive không dùng để kết luận
-tính năng đã triển khai; status docs là snapshot, không thay thế bằng chứng runtime/test.
+Khi có mâu thuẫn, ưu tiên theo thứ tự: **code/runtime/test hiện tại** → tài liệu dữ liệu/thiết kế → ADR
+→ `docs/archive/`. Tài liệu archive không dùng để kết luận tính năng đã triển khai.
 
 ## Bối cảnh
 
@@ -24,8 +23,8 @@ dữ liệu hoặc quyền quyết định của người dùng.
 2. **Backend đích:** FastAPI chạy local và bind `127.0.0.1`, là ranh giới HTTP cho dữ liệu đã xử lý và
    API AI, API Thực thi, API Logs. React không đọc `data/raw/`, secrets, hoặc tự tính/sửa dữ liệu nguồn.
    Logic trong `src/analysis/` phải được tái sử dụng/đối chiếu ở Python, không sao chép công thức sang UI.
-3. **Vận hành:** development dùng Vite + Uvicorn. Bản demo production-like là một lệnh local, trong đó
-   FastAPI phục vụ React `dist`; script/lệnh cụ thể được tạo ở **Phase 6**, không tạo trong Phase 0.
+3. **Vận hành:** development dùng Vite + Uvicorn chạy local. Build React được tạo bằng `npm run build`;
+   hướng dẫn vận hành hiện hành nằm trong `docs/guides/getting-started.md`.
 4. **OpenAPI semantic view-model:** response dành cho UI phải có, khi áp dụng, `source`, `unit`, số quan
    sát `n`, và `caveats`, cạnh dữ liệu/series/chart spec. Giá trị số không biểu diễn được
    (`NaN`, `Infinity`) phải được chuẩn hoá thành JSON `null`; UI không tự suy diễn giá trị thiếu.
@@ -36,19 +35,19 @@ dữ liệu hoặc quyền quyết định của người dùng.
 6. **Sidebar trái là invariant:** năm route phân tích dùng cùng sidebar trái, có active state, không bị
    thay bằng top navigation. Floating assistant có launcher ở cả năm trang. Ở màn hình hẹp sidebar có
    thể thu gọn nhưng phải có nút mở lại có nhãn truy cập được.
-7. Streamlit ở `app/` là **legacy fallback frozen** đến cutover. Chỉ sửa lỗi tối thiểu để fallback chạy
-   được; capability mới thuộc React/FastAPI sau phase được phê duyệt.
+7. Streamlit ở `app/` là **legacy fallback frozen**. Chỉ sửa lỗi tối thiểu để fallback chạy được;
+   capability mới thuộc React/FastAPI.
 
 ## Cutover và rollback
 
-Cutover chỉ được phép khi toàn bộ acceptance trong `docs/react-fastapi-parity-matrix.md` đạt: content/
-numeric parity trên cùng snapshot `data/processed/`, semantic view-model, responsive/sidebar/accessibility,
-và AI không thực thi trước duyệt. Bản phát hành phải giữ Streamlit chạy độc lập và không đổi schema dữ
-liệu/logs.
+Acceptance migration gồm content/numeric parity trên cùng snapshot `data/processed/`, semantic
+view-model, responsive/sidebar/accessibility và AI không thực thi trước duyệt. Ma trận và evidence đã
+hoàn tất được tóm tắt tại `docs/archive/2026-07-react-fastapi-migration.md`. Streamlit tiếp tục chạy độc
+lập và schema dữ liệu/logs không đổi.
 
 Nếu có sai khác số vượt tolerance, thiếu metadata/error-retry, mất AI context, vi phạm sidebar/approval,
-hay lỗi ở viewport bắt buộc, dừng cutover và quay demo về Streamlit fallback. Rollback không migration
-dữ liệu, không xóa log, không sửa dữ liệu đã xử lý; sửa UI/API mới rồi chạy lại ma trận trước cutover kế tiếp.
+hay lỗi ở viewport bắt buộc, có thể dùng Streamlit fallback trong lúc sửa React/FastAPI. Rollback không
+migration dữ liệu, không xóa log và không sửa dữ liệu đã xử lý.
 
 ## Hệ quả
 

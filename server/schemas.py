@@ -1,4 +1,4 @@
-"""Schema OpenAPI cụ thể cho từng view-model dashboard Phase 1."""
+"""Schema OpenAPI cụ thể cho từng view-model của PAPI Dashboard."""
 from __future__ import annotations
 
 from typing import Annotated, Any, Literal
@@ -183,10 +183,6 @@ class OverviewMetrics(ApiModel):
     leader: str
     last: str
     gap: float | None
-
-
-class ScoreRowsArtifact(Artifact):
-    rows: list[ScoreRow]
 
 
 class OverviewMapArtifact(Artifact):

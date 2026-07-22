@@ -168,8 +168,8 @@ tỷ lệ tăng/giảm, không lặp danh sách top/bottom.
 ### Interaction
 
 - Hover bin: khoảng delta, số tỉnh và tỷ lệ.
-- Click bin: mở trang Thay đổi & phân nhóm với khoảng delta tương ứng nếu API hỗ trợ; nếu chưa hỗ trợ,
-  chỉ pin và hiện danh sách tỉnh trong bảng tóm tắt.
+- Click bin: pin khoảng delta vào URL và hiện selection cùng bảng tóm tắt; drill-through dùng link có
+  ngữ cảnh khi người dùng chủ động chuyển sang trang Thay đổi & phân nhóm.
 - Brush chọn khoảng delta là enhancement, không phải điều kiện MVP.
 
 ### Insight động

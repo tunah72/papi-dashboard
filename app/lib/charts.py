@@ -194,21 +194,3 @@ def radar_comparison(categories, series, title=None, subtitle=None,
         legend=dict(orientation="h", y=-0.18, x=0, xanchor="left"),
     )
     return fig
-
-
-def slopegraph(df, label_col, year_col, value_col, year_start, year_end, title=None,
-               subtitle=None, source=config.SOURCE_DEFAULT, color="#9CA3AF", height=420):
-    """Slopegraph nối hai mốc năm cho mỗi đối tượng (vd tỉnh)."""
-    d = df[df[year_col].isin([year_start, year_end])]
-    fig = go.Figure()
-    for label, g in d.groupby(label_col):
-        g = g.set_index(year_col)
-        if year_start in g.index and year_end in g.index:
-            fig.add_trace(go.Scatter(
-                x=[year_start, year_end],
-                y=[g.loc[year_start, value_col], g.loc[year_end, value_col]],
-                mode="lines+markers", name=str(label), showlegend=False,
-                line=dict(color=color, width=1)))
-    apply_owid(fig, title, subtitle, source, height=height)
-    fig.update_layout(xaxis=dict(tickvals=[year_start, year_end]))
-    return fig

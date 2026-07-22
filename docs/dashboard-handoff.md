@@ -3,9 +3,9 @@
 ## Chạy local
 
 ```bash
-pip install -r requirements-dev.txt
+python -m pip install -r requirements-dev.txt
 python -m uvicorn server.main:app --host 127.0.0.1 --port 8000
-cd frontend && npm run dev
+cd frontend && npm ci && npm run dev
 ```
 
 Không commit `.streamlit/secrets.toml` hoặc `logs/ai_sessions.jsonl`.
@@ -13,10 +13,10 @@ Không commit `.streamlit/secrets.toml` hoặc `logs/ai_sessions.jsonl`.
 ## Mạch trình bày
 
 1. **Tổng quan** — chọn phạm vi 6 hoặc 8 lĩnh vực, đọc bản đồ và khoảng cách tỉnh dẫn đầu–xếp cuối.
-2. **Hướng 1** — xu hướng quốc gia: lĩnh vực nào tăng/giảm qua thời gian.
-3. **Hướng 2** — khoảng cách vùng và vị trí của một tỉnh so với benchmark phù hợp.
-4. **Hướng 3** — các lĩnh vực có đi cùng nhau không; tương quan không phải quan hệ nhân quả.
-5. **Hướng 4** — tỉnh nào thay đổi giữa hai mốc, và profile PAPI nào tương đồng.
+2. **Diễn biến theo thời gian** — xu hướng quốc gia, nhịp vùng, thứ hạng vùng và thay đổi lĩnh vực.
+3. **Vùng & tỉnh** — phân phối vùng và vị trí một tỉnh so với benchmark phù hợp.
+4. **Mối quan hệ lĩnh vực** — các lĩnh vực có đi cùng nhau không; tương quan không phải nhân quả.
+5. **Thay đổi & phân nhóm** — tỉnh nào thay đổi giữa hai mốc và profile PAPI nào tương đồng.
 
 ## Demo AI human-in-the-loop
 
@@ -36,6 +36,8 @@ Không commit `.streamlit/secrets.toml` hoặc `logs/ai_sessions.jsonl`.
 ## Kiểm tra trước khi trình bày
 
 - Chạy `python -m pytest -q`.
-- Mở app local và thử Overview cùng H1–H4 ở cả 6 và 8 lĩnh vực.
+- Chạy `npm test`, `npm run lint`, `npm run build` và `npx playwright test` trong `frontend/`.
+- Mở app local và thử đủ năm route ở cả phạm vi 6 và 8 lĩnh vực.
+- Phóng to ít nhất một chart mỗi trang; kiểm tooltip, nhãn, nguồn, `n`, đóng bằng `Esc` và focus return.
 - Mở floating AI Assistant; kiểm tra code chỉ chạy sau nút phê duyệt và proposal cũ không chạy được.
 - Không cần API key để xem Dashboard; AI sinh code live cần cấu hình secret cục bộ.

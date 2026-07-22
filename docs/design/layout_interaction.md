@@ -110,8 +110,8 @@ Tạo component `ChartInsight` hoặc prop `insight` của `ChartCard` và đặ
 - Dùng dữ liệu theo filter hiện tại, không dùng câu cố định từ EDA.
 - Với dữ liệu thiếu: `Không đủ hai mốc để tính thay đổi cho 2 tỉnh; các tỉnh này không được xếp hạng.`
 - Với tương quan/phân cụm, thêm qualifier ngắn: `r = 0,72, là liên hệ quan sát chứ không phải nhân quả.`
-- Insight không được do AI tự sinh trong luồng Dashboard. Nếu có nút hỏi AI, nó chỉ mở trang Trợ lý
-  AI với context; code vẫn chờ người dùng duyệt.
+- Insight không được do AI tự sinh trong luồng Dashboard. Floating launcher mở Trợ lý AI với context
+  trang hiện tại; code vẫn chờ người dùng duyệt.
 
 ### Metadata
 
@@ -151,16 +151,13 @@ Tạo component `ChartInsight` hoặc prop `insight` của `ChartCard` và đặ
 - Drill-through giữ `scale`, `year/from/to`, `region`, `province`, `dimension` phù hợp trong URL.
 - Animation chỉ dùng opacity/transform 160–240 ms; tắt theo `prefers-reduced-motion`.
 
-### Nâng cấp component cần thiết
+### Contract component hiện tại
 
-`CartesianChart` hiện mới có `onClick`. Implementation cần bổ sung API ổn định cho:
+`CartesianChart` hỗ trợ `onClick`, `onHover`, `onUnhover`, `onSelected`, Plotly config, fallback table
+và mô tả figure cho screen reader. Page chỉ truyền các callback thật sự cần dùng; brush/lasso và
+modebar chỉ bật ở dạng biểu đồ có acceptance rõ.
 
-- `onHover` / `onUnhover` để dim/highlight liên kết;
-- `onSelected` cho brush/lasso khi chart hỗ trợ;
-- `hovermode`, spike/guide line và legend event;
-- config cho modebar có chọn lọc ở chart cần zoom/brush;
-- fallback table và mô tả insight cho screen reader.
-- `ChartFocusTrigger`/`ChartFocusDialog` dùng chung, đồng bộ chart state và URL `focus={chart_id}`.
+`ChartFocusDialog` dùng chung đồng bộ chart state và URL `focus={chart_id}`.
 
 Sankey nên có component/bundle riêng để không làm bundle Cartesian của mọi trang nặng hơn.
 
