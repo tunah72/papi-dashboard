@@ -1,0 +1,160 @@
+\section{Dữ liệu PAPI và tiền xử lý}
+
+% Slide 5
+\begin{frame}[t]{Nguồn và Phạm vi dữ liệu}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.54\textwidth}
+      \small
+      \centerline{\textbf{Nguồn và cách hình thành dữ liệu}}
+      \begin{itemize}
+        \setlength{\itemsep}{7pt}
+        \item[-] UNDP Việt Nam, CECODES và RTA phối hợp thực hiện PAPI.
+        \item[-] Khảo sát ghi nhận trải nghiệm và cảm nhận thực tế của người dân.
+        \item[-] Kết quả được tổng hợp thành điểm lĩnh vực và tổng điểm cấp tỉnh.
+        \item[-] Đồ án sử dụng dữ liệu công khai giai đoạn 2011-2024.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.42\textwidth}
+      \centering
+      \renewcommand{\arraystretch}{1.35}
+      \begin{tabularx}{\linewidth}{@{}>{\centering\arraybackslash}X>{\centering\arraybackslash}X@{}}
+        {\color{Logo1}\LARGE 14} & {\color{Logo1}\LARGE 63} \\
+        {\scriptsize năm, 2011-2024} & {\scriptsize tỉnh, thành phố} \\
+        {\color{Logo1}\LARGE 6} & {\color{Logo1}\LARGE 8} \\
+        {\scriptsize vùng kinh tế - xã hội} & {\scriptsize lĩnh vực PAPI} \\
+      \end{tabularx}
+
+      \vspace{0.35cm}
+      {\footnotesize Đơn vị quan sát chính}\par
+      {\small tỉnh $\times$ năm $\times$ lĩnh vực}\par
+      \vspace{0.15cm}
+      {\scriptsize 100\% quan sát thuộc Việt Nam}
+    \end{column}
+  \end{columns}
+  \sourcefoot{UNDP Việt Nam và Cổng dữ liệu PAPI.}
+\end{frame}
+
+% Slide 6
+\begin{frame}[t]{Ý nghĩa của 8 lĩnh vực PAPI}
+  \begin{table}
+    \centering
+    \caption*{Nội dung đo lường ở mức khái quát}
+    \scriptsize
+    \setlength{\tabcolsep}{4pt}
+    \renewcommand{\arraystretch}{1.22}
+    \begin{tabularx}{\textwidth}{@{}p{0.035\textwidth}X p{0.035\textwidth}X@{}}
+      \toprule
+      \textbf{Mã} & \textbf{Lĩnh vực và nội dung phản ánh} & \textbf{Mã} & \textbf{Lĩnh vực và nội dung phản ánh} \\
+      \midrule
+      D1 & Tham gia ở cấp cơ sở - tri thức, cơ hội tham gia và bầu cử cơ sở. &
+      D5 & Thủ tục hành chính công - chứng thực, giấy phép, đất đai và thủ tục cấp xã. \\
+      D2 & Công khai, minh bạch - tiếp cận thông tin, ngân sách và kế hoạch sử dụng đất. &
+      D6 & Cung ứng dịch vụ công - y tế, giáo dục, hạ tầng và an ninh, trật tự. \\
+      D3 & Trách nhiệm giải trình - tương tác với chính quyền, khiếu nại và tiếp cận tư pháp. &
+      D7 & Quản trị môi trường - chất lượng không khí, nước và phản ứng với vấn đề môi trường. \\
+      D4 & Kiểm soát tham nhũng - vòi vĩnh, hối lộ, tuyển dụng và quyết tâm chống tham nhũng. &
+      D8 & Quản trị điện tử - Internet, thông tin và dịch vụ công trực tuyến. \\
+      \bottomrule
+    \end{tabularx}
+  \end{table}
+
+  \vspace{0.1cm}
+  \centering
+  {\footnotesize D1-D6 có từ năm 2011; D7-D8 có từ năm 2018. Điểm lĩnh vực nằm trên thang 1-10.}\par
+  {\scriptsize So sánh dài hạn sử dụng cùng sáu lĩnh vực; không nối trực tiếp tổng sáu và tám lĩnh vực qua năm 2018.}
+\end{frame}
+
+% Slide 7
+\begin{frame}[t]{Thu thập, tiền xử lý dữ liệu}
+  \centering
+  \resizebox{\textwidth}{!}{%
+  \begin{tikzpicture}[
+    node distance=0.32cm,
+    stage/.style={rectangle, rounded corners, draw=Logo1, fill=Logo1!7,
+      align=center, minimum height=1.0cm, text width=2.45cm, font=\scriptsize},
+    flow/.style={-{Stealth[length=2mm]}, color=Logo1, thick}
+  ]
+    \node[stage] (source) {Kết quả PAPI\\được công bố};
+    \node[stage, right=of source] (merge) {Đọc và hợp nhất\\theo năm};
+    \node[stage, right=of merge] (standardize) {Chuẩn hóa tỉnh\\và D1-D8};
+    \node[stage, right=of standardize] (clean) {Xử lý thiếu\\và khử trùng};
+    \node[stage, right=of clean] (quality) {Tổng hợp và\\kiểm tra chất lượng};
+    \draw[flow] (source) -- (merge);
+    \draw[flow] (merge) -- (standardize);
+    \draw[flow] (standardize) -- (clean);
+    \draw[flow] (clean) -- (quality);
+  \end{tikzpicture}%
+  }
+
+  \vspace{0.55cm}
+  \small
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \centerline{\textbf{Chuẩn hóa và hợp nhất}}
+      \begin{itemize}
+        \setlength{\itemsep}{6pt}
+        \item[-] Đồng nhất tên tỉnh và mã lĩnh vực.
+        \item[-] Tách điểm lĩnh vực khỏi tổng điểm.
+        \item[-] Loại bản ghi trùng theo tỉnh, năm và lĩnh vực.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centerline{\textbf{Nguyên tắc xử lý thiếu}}
+      \begin{itemize}
+        \setlength{\itemsep}{6pt}
+        \item[-] Không điền 0 và không nội suy.
+        \item[-] Chỉ tính tổng khi đủ lĩnh vực yêu cầu.
+        \item[-] Mỗi phép tính sử dụng số tỉnh có dữ liệu thực tế.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 8
+\begin{frame}[t]{Kết quả xử lý dữ liệu}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.31\textwidth}
+      \centering
+      {\color{Logo1}\fontsize{25}{28}\selectfont 6.094}\par
+      {\scriptsize điểm lĩnh vực hợp lệ}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \centering
+      {\color{Logo1}\fontsize{25}{28}\selectfont 882}\par
+      {\scriptsize tổ hợp tỉnh - năm}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \centering
+      {\color{Logo1}\fontsize{25}{28}\selectfont 13}\par
+      {\scriptsize tổ hợp thiếu tổng hợp lệ}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.45cm}
+  \small
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \centerline{\textbf{Kết quả kiểm tra}}
+      \begin{itemize}
+        \setlength{\itemsep}{6pt}
+        \item[-] Mỗi năm có từ 60 đến 63 tỉnh.
+        \item[-] Không trùng khóa tỉnh $\times$ năm $\times$ lĩnh vực.
+        \item[-] Số lĩnh vực đúng theo từng giai đoạn.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centerline{\textbf{Dữ liệu sẵn sàng cho}}
+      \begin{itemize}
+        \setlength{\itemsep}{6pt}
+        \item[-] Phân tích xu hướng và phân phối.
+        \item[-] Bản đồ, so sánh vùng và tỉnh.
+        \item[-] Tương quan, thay đổi và phân nhóm.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.2cm}
+  \centering
+  {\footnotesize 28 giá trị 0 không hợp lệ được chuyển thành thiếu; không tạo dữ liệu thay thế.}
+  \sourcefoot{Tài liệu dữ liệu và kết quả kiểm tra chất lượng của dự án.}
+\end{frame}

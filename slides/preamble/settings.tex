@@ -2,24 +2,48 @@
 \usecolortheme{default}
 \useinnertheme{circles}
 
+%------------- Màu nhận diện Dashboard PAPI -------------
+\definecolor{PapiCanvas}{HTML}{F5F7F6}
+\definecolor{PapiSurface}{HTML}{FFFFFF}
+\definecolor{PapiInk}{HTML}{17313A}
+\definecolor{PapiText}{HTML}{243B43}
+\definecolor{PapiMuted}{HTML}{64757B}
+\definecolor{PapiAccent}{HTML}{1F6873}
+\definecolor{PapiAccentDark}{HTML}{154D56}
+\definecolor{PapiAccentWash}{HTML}{E4F0EF}
+
 %------------- Đánh số công thức và Caption -------------
 \setbeamertemplate{equations}[numbered]
 \setbeamertemplate{caption}[numbered]
-\captionsetup{labelfont={color=black},textfont={color=black}}
+\captionsetup{labelfont={color=PapiText},textfont={color=PapiText}}
 % \setbeamertemplate{frametitle}{}
 
-%------------- Màu nhận diện -------------
-\definecolor{Logo1}{HTML}{1B5E20}
-\definecolor{Logo2}{HTML}{3E2723}
+% Bí danh giữ tương thích với các sơ đồ và chỉ số trong nội dung.
+\colorlet{Logo1}{PapiAccent}
+\colorlet{Logo2}{PapiAccentDark}
 
-\setbeamercolor*{palette primary}{bg=Logo1, fg=white}
-\setbeamercolor*{palette secondary}{bg=Logo2, fg=white}
-\setbeamercolor*{palette tertiary}{bg=white, fg=Logo1}
-\setbeamercolor*{palette quaternary}{bg=Logo1,fg=white}
-\setbeamercolor{structure}{fg=Logo1}
-\setbeamercolor{section in toc}{fg=Logo1}
+\setbeamercolor{normal text}{fg=PapiText,bg=PapiCanvas}
+\setbeamercolor*{palette primary}{bg=PapiAccent,fg=white}
+\setbeamercolor*{palette secondary}{bg=PapiInk,fg=white}
+\setbeamercolor*{palette tertiary}{bg=PapiAccentWash,fg=PapiInk}
+\setbeamercolor*{palette quaternary}{bg=PapiAccentDark,fg=white}
+\setbeamercolor{frametitle}{bg=PapiAccent,fg=white}
+\setbeamercolor{title}{bg=PapiAccent,fg=white}
+\setbeamercolor{subtitle}{fg=PapiAccentWash}
+\setbeamercolor{structure}{fg=PapiAccent}
+\setbeamercolor{section in toc}{fg=PapiAccentDark}
+\setbeamercolor{section number projected}{bg=PapiAccent,fg=white}
 \setbeamerfont{section in toc}{size=\small,series=\mdseries}
 \setbeamerfont{section number projected}{size=\small}
+\setbeamerfont{caption}{size=\scriptsize}
+\setbeamertemplate{itemize item}{\textendash}
+\setbeamertemplate{itemize subitem}{\textendash}
+\setlength{\abovecaptionskip}{2pt}
+\setlength{\belowcaptionskip}{0pt}
+
+\newcommand{\sourcefoot}[1]{%
+  \vspace{0.05cm}\par{\tiny\color{PapiMuted}Nguồn: #1}\par
+}
 
 %------------- Mục lục đầu mỗi section -------------
 \newbool{showtocatsection}
@@ -122,4 +146,3 @@
   \fi
 }
 \makeatother
-

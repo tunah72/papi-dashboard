@@ -1,0 +1,82 @@
+\section{Giới thiệu}
+
+% Slide 3
+\begin{frame}[t]{\textsl{PAPI - Chỉ số Hiệu quả Quản trị và Hành chính công cấp tỉnh}}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.56\textwidth}
+      \small
+      PAPI đo lường trải nghiệm, cảm nhận và mức độ hài lòng của người dân đối với quản trị, hành chính công và dịch vụ công tại địa phương.
+
+      \vspace{0.25cm}
+      \begin{itemize}
+        \setlength{\itemsep}{6pt}
+        \item[-] Khảo sát người dân, không phải dữ liệu hành chính.
+        \item[-] Điểm được tổng hợp theo tỉnh và lĩnh vực.
+        \item[-] Điểm cao hơn phản ánh trải nghiệm tích cực hơn trong mẫu khảo sát.
+        \item[-] Đồ án không sử dụng dữ liệu từng cá nhân.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.40\textwidth}
+      \centering
+      \begin{tikzpicture}[
+        node distance=0.18cm,
+        survey-stage/.style={rectangle, rounded corners, draw=Logo1, fill=Logo1!7,
+          align=center, minimum height=0.66cm, text width=3.7cm, font=\scriptsize},
+        flow/.style={-{Stealth[length=1.7mm]}, color=Logo1, thick}
+      ]
+        \node[survey-stage] (survey) {Khảo sát trải nghiệm và cảm nhận};
+        \node[survey-stage, below=of survey] (indicator) {Tổng hợp chỉ tiêu và lĩnh vực};
+        \node[survey-stage, below=of indicator] (province) {Công bố điểm PAPI cấp tỉnh};
+        \draw[flow] (survey) -- (indicator);
+        \draw[flow] (indicator) -- (province);
+      \end{tikzpicture}
+
+      \vspace{0.32cm}
+      {\color{Logo1}\Large 18.894}\par
+      {\scriptsize người tham gia khảo sát năm 2024}\par
+      \vspace{0.22cm}
+      {\color{Logo1}\Large 216.673}\par
+      {\scriptsize lượt phỏng vấn trực tiếp, 2009-2024}
+    \end{column}
+  \end{columns}
+  \sourcefoot{UNDP Việt Nam, Báo cáo PAPI 2024.}
+\end{frame}
+
+% Slide 4
+\begin{frame}[t]{Ý nghĩa, đối tượng và mục tiêu phân tích}
+  \small
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.31\textwidth}
+      \centerline{\textbf{Ý nghĩa}}
+      \begin{itemize}
+        \setlength{\itemsep}{7pt}
+        \item[-] Theo dõi thay đổi quản trị qua thời gian.
+        \item[-] So sánh địa phương trên cùng phạm vi.
+        \item[-] Nhận diện lĩnh vực cần ưu tiên xem xét.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.31\textwidth}
+      \centerline{\textbf{Đối tượng sử dụng}}
+      \begin{itemize}
+        \setlength{\itemsep}{7pt}
+        \item[-] Cơ quan quản lý và nhà hoạch định chính sách.
+        \item[-] Nhà nghiên cứu, giảng viên và sinh viên.
+        \item[-] Người dân quan tâm đến quản trị địa phương.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.34\textwidth}
+      \centerline{\textbf{Mục tiêu phân tích}}
+      \begin{itemize}
+        \setlength{\itemsep}{7pt}
+        \item[-] Diễn biến theo thời gian.
+        \item[-] Khác biệt giữa vùng và tỉnh.
+        \item[-] Quan hệ giữa các lĩnh vực.
+        \item[-] Thay đổi và phân nhóm tỉnh.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.28cm}
+  \centering
+  {\footnotesize Dữ liệu PAPI $\rightarrow$ bằng chứng so sánh $\rightarrow$ lĩnh vực ưu tiên $\rightarrow$ định hướng cải thiện phù hợp với địa phương.}
+\end{frame}

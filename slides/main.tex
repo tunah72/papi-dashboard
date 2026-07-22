@@ -4,29 +4,27 @@
 
 \input{preamble/packages}
 \input{preamble/settings}
-\graphicspath{{img/}{../report/img/}{../report/img/autoregressive_world_modeling_and_planning/}}
+\graphicspath{{img/}{../report/img/}}
 \input{content/0-title}
 
 %-------------------------------------
 \begin{document}
 
-\begin{frame}
-  \titlepage
-  \vspace{-0.5cm}
-  \centering
-\end{frame}
-
+\input{content/0-cover}
 \boolfalse{showsectnum}
-\begin{frame}[t]{Mục lục}
-  \tableofcontents[subsectionstyle=hide]
-\end{frame}
+\input{content/1-toc}
 \booltrue{showsectnum}
 
 %-------------------------------------
-
-
 \boolfalse{showtocatsection}
-\section{Tài liệu tham khảo}
-\input{ref/ref}
+\input{content/2-introduction}
+\input{content/3-data-preprocessing}
+\input{content/4-overview}
+\input{content/5-time-trend}
+\input{content/6-regional-province}
+\input{content/7-dimension-relationships}
+\input{content/8-dynamics-clustering}
+\input{content/9-dashboard}
+\input{content/10-conclusion}
 
 \end{document}

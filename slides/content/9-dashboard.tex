@@ -1,0 +1,117 @@
+\section{Thiết kế Dashboard}
+
+% Slide 18
+\begin{frame}[t]{Xây dựng Dashboard}
+  \centering
+  \begin{tikzpicture}[
+    node distance=0.42cm,
+    layer/.style={rectangle, rounded corners, draw=Logo1, fill=Logo1!7,
+      align=center, minimum height=1.12cm, text width=2.55cm, font=\small},
+    flow/.style={-{Stealth[length=2mm]}, color=Logo1, thick}
+  ]
+    \node[layer] (data) {Dữ liệu PAPI\\đã chuẩn hóa};
+    \node[layer, right=of data] (python) {Python\\phân tích dữ liệu};
+    \node[layer, right=of python] (api) {FastAPI\\dịch vụ dữ liệu};
+    \node[layer, right=of api] (react) {React\\giao diện tương tác};
+    \draw[flow] (data) -- (python);
+    \draw[flow] (python) -- (api);
+    \draw[flow] (api) -- (react);
+  \end{tikzpicture}
+
+  \vspace{0.6cm}
+  \small
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.48\textwidth}
+      \centerline{\textbf{Phân tách trách nhiệm}}
+      \begin{itemize}
+        \setlength{\itemsep}{7pt}
+        \item[-] Python tính thống kê, thứ hạng và mô hình phân tích.
+        \item[-] FastAPI cung cấp kết quả theo bộ lọc thống nhất.
+        \item[-] React hiển thị biểu đồ và quản lý tương tác.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.48\textwidth}
+      \centerline{\textbf{Nguyên tắc hệ thống}}
+      \begin{itemize}
+        \setlength{\itemsep}{7pt}
+        \item[-] Năm trang sử dụng cùng định nghĩa dữ liệu.
+        \item[-] Dữ liệu sau xử lý được dùng ở trạng thái chỉ đọc.
+        \item[-] Nguồn, đơn vị và số quan sát đi cùng kết quả.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 19
+\begin{frame}[t]{Thiết kế trực quan và tương tác}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.62\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.65\textheight,keepaspectratio]{dashboard/dashboard_overview_page.png}
+        \caption*{Bố cục chung của trang Tổng quan}
+      \end{figure}
+    \end{column}
+    \begin{column}{0.35\textwidth}
+      \scriptsize
+      \centerline{\textbf{Thiết kế trực quan}}
+      \begin{itemize}
+        \setlength{\itemsep}{4pt}
+        \item[-] Lưới 2 $\times$ 2, mỗi trang bốn biểu đồ và bốn nhận xét.
+        \item[-] Màu vùng và lĩnh vực nhất quán.
+        \item[-] Tăng, giảm được thể hiện bằng màu, dấu và hướng.
+      \end{itemize}
+
+      \centerline{\textbf{Tính năng tương tác}}
+      \begin{itemize}
+        \setlength{\itemsep}{4pt}
+        \item[-] Bộ lọc năm, vùng, tỉnh và lĩnh vực.
+        \item[-] Di chuột, lựa chọn và liên kết ngữ cảnh.
+        \item[-] Phóng to biểu đồ nhưng giữ nguyên bộ lọc và nhận xét.
+        \item[-] Bảng tóm tắt và thao tác bằng bàn phím.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+\end{frame}
+
+% Slide 20
+\begin{frame}[t]{Trợ lý AI}
+  \centering
+  \begin{tikzpicture}[
+    node distance=0.22cm,
+    action/.style={rectangle, rounded corners, draw=Logo2, fill=Logo2!6,
+      align=center, minimum height=0.78cm, text width=2.15cm, font=\scriptsize},
+    flow/.style={-{Stealth[length=1.7mm]}, color=Logo2, thick}
+  ]
+    \node[action] (ask) {Người dùng\\đặt câu hỏi};
+    \node[action, right=of ask] (propose) {AI giải thích và\\đề xuất mã lệnh};
+    \node[action, right=of propose] (review) {Người dùng xem\\hoặc yêu cầu sửa};
+    \node[action, right=of review] (approve) {Phê duyệt\\phiên bản mới nhất};
+    \node[action, right=of approve] (run) {Thực thi cục bộ\\và ghi nhật ký};
+    \draw[flow] (ask) -- (propose);
+    \draw[flow] (propose) -- (review);
+    \draw[flow] (review) -- (approve);
+    \draw[flow] (approve) -- (run);
+  \end{tikzpicture}
+
+  \vspace{0.28cm}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.88\textwidth,height=0.34\textheight,keepaspectratio]{ai_assistant/ai_assistant_pending_approval.png}
+        \caption*{Mã lệnh và giải thích ở trạng thái chờ duyệt}
+      \end{figure}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=0.88\textwidth,height=0.34\textheight,keepaspectratio]{ai_assistant/ai_assistant_execution_result.png}
+        \caption*{Kết quả sau khi người dùng phê duyệt}
+      \end{figure}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.05cm}
+  {\scriptsize AI đề xuất và giải thích; người dùng kiểm tra, yêu cầu sửa và quyết định trước khi thực thi trên máy cục bộ.}
+\end{frame}
