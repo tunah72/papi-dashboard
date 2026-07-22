@@ -53,12 +53,12 @@
 % \renewcommand{\thesubsection}{\thesection.\Roman{subsection}}
 
 % Define course name, report name and report title.
-\newcommand{\coursename}{CSC14005 - Nhập môn học máy}
-\newcommand{\reportname}{Hệ thống phân vùng thực thể chẩn đoán bệnh trên lá cây nông nghiệp đặc sản cà phê và lúa}
+\newcommand{\coursename}{CSC10108 - Trực quan hóa dữ liệu}
+\newcommand{\reportname}{Dashboard trực quan hóa và phân tích chỉ số PAPI Việt Nam}
 \newcommand{\reporttitle}{BÁO CÁO ĐỒ ÁN CUỐI KỲ}
 
-\newcommand{\studentname}{Nguyễn Hồ Anh Tuấn - 23120185 \\ Lê Xuân Trí - 23120099 \\ Đàm Tiến Đạt - 23120118 \\ Tống Thanh Phúc - 23120158\\ Dương Tuấn Anh - 23120208}
-\newcommand{\teachername}{Thầy Bùi Tiến Lên}
+\newcommand{\studentname}{Lê Xuân Trí - 23120199 \\ Dương Tuấn Anh - 23120208 \\ Nguyễn Trần Trung Kiên - 23122038 \\ Lê Đức Phúc - 23122045}
+\newcommand{\teachername}{Thầy Bùi Tiến Lên \\ Thầy Trần Huy Bân \\ Thầy Võ Nhật Tân}
 
 % Header
 \lhead{\reporttitle}
@@ -73,36 +73,43 @@ Trường Đại học Khoa học Tự nhiên - ĐHQG HCM\\
 % ============ DOCUMENT ============
 \begin{document}
 
-\pagenumbering{roman}
+\pagenumbering{gobble}
 \input{content/title}
 
-\cleardoublepage
+\clearpage
 \pagenumbering{roman}
-\pagestyle{empty}
-
-\tableofcontents
-% \pagebreak
-% \thispagestyle{empty}
-
-\cleardoublepage
-\pagenumbering{arabic}
 \pagestyle{plain}
+\input{content/abstract}
 
+\clearpage
+\tableofcontents
+
+\clearpage
 \listoftables
 \addcontentsline{toc}{section}{Danh sách bảng}
-\pagebreak
 
+\clearpage
 \listoffigures
 \addcontentsline{toc}{section}{Danh sách hình vẽ}
 
 \clearpage
 \input{content/glossary}
-\clearpage
-
-% \setcounter{page}{1}
 
 % ===== NỘI DUNG CHÍNH =====
 
+\clearpage
+\pagenumbering{arabic}
+\pagestyle{plain}
+
+\input{content/01_introduction}
+\clearpage
+\input{content/02_data_preprocessing}
+\clearpage
+\input{content/03_visual_analysis}
+\clearpage
+\input{content/04_dashboard_design}
+\clearpage
+\input{content/05_conclusion}
 
 % References
 \input{ref/ref.tex}
@@ -110,5 +117,11 @@ Trường Đại học Khoa học Tự nhiên - ĐHQG HCM\\
 % Appendix
 \clearpage
 \appendix
-\input{appendix/ch5_evidence.tex}
+\input{appendix/a_preprocessing}
+\clearpage
+\input{appendix/b_data_dictionary}
+\clearpage
+\input{appendix/c_ai_usage}
+\clearpage
+\input{appendix/d_team_contributions}
 \end{document}

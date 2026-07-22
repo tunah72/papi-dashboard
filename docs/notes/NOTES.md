@@ -12,7 +12,7 @@ Tài liệu này tổng hợp các quy luật định dạng, cấu trúc, phong
 * **Các danh mục bắt buộc**:
   * Phải có Danh sách bảng (`\listoftables`) và Danh sách hình vẽ (`\listoffigures`).
   * Phải có Bảng thuật ngữ tiếng Anh - tiếng Việt (`content/glossary.tex`).
-* **Giới hạn dung lượng**: Báo cáo chính không vượt quá 30 trang (không bao gồm phần phụ lục) và khoảng 7000 từ để đảm bảo tính súc tích, cô đọng.
+* **Giới hạn dung lượng**: Báo cáo chính không vượt quá 40 trang (không bao gồm phần phụ lục) và khoảng 9000 từ để đảm bảo tính súc tích, cô đọng.
 
 ### 2. Định dạng Bảng biểu (Tables)
 * **Kiểu bảng**: Bắt buộc sử dụng gói `booktabs` với các lệnh kẻ ngang chuyên dụng: `\toprule` (đường kẻ đậm trên cùng), `\midrule` (đường kẻ phân cách), `\bottomrule` (đường kẻ đậm dưới cùng).
