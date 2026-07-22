@@ -22,9 +22,12 @@ trong đúng `subsection` được giao; nên tạo một commit riêng để Tu
 Mỗi hướng phân tích cần trình bày đủ bốn biểu đồ theo cùng một cấu trúc:
 
 1. Một đoạn mở đầu ngắn nêu câu hỏi phân tích, phạm vi năm, số lĩnh vực và đối tượng so sánh.
-2. Với từng biểu đồ: nêu loại biểu đồ, cách mã hóa dữ liệu, lý do lựa chọn và cách đọc cần thiết.
-3. Chèn hình ngay sau phần mô tả; hình phải rõ, không chứa thông tin thừa và không dùng ảnh do AI tạo.
-4. Sau hình chỉ giữ hai gạch đầu dòng: `Nhận xét` và `Định hướng`.
+2. Một mục `Phương pháp tính toán` giải thích ngắn dữ liệu đầu vào, công thức hoặc thuật toán, kết quả
+   đầu ra và giới hạn diễn giải. Công thức chính thức phải đặt trong môi trường `equation` và được giải
+   thích ngay sau công thức.
+3. Với từng biểu đồ: nêu loại biểu đồ, cách mã hóa dữ liệu, lý do lựa chọn và cách đọc cần thiết.
+4. Chèn hình ngay sau phần mô tả; hình phải rõ, không chứa thông tin thừa và không dùng ảnh do AI tạo.
+5. Sau hình chỉ giữ hai gạch đầu dòng: `Nhận xét` và `Định hướng`.
 
 Yêu cầu bắt buộc:
 
@@ -36,6 +39,10 @@ Yêu cầu bắt buộc:
 - Không so sánh trực tiếp tổng 6 lĩnh vực với tổng 8 lĩnh vực qua mốc năm 2018.
 - Không diễn giải tương quan, hồi quy, PCA hoặc phân nhóm thành quan hệ nhân quả, chất lượng quản trị
   chính thức hay tác động chính sách.
+- Mô tả phương pháp theo khái niệm và công thức, không kể tên hàm, file mã nguồn hoặc chi tiết triển
+  khai. Tham số thuật toán chỉ nêu khi ảnh hưởng khả năng tái lập hoặc cách diễn giải kết quả.
+- Nếu cần thêm tài liệu giải thích phương pháp, ưu tiên bài báo gốc, giáo trình hoặc tài liệu chính
+  thức; không dùng blog. Tham số thực tế phải được đối chiếu với phân tích đang chạy trên Dashboard.
 - Dùng số thập phân với dấu phẩy; dùng gạch ngang ngắn; chỉ giải thích thuật ngữ tiếng Anh ở lần xuất
   hiện đầu tiên.
 - Mỗi hình phải nằm trong môi trường `figure`, có `\caption`, `\label` và được tham chiếu bằng
@@ -56,6 +63,10 @@ Có thể dùng phần Bức tranh tổng quan và Diễn biến theo thời gia
   ở tỷ lệ 16:9. Không thu nhỏ hình đến mức mất nhãn hoặc chú giải.
 - Mỗi slide ưu tiên hai biểu đồ đặt cạnh nhau. Dưới mỗi biểu đồ ghi một dòng loại biểu đồ và một đến
   hai gạch đầu dòng kết quả chính.
+- Mỗi hướng phải có một dải phương pháp ngắn gồm tối đa bốn bước hoặc hai công thức cốt lõi. Có thể
+  đặt ở đầu slide thứ nhất hoặc tách thành một slide phương pháp nếu hai slide hiện tại bị quá tải.
+- Trên slide, chỉ giải thích ý nghĩa của chỉ số hoặc thuật toán đối với kết quả; không đưa đoạn mã,
+  tên hàm hoặc công thức khai triển dài.
 - Slide cuối của mỗi hướng có một dòng `Định hướng` gắn trực tiếp với kết quả vừa trình bày.
 - Chỉ giữ từ khóa và số liệu chính; không sao chép nguyên đoạn văn từ báo cáo.
 - Dùng `\item[-]`, hạn chế khối hộp màu, không in đậm tùy tiện và không dùng ảnh do AI tạo.
@@ -73,6 +84,21 @@ Nguồn cần đọc:
 - `docs/data/README.md`: phạm vi dữ liệu, lĩnh vực và dữ liệu thiếu.
 - `docs/design/README.md`: ma trận biểu đồ và nguyên tắc trực quan chung.
 - `report/img/dashboard/dashboard_regional_province_page.png`: bố cục trang hiện tại.
+
+Phương pháp tính toán phải trình bày:
+
+- Chỉ so sánh các tỉnh có tổng điểm hợp lệ trong cùng năm và cùng phạm vi 6 hoặc 8 lĩnh vực.
+- Với mỗi vùng, tính trung bình, trung vị, tứ phân vị thứ nhất $Q_1$, tứ phân vị thứ ba $Q_3$ và
+  khoảng tứ phân vị $IQR = Q_3 - Q_1$. Số tỉnh `n` được tính từ dữ liệu hợp lệ thực tế.
+- Xếp hạng theo tổng điểm giảm dần; nếu bằng điểm thì các tỉnh dùng cùng hạng nhỏ nhất. Khoảng cách
+  với tỉnh dẫn đầu bằng điểm dẫn đầu trừ điểm tỉnh đang xét.
+- Chuẩn đối chiếu là trung bình của vùng và trung bình toàn bộ mẫu trong cùng lát cắt. Chênh lệch có
+  dấu được tính bằng điểm tỉnh trừ giá trị chuẩn. Hồ sơ lĩnh vực áp dụng phép so sánh tương tự cho
+  từng D1-D8 trên thang 1-10.
+
+Trong báo cáo, nên dành một đoạn ngắn và một công thức cho $IQR$ và chênh lệch chuẩn đối chiếu. Trên
+slide, tóm tắt bằng một dải: `Cùng năm và phạm vi` $\rightarrow$ `Trung vị/IQR` $\rightarrow$
+`Xếp hạng` $\rightarrow$ `Chênh lệch với chuẩn đối chiếu`.
 
 Bốn nội dung phải trình bày:
 
@@ -102,6 +128,22 @@ Nguồn cần đọc:
 - `docs/design/README.md`: quan hệ giữa trang này với các hướng phân tích khác.
 - `report/img/dashboard/dashboard_dimension_relationships_page.png`: bố cục trang hiện tại.
 
+Phương pháp tính toán phải trình bày:
+
+- Hệ số tương quan Pearson $r$ đo hướng và mức liên hệ tuyến tính của hai lĩnh vực. Mỗi cặp chỉ dùng
+  các tỉnh có đủ cả hai điểm, vì vậy phải công bố `n` riêng của cặp.
+- Hồi quy bình phương tối thiểu thông thường mô tả đường $\hat{y}=a+bx$. Hệ số $R^2$ cho biết tỷ lệ
+  biến thiên của $y$ được mô tả bởi mô hình tuyến tính trong mẫu đang xét.
+- Phần dư của tỉnh là $e_i=y_i-\hat{y}_i$. Dấu dương nghĩa là điểm quan sát cao hơn đường dự đoán;
+  dấu âm nghĩa là thấp hơn. Chọn tỉnh lệch nhất theo $|e_i|$ nhưng không xem đó là lỗi dữ liệu.
+- Độ phân tán của từng lĩnh vực dùng độ lệch chuẩn mẫu; biểu đồ thể hiện trung bình $\pm$ một độ lệch
+  chuẩn. Đây là thống kê mô tả, không phải khoảng tin cậy.
+
+Trong báo cáo, nêu công thức Pearson, mô hình hồi quy, phần dư và ý nghĩa $R^2$; không cần trình bày
+quá trình tối ưu chi tiết. Trên slide, dùng dải `Pearson r` $\rightarrow$ `Hồi quy và $R^2$`
+$\rightarrow$ `Phần dư` $\rightarrow$ `Trung bình $\pm$ SD`, kèm một câu “mô tả liên hệ, không phải
+quan hệ nhân quả”.
+
 Bốn nội dung phải trình bày:
 
 | Thứ tự | Biểu đồ | Câu hỏi cần trả lời | Điểm cần nhấn mạnh |
@@ -129,6 +171,28 @@ Nguồn cần đọc:
 - `docs/data/README.md`: điều kiện đủ dữ liệu ở hai mốc và phạm vi lĩnh vực.
 - `docs/design/README.md`: vai trò của phân nhóm trong mạch kể chung.
 - `report/img/dashboard/dashboard_dynamics_clustering_page.png`: bố cục trang hiện tại.
+
+Phương pháp tính toán phải trình bày:
+
+- Chỉ giữ tỉnh có đủ dữ liệu lĩnh vực ở cả hai mốc. Mức thay đổi tổng điểm là
+  $\Delta_i=S_{i,\mathrm{cuối}}-S_{i,\mathrm{đầu}}$.
+- Chuẩn hóa từng lĩnh vực riêng trong từng năm bằng điểm chuẩn
+  $z=(x-\bar{x})/\sigma$. Hai mốc chuẩn hóa sau đó được gộp để phân nhóm trên cùng không gian đặc trưng.
+- Thuật toán phân cụm K-Means thử số nhóm $K$ từ 2 đến 6. Chế độ tự động chọn $K$ có hệ số silhouette
+  (độ tách nhóm) lớn nhất; mô hình khởi tạo 50 lần và cố định hạt giống ngẫu nhiên 42 để kết quả có
+  thể tái lập. Người dùng có thể chọn $K$ cụ thể.
+- Tên nhóm A-F được sắp ổn định trong truy vấn hiện tại theo tâm nhóm chuẩn hóa. Đây chỉ là nhãn hồ
+  sơ tương đồng, không phải thứ hạng hoặc phân loại chính thức của PAPI.
+- Phân tích thành phần chính (PCA) chiếu dữ liệu nhiều lĩnh vực xuống hai thành phần PC1 và PC2. Phải
+  công bố tổng tỷ lệ phương sai giải thích; không gán PC1 hoặc PC2 thành điểm tốt, xấu. Khoảng dịch
+  chuyển hiển thị là khoảng cách Euclid giữa hai vị trí của cùng tỉnh trên mặt phẳng PCA.
+- Luồng chuyển nhóm được đếm từ nhãn đầu-cuối của từng tỉnh; tỷ lệ giữ nhóm bằng số tỉnh không đổi
+  nhóm chia cho tổng số tỉnh đủ dữ liệu ở hai mốc.
+
+Trong báo cáo, nên dùng một sơ đồ vector ngắn cho chuỗi `Lọc hai mốc` $\rightarrow$ `Chuẩn hóa theo
+năm` $\rightarrow$ `Chọn K và K-Means` $\rightarrow$ `PCA và luồng chuyển nhóm`, kèm các công thức
+$\Delta_i$ và $z$. Trên slide, giữ chính sơ đồ bốn bước, tham số $K\in[2,6]$, silhouette và tỷ lệ
+phương sai PCA; không đưa phần chứng minh thuật toán.
 
 Bốn nội dung phải trình bày:
 
@@ -175,7 +239,8 @@ Mỗi thành viên tự kiểm tra phần của mình theo thứ tự:
 1. Đọc lại toàn bộ `docs/notes/NOTES.md` và tài liệu thiết kế được chỉ định.
 2. Đối chiếu bốn biểu đồ trên Dashboard ở cùng bộ lọc; ghi lại năm, phạm vi, tỉnh hoặc lĩnh vực đang
    chọn và `n` trước khi viết nhận xét.
-3. Kiểm tra đủ bốn hình, bốn nhãn, bốn tham chiếu, bốn nhận xét và bốn định hướng trong báo cáo.
+3. Kiểm tra phần phương pháp khớp với tài liệu thiết kế; đủ bốn hình, bốn nhãn, bốn tham chiếu, bốn
+   nhận xét và bốn định hướng trong báo cáo.
 4. Biên dịch báo cáo và slide:
 
 ```bash
