@@ -1,4 +1,62 @@
 \section{Quá trình sử dụng AI}
 \label{appendix:ai-usage}
 
-% TODO: Tóm tắt yêu cầu đã đặt, kết quả AI, thay đổi của nhóm, phê duyệt và nhận xét.
+AI được sử dụng như công cụ hỗ trợ tìm kiếm trong tài liệu, đề xuất cách trình bày và kiểm tra tính nhất quán. Nhóm chịu trách nhiệm lựa chọn nguồn, xác nhận số liệu, chỉnh sửa nội dung và quyết định phiên bản cuối cùng.
+
+\subsection{Các công việc có sự hỗ trợ của AI}
+
+Bảng~\ref{tab:appendix-ai-tasks} tóm tắt các nhóm yêu cầu, kết quả nhận được và quyết định của nhóm trong quá trình hoàn thiện sản phẩm và báo cáo.
+
+\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.28\textwidth}>{\raggedright\arraybackslash}p{0.31\textwidth}>{\raggedright\arraybackslash}p{0.32\textwidth}@{}}
+\caption{Tóm tắt quá trình sử dụng AI trong đồ án}
+\label{tab:appendix-ai-tasks}\\
+\toprule
+\textbf{Yêu cầu của nhóm} & \textbf{Kết quả AI cung cấp} & \textbf{Kiểm tra và điều chỉnh của nhóm} \\
+\midrule
+\endfirsthead
+\caption[]{Tóm tắt quá trình sử dụng AI trong đồ án (tiếp theo)}\\
+\toprule
+\textbf{Yêu cầu của nhóm} & \textbf{Kết quả AI cung cấp} & \textbf{Kiểm tra và điều chỉnh của nhóm} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\textit{Còn tiếp ở trang sau}}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Rà soát nguồn dữ liệu và cấu trúc báo cáo. & Đề xuất dàn ý cho phần giới thiệu, tiền xử lý và phụ lục. & Đối chiếu với tài liệu PAPI, loại thông tin nội bộ và các nhận định không có nguồn. \\
+Đề xuất nội dung phân tích cho trang Tổng quan và Diễn biến theo thời gian. & Gợi ý loại biểu đồ, kỹ thuật mã hóa trực quan và nhận xét chính. & Chỉ giữ kết quả được xác nhận từ dữ liệu; rút gọn các giải thích không phục vụ câu hỏi phân tích. \\
+Sắp xếp hình ảnh của bảng điều khiển trong báo cáo. & Gợi ý tên tệp, bố cục hình đơn và nhóm hình, chú thích và nhãn tham chiếu. & Kiểm tra hình đúng trang, đúng nội dung và tuân thủ quy định về chú thích. \\
+Hoàn thiện phần thiết kế bảng điều khiển. & Mô tả kiến trúc React, FastAPI, xử lý dữ liệu bằng Python và cơ chế phê duyệt AI. & Chuyển các đoạn dài thành gạch đầu dòng và giới hạn mô tả ở mức cần thiết cho báo cáo. \\
+Kiểm tra tài liệu LaTeX. & Phát hiện đầu vào thiếu, tham chiếu chưa định nghĩa và vấn đề bố cục sau biên dịch. & Xem lại PDF, xác nhận số trang, bảng, hình, phông chữ và sửa lỗi trước khi chấp nhận. \\
+\end{longtable}
+\normalsize
+
+\subsection{Cơ chế con người phê duyệt trong bảng điều khiển}
+
+Luồng sử dụng Trợ lý AI được thiết kế như sau:
+
+\begin{enumerate}
+    \setlength{\itemsep}{0.2em}
+    \setlength{\parskip}{0pt}
+    \item Người dùng gửi câu hỏi cùng ngữ cảnh trang, bộ lọc và đối tượng đang chọn.
+    \item Câu hỏi kiến thức nhận câu trả lời ngắn kèm nguồn; yêu cầu tính toán mới nhận giải thích và toàn bộ mã lệnh ở trạng thái chờ duyệt.
+    \item Người dùng đọc mã lệnh, yêu cầu sửa bằng ngôn ngữ tự nhiên hoặc chấp nhận phiên bản mới nhất.
+    \item Chỉ sau thao tác phê duyệt, mã lệnh mới được thực thi cục bộ trên bản sao dữ liệu.
+    \item Kết quả, lỗi và các trạng thái chính được ghi lại để phục vụ kiểm tra.
+\end{enumerate}
+
+Trạng thái chờ duyệt và kết quả sau thực thi được minh họa tại Hình~\ref{fig:dashboard-ai-approval}.
+
+\subsection{Nguyên tắc kiểm soát và nhận xét}
+
+\begin{itemize}
+    \setlength{\itemsep}{0.2em}
+    \setlength{\parskip}{0pt}
+    \item AI không tự sửa dữ liệu gốc, tự tạo số liệu hoặc tự thực thi mã lệnh phân tích.
+    \item Mọi số liệu trong báo cáo phải được đối chiếu với dữ liệu PAPI hoặc nguồn chính thức.
+    \item Đề xuất có nội dung dài, lặp lại hoặc không làm rõ mục tiêu phân tích được nhóm loại bỏ.
+    \item AI giúp rút ngắn thời gian rà soát và định dạng, nhưng chất lượng đầu ra phụ thuộc vào nguồn và yêu cầu đầu vào.
+    \item Quyết định về nội dung, cách diễn giải và phiên bản cuối cùng thuộc về các thành viên trong nhóm.
+\end{itemize}

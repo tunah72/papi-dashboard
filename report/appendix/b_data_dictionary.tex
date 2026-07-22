@@ -1,4 +1,111 @@
 \section{Định nghĩa biến}
 \label{appendix:data-dictionary}
 
-% TODO: Bổ sung data dictionary và định nghĩa chi tiết D1--D8.
+Tên biến được giữ nguyên như trong các bảng dữ liệu để thuận tiện đối chiếu. Các bảng dưới đây mô tả ý nghĩa, kiểu dữ liệu và quy tắc sử dụng; tên đầy đủ của D1\textendash D8 được trình bày tại Bảng~\ref{tab:papi-dimensions}.
+
+\subsection{Bảng điểm lĩnh vực}
+
+Bảng~\ref{tab:dictionary-fact} mô tả bảng có mức chi tiết tỉnh $\times$ năm $\times$ lĩnh vực. Bảng này chỉ lưu điểm hợp lệ; trường hợp thiếu không được thay bằng dòng có giá trị 0.
+
+\begin{table}[H]
+    \centering
+    \caption{Định nghĩa biến của bảng điểm lĩnh vực}
+    \label{tab:dictionary-fact}
+    \small
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.20\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}>{\raggedright\arraybackslash}X@{}}
+        \toprule
+        \textbf{Biến} & \textbf{Kiểu dữ liệu} & \textbf{Ý nghĩa} \\
+        \midrule
+        \texttt{province\_id} & Số nguyên & Mã tỉnh từ 1 đến 63. \\
+        \texttt{year} & Số nguyên & Năm quan sát, từ 2011 đến 2024. \\
+        \texttt{code} & Phân loại & Mã lĩnh vực D1\textendash D8. \\
+        \texttt{score} & Số thực & Điểm lĩnh vực trên thang 1\textendash 10. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
+
+\subsection{Bảng tổng hợp tỉnh - năm}
+
+Bảng~\ref{tab:dictionary-province-year} mô tả các biến dùng cho thẻ chỉ số, bản đồ, xếp hạng và so sánh theo thời gian.
+
+\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.16\textwidth}>{\raggedright\arraybackslash}p{0.51\textwidth}@{}}
+\caption{Định nghĩa biến của bảng tổng hợp tỉnh - năm}
+\label{tab:dictionary-province-year}\\
+\toprule
+\textbf{Biến} & \textbf{Kiểu dữ liệu} & \textbf{Ý nghĩa} \\
+\midrule
+\endfirsthead
+\caption[]{Định nghĩa biến của bảng tổng hợp tỉnh - năm (tiếp theo)}\\
+\toprule
+\textbf{Biến} & \textbf{Kiểu dữ liệu} & \textbf{Ý nghĩa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\textit{Còn tiếp ở trang sau}}\\
+\endfoot
+\bottomrule
+\endlastfoot
+\texttt{province\_id} & Số nguyên & Mã tỉnh từ 1 đến 63. \\
+\texttt{province\_vi} & Văn bản & Tên tỉnh bằng tiếng Việt. \\
+\texttt{region} & Văn bản & Tên một trong sáu vùng kinh tế - xã hội. \\
+\texttt{region\_id} & Số nguyên & Mã vùng dùng để sắp xếp và liên kết dữ liệu. \\
+\texttt{year} & Số nguyên & Năm quan sát, từ 2011 đến 2024. \\
+\texttt{D1}\textendash\texttt{D8} & Số thực & Điểm từng lĩnh vực; D7 và D8 để thiếu trước năm 2018. \\
+\texttt{total\_papi} & Số thực & Tổng các lĩnh vực của cấu trúc chỉ số trong năm; thiếu nếu không đủ lĩnh vực. \\
+\texttt{total\_papi\_6dim} & Số thực & Tổng D1\textendash D6 dùng cho so sánh nhất quán giai đoạn 2011\textendash 2024. \\
+\texttt{total\_official} & Số thực & Tổng điểm đọc từ bảng công bố, dùng để đối chiếu khi có dữ liệu. \\
+\texttt{n\_dims} & Số nguyên & Số lĩnh vực thực sự có điểm hợp lệ. \\
+\texttt{rank\_year} & Số thực & Thứ hạng giảm dần trong các tỉnh có tổng hợp lệ của cùng năm. \\
+\texttt{tier} & Phân loại & Nhóm tứ phân vị theo năm; không phải phân loại chính thức của PAPI. \\
+\end{longtable}
+\normalsize
+
+\subsection{Bảng thống kê và danh mục}
+
+Bảng~\ref{tab:dictionary-supporting} mô tả các biến còn lại được dùng để tính thống kê, hiển thị nhãn và dựng bản đồ.
+
+\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.22\textwidth}>{\raggedright\arraybackslash}p{0.24\textwidth}>{\raggedright\arraybackslash}p{0.45\textwidth}@{}}
+\caption{Định nghĩa biến của các bảng thống kê và danh mục}
+\label{tab:dictionary-supporting}\\
+\toprule
+\textbf{Bảng} & \textbf{Biến} & \textbf{Ý nghĩa} \\
+\midrule
+\endfirsthead
+\caption[]{Định nghĩa biến của các bảng thống kê và danh mục (tiếp theo)}\\
+\toprule
+\textbf{Bảng} & \textbf{Biến} & \textbf{Ý nghĩa} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{3}{r}{\textit{Còn tiếp ở trang sau}}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Thống kê năm - lĩnh vực & \texttt{year}, \texttt{code} & Năm và mã lĩnh vực xác định một dòng. \\
+Thống kê năm - lĩnh vực & \texttt{mean\_score} & Điểm trung bình của các tỉnh có dữ liệu. \\
+Thống kê năm - lĩnh vực & \texttt{min\_score}, \texttt{max\_score} & Điểm nhỏ nhất và lớn nhất trong các tỉnh có dữ liệu. \\
+Thống kê năm - lĩnh vực & \texttt{std\_score} & Độ lệch chuẩn giữa các tỉnh có dữ liệu. \\
+Danh mục tỉnh & \texttt{province\_id} & Mã tỉnh dùng để liên kết các bảng. \\
+Danh mục tỉnh & \texttt{province\_vi}, \texttt{province\_en} & Tên tỉnh bằng tiếng Việt và tiếng Anh. \\
+Danh mục tỉnh & \texttt{region}, \texttt{region\_id} & Tên vùng và mã vùng của tỉnh. \\
+Danh mục lĩnh vực & \texttt{code} & Mã D1\textendash D8. \\
+Danh mục lĩnh vực & \texttt{name\_vi}, \texttt{name\_en}, \texttt{short} & Tên tiếng Việt, tên tiếng Anh và tên rút gọn. \\
+Danh mục lĩnh vực & \texttt{color}, \texttt{sort} & Màu hiển thị thống nhất và thứ tự lĩnh vực. \\
+Danh mục lĩnh vực & \texttt{from\_year} & Năm bắt đầu có dữ liệu của lĩnh vực. \\
+Ranh giới địa lý & \texttt{province\_id}, \texttt{province\_vi} & Mã và tên tỉnh dùng để nối với điểm PAPI. \\
+Ranh giới địa lý & Hình học & Đường biên tỉnh dùng cho bản đồ tô màu theo giá trị. \\
+\end{longtable}
+\normalsize
+
+\subsection{Quy ước giá trị thiếu và phạm vi tổng điểm}
+
+\begin{itemize}
+    \setlength{\itemsep}{0.2em}
+    \setlength{\parskip}{0pt}
+    \item Giá trị thiếu được giữ nguyên và bị loại khỏi phép tính tương ứng; không thay bằng 0.
+    \item Tổng sáu lĩnh vực yêu cầu đủ D1\textendash D6; tổng tám lĩnh vực yêu cầu đủ D1\textendash D8.
+    \item Thứ hạng và nhóm tứ phân vị chỉ được tính trong các tỉnh có tổng điểm hợp lệ của cùng năm.
+    \item Mỗi thống kê theo năm hoặc lĩnh vực sử dụng số tỉnh có dữ liệu thực tế tại phép tính đó.
+\end{itemize}

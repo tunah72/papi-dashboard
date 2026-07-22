@@ -1,17 +1,126 @@
-\section{Thiết kế Dashboard}
+\section{Thiết kế bảng điều khiển}
 \label{sec:dashboard-design}
 
 \subsection{Kiến trúc tổng quan}
-% TODO: Giới thiệu ngắn pipeline dữ liệu, FastAPI local, React và ranh giới trách nhiệm.
+
+\begin{itemize}
+    \item \textit{Giao diện người dùng:} xây dựng bằng React để hiển thị thẻ chỉ số, biểu đồ và quản lý các thao tác tương tác.
+    \item \textit{Dịch vụ phía máy chủ:} xây dựng bằng FastAPI để cung cấp dữ liệu và kết quả phân tích cho giao diện.
+    \item \textit{Xử lý dữ liệu:} sử dụng các chương trình Python để chuẩn hóa dữ liệu, tính thống kê, thứ hạng và thông tin tóm tắt.
+    \item \textit{Lớp dữ liệu:} lưu các bảng PAPI đã chuẩn hóa ở trạng thái chỉ đọc và dùng chung cho các trang.
+    \item \textit{Trợ lý AI:} hoạt động độc lập với luồng hiển thị và chỉ thực thi phân tích sau khi được phê duyệt.
+\end{itemize}
 
 \subsection{Bố cục và luồng khám phá dữ liệu}
-% TODO: Nêu năm trang, sidebar và luồng đọc từ tổng quan đến bốn hướng phân tích.
+
+\begin{itemize}
+    \item \textit{Điều hướng:} năm trang được sắp xếp từ Tổng quan đến bốn hướng phân tích chuyên sâu.
+    \item \textit{Bố cục chung:} tiêu đề, bộ lọc, bốn thẻ chỉ số và bốn biểu đồ trên lưới 2 $\times$ 2.
+    \item \textit{Nhận xét:} đặt ngay dưới biểu đồ tương ứng để liên kết kết quả với hình vẽ.
+    \item \textit{Thích ứng màn hình:} lưới hai cột trên màn hình lớn và một cột khi chiều rộng giảm.
+\end{itemize}
+
+Hình~\ref{fig:dashboard-overview-page} minh họa bố cục chung; Hình~\ref{fig:dashboard-analysis-pages} thể hiện bốn trang chuyên sâu.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/dashboard/dashboard_overview_page.png}
+    \caption{Bố cục trang Tổng quan của bảng điều khiển}
+    \label{fig:dashboard-overview-page}
+\end{figure}
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/dashboard/dashboard_time_trend_with_assistant.png}
+        \caption{Diễn biến theo thời gian}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/dashboard/dashboard_regional_province_page.png}
+        \caption{Khác biệt giữa vùng và tỉnh}
+    \end{subfigure}
+
+    \vspace{0.4cm}
+
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/dashboard/dashboard_dimension_relationships_page.png}
+        \caption{Mối quan hệ giữa các lĩnh vực}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/dashboard/dashboard_dynamics_clustering_page.png}
+        \caption{Thay đổi và phân nhóm tỉnh}
+    \end{subfigure}
+    \caption{Bốn trang phân tích chuyên sâu của bảng điều khiển}
+    \label{fig:dashboard-analysis-pages}
+\end{figure}
 
 \subsection{Màu sắc và nguyên tắc mã hóa trực quan}
-% TODO: Trình bày palette lĩnh vực/vùng và nguyên tắc không phụ thuộc duy nhất vào màu.
+
+\begin{itemize}
+    \item \textit{Giao diện:} nền xanh xám nhạt, thẻ trắng, chữ xanh than và màu xanh ngọc làm điểm nhấn.
+    \item \textit{Tính nhất quán:} mỗi vùng và mỗi lĩnh vực giữ một màu cố định trên toàn bộ bảng điều khiển.
+    \item \textit{Thang màu:} tuần tự cho mức điểm; phân kỳ có tâm tại 0 cho mức thay đổi và tương quan.
+    \item \textit{Khả năng phân biệt:} kết hợp màu với dấu, hướng, độ đậm nét, ký hiệu và nhãn trực tiếp.
+    \item \textit{Dữ liệu thiếu:} dùng màu xám nhạt và không xếp vào nhóm điểm thấp.
+\end{itemize}
 
 \subsection{Bộ lọc, tương tác và chế độ phóng to biểu đồ}
-% TODO: Tóm tắt URL state, tooltip, linked selection, bảng fallback và focus dialog.
 
-\subsection{Floating AI Assistant và cơ chế phê duyệt của người dùng}
-% TODO: Mô tả ngắn answer/proposal/revision/approval/execution/log và giới hạn sandbox local.
+\begin{itemize}
+    \item \textit{Bộ lọc:} phạm vi sáu hoặc tám lĩnh vực, năm, vùng, tỉnh và cặp lĩnh vực tùy theo từng trang.
+    \item \textit{Trạng thái:} lựa chọn hiện tại được hiển thị rõ và giữ lại khi làm mới hoặc chia sẻ đường dẫn.
+    \item \textit{Di chuột:} làm nổi đối tượng và hiển thị chú giải chi tiết.
+    \item \textit{Lựa chọn:} giữ đối tượng đang quan tâm và cập nhật các biểu đồ liên quan.
+    \item \textit{Hỗ trợ đọc dữ liệu:} cung cấp bảng tóm tắt cho giá trị chính xác và thao tác bằng bàn phím.
+    \item \textit{Phóng to:} mở cùng biểu đồ, nhận xét, đơn vị và số quan sát trong chế độ xem riêng ở Hình~\ref{fig:dashboard-chart-focus}.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/dashboard/dashboard_chart_focus_dialog.png}
+    \caption{Chế độ xem riêng của biểu đồ thứ hạng vùng}
+    \label{fig:dashboard-chart-focus}
+\end{figure}
+
+\subsection{Trợ lý AI nổi và cơ chế phê duyệt của người dùng}
+
+\begin{itemize}
+    \item \textit{Vị trí:} nút mở cố định ở góc dưới bên phải của cả năm trang, như Hình~\ref{fig:dashboard-floating-assistant}.
+    \item \textit{Ngữ cảnh:} ghi nhận trang, bộ lọc và đối tượng đang chọn tại thời điểm gửi yêu cầu.
+    \item \textit{Câu hỏi kiến thức:} trả lời ngắn gọn và kèm nguồn.
+    \item \textit{Yêu cầu phân tích:} hiển thị giải thích và toàn bộ mã lệnh ở trạng thái chờ duyệt.
+    \item \textit{Phê duyệt:} người dùng yêu cầu chỉnh lại hoặc đồng ý chạy phiên bản mới nhất tại máy.
+    \item \textit{Kết quả:} trả về bảng, biểu đồ hoặc thông báo lỗi trong cùng phiên hội thoại.
+\end{itemize}
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/ai_assistant/ai_assistant_floating_panel.png}
+    \caption{Trợ lý AI nổi được mở trên trang Tổng quan}
+    \label{fig:dashboard-floating-assistant}
+\end{figure}
+
+Hình~\ref{fig:dashboard-ai-approval} thể hiện trạng thái chờ duyệt và kết quả sau phê duyệt. AI chỉ đề xuất; người dùng kiểm tra và quyết định trước khi thực thi.
+
+\begin{figure}[H]
+    \centering
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ai_assistant/ai_assistant_pending_approval.png}
+        \caption{Mã lệnh ở trạng thái chờ duyệt}
+    \end{subfigure}
+    \hfill
+    \begin{subfigure}[b]{0.48\textwidth}
+        \centering
+        \includegraphics[width=\textwidth]{img/ai_assistant/ai_assistant_execution_result.png}
+        \caption{Kết quả sau khi được phê duyệt}
+    \end{subfigure}
+    \caption{Quy trình phê duyệt và thực thi phân tích do AI đề xuất}
+    \label{fig:dashboard-ai-approval}
+\end{figure}

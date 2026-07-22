@@ -1,4 +1,100 @@
 \section{Chi tiết quy trình tiền xử lý}
 \label{appendix:preprocessing}
 
-% TODO: Bổ sung bảng bước xử lý, input, output và kiểm tra chất lượng khi phần chính không đủ chỗ.
+Phụ lục này bổ sung cho quy trình ở Hình~\ref{fig:data-pipeline}, tập trung vào quy tắc xử lý, dữ liệu thiếu và kết quả kiểm tra chất lượng. Dữ liệu đầu vào là các bảng điểm cấp tỉnh được công bố trên cổng dữ liệu PAPI \cite{papiDataPortal}.
+
+\subsection{Các bước xử lý và điều kiện kiểm tra}
+
+Bảng~\ref{tab:appendix-processing-steps} trình bày đầu ra và điều kiện kiểm tra của từng giai đoạn.
+
+\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.19\textwidth}>{\raggedright\arraybackslash}p{0.31\textwidth}>{\raggedright\arraybackslash}p{0.25\textwidth}>{\raggedright\arraybackslash}p{0.17\textwidth}@{}}
+\caption{Các bước tiền xử lý dữ liệu PAPI}
+\label{tab:appendix-processing-steps}\\
+\toprule
+\textbf{Giai đoạn} & \textbf{Thao tác chính} & \textbf{Kết quả} & \textbf{Điều kiện kiểm tra} \\
+\midrule
+\endfirsthead
+\caption[]{Các bước tiền xử lý dữ liệu PAPI (tiếp theo)}\\
+\toprule
+\textbf{Giai đoạn} & \textbf{Thao tác chính} & \textbf{Kết quả} & \textbf{Điều kiện kiểm tra} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\textit{Còn tiếp ở trang sau}}\\
+\endfoot
+\bottomrule
+\endlastfoot
+Chọn nguồn & Chọn một bảng dữ liệu công khai cho mỗi năm từ 2011 đến 2024. & Bộ dữ liệu đầu vào gồm 14 năm. & Mỗi năm có đúng một nguồn. \\
+Đọc dữ liệu & Đọc cấu trúc tỉnh theo hàng trong giai đoạn 2011\textendash 2017 và tỉnh theo cột trong giai đoạn 2018\textendash 2024. & Các bản ghi điểm được đưa về cùng cấu trúc. & Nhận diện đúng tỉnh và lĩnh vực. \\
+Chuẩn hóa & Thống nhất tên tỉnh, mã tỉnh, năm và mã D1\textendash D8. & Khóa dữ liệu nhất quán giữa các năm. & Mã tỉnh thuộc 1\textendash 63; mã lĩnh vực hợp lệ. \\
+Làm sạch & Chỉ giữ điểm không trọng số; chuyển giá trị 0 không hợp lệ thành thiếu. & 28 giá trị không hợp lệ bị loại, gồm 24 điểm lĩnh vực và 4 tổng điểm. & Điểm hợp lệ thuộc khoảng $(0;10]$. \\
+Tách và khử trùng & Tách tổng điểm khỏi điểm lĩnh vực và khử trùng theo tỉnh $\times$ năm $\times$ lĩnh vực. & Bảng điểm lĩnh vực có 6.094 dòng. & Không trùng khóa quan sát. \\
+Tạo bảng tỉnh - năm & Tạo đủ $63 \times 14$ tổ hợp và giữ giá trị thiếu. & Bảng tỉnh - năm có 882 dòng. & Không điền 0 hoặc nội suy. \\
+Tổng hợp & Chỉ tính tổng, thứ hạng và thống kê khi đủ số lĩnh vực cần thiết. & Các bảng tổng hợp tỉnh - năm và năm - lĩnh vực. & Số quan sát phản ánh dữ liệu thực tế. \\
+Kiểm tra và xuất dữ liệu & Kiểm tra quy mô, phạm vi điểm, số lĩnh vực, khóa và tổng điểm. & Bộ dữ liệu sẵn sàng cho phân tích và trực quan hóa. & Tất cả tiêu chí trong Bảng~\ref{tab:appendix-quality-checks} đạt yêu cầu. \\
+\end{longtable}
+\normalsize
+
+\subsection{Các tổ hợp tỉnh - năm thiếu dữ liệu}
+
+Tổng cộng 13 tổ hợp không đủ số lĩnh vực để tính tổng điểm. Bảng~\ref{tab:appendix-missing-province-years} liệt kê số lĩnh vực hợp lệ và phần dữ liệu còn thiếu; các trường hợp này không được xếp hạng.
+
+\small
+\begin{longtable}{@{}>{\raggedright\arraybackslash}p{0.12\textwidth}>{\raggedright\arraybackslash}p{0.27\textwidth}>{\raggedright\arraybackslash}p{0.23\textwidth}>{\raggedright\arraybackslash}p{0.29\textwidth}@{}}
+\caption{Các tổ hợp tỉnh - năm không có tổng điểm hợp lệ}
+\label{tab:appendix-missing-province-years}\\
+\toprule
+\textbf{Năm} & \textbf{Tỉnh} & \textbf{Số lĩnh vực hợp lệ} & \textbf{Lĩnh vực thiếu} \\
+\midrule
+\endfirsthead
+\caption[]{Các tổ hợp tỉnh - năm không có tổng điểm hợp lệ (tiếp theo)}\\
+\toprule
+\textbf{Năm} & \textbf{Tỉnh} & \textbf{Số lĩnh vực hợp lệ} & \textbf{Lĩnh vực thiếu} \\
+\midrule
+\endhead
+\midrule
+\multicolumn{4}{r}{\textit{Còn tiếp ở trang sau}}\\
+\endfoot
+\bottomrule
+\endlastfoot
+2014 & Bắc Giang & 0/6 & D1\textendash D6 \\
+2014 & Đồng Tháp & 0/6 & D1\textendash D6 \\
+2018 & Quảng Ninh & 6/8 & D2, D4 \\
+2018 & Đồng Tháp & 6/8 & D2, D4 \\
+2021 & Bắc Giang & 0/8 & D1\textendash D8 \\
+2021 & Bắc Ninh & 0/8 & D1\textendash D8 \\
+2021 & Quảng Ninh & 0/8 & D1\textendash D8 \\
+2022 & Bắc Giang & 4/8 & D1, D2, D4, D5 \\
+2022 & Bắc Ninh & 4/8 & D2, D3, D4, D8 \\
+2023 & Quảng Ninh & 0/8 & D1\textendash D8 \\
+2023 & Bình Dương & 0/8 & D1\textendash D8 \\
+2024 & Vĩnh Phúc & 0/8 & D1\textendash D8 \\
+2024 & Tiền Giang & 0/8 & D1\textendash D8 \\
+\end{longtable}
+\normalsize
+
+\subsection{Kết quả kiểm tra chất lượng}
+
+Bảng~\ref{tab:appendix-quality-checks} tổng hợp kết quả kiểm tra trên bộ dữ liệu sử dụng trong báo cáo.
+
+\begin{table}[H]
+    \centering
+    \caption{Kết quả kiểm tra chất lượng dữ liệu sau tiền xử lý}
+    \label{tab:appendix-quality-checks}
+    \small
+    \begin{tabularx}{\textwidth}{@{}>{\raggedright\arraybackslash}p{0.52\textwidth}>{\raggedright\arraybackslash}X@{}}
+        \toprule
+        \textbf{Tiêu chí} & \textbf{Kết quả} \\
+        \midrule
+        Bảng điểm lĩnh vực có ít nhất 2.000 dòng & Đạt - 6.094 dòng. \\
+        Mỗi năm có ít nhất 60 tỉnh xuất hiện & Đạt - từ 60 đến 63 tỉnh. \\
+        Bảng tỉnh - năm có đủ $63 \times 14$ tổ hợp & Đạt - 882 dòng. \\
+        Số lĩnh vực đúng theo từng giai đoạn & Đạt - 6 trước năm 2018 và 8 từ năm 2018. \\
+        Điểm lĩnh vực thuộc khoảng hợp lệ & Đạt - từ 1,93 đến 8,46. \\
+        Tổng điểm thuộc khoảng hợp lệ & Đạt - từ 31,7 đến 48,8. \\
+        Khóa tỉnh $\times$ năm $\times$ lĩnh vực không trùng & Đạt. \\
+        Tổng tính lại khớp tổng công bố khi đủ tám lĩnh vực & Đạt - 369 trường hợp, sai lệch lớn nhất 0,0000. \\
+        \bottomrule
+    \end{tabularx}
+\end{table}
