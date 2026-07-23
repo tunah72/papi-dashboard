@@ -176,7 +176,95 @@ Hình~\ref{fig:time-series-dimension-change} là biểu đồ nối hai mốc. M
 % TODO: Phân tích phân phối vùng, xếp hạng tỉnh, benchmark và profile lĩnh vực.
 
 \subsection{Phân tích Mối quan hệ giữa các lĩnh vực}
-% TODO: Phân tích correlation heatmap, scatter/hồi quy, residual và mean cộng trừ SD.
+
+Phần này khảo sát cách các lĩnh vực PAPI cùng biến thiên giữa các tỉnh trong cùng một thời điểm, thay vì diễn giải sự thay đổi theo thời gian. Phạm vi phân tích là snapshot năm 2024 với tám lĩnh vực D1--D8. Có 61 tỉnh có đủ điểm cho cả tám lĩnh vực; Vĩnh Phúc và Tiền Giang không được đưa vào snapshot do thiếu dữ liệu tại nguồn. Mỗi điểm lĩnh vực nằm trên thang 1--10.
+
+Với một cặp lĩnh vực $X$ và $Y$, hệ số tương quan Pearson được tính trên các tỉnh có đủ cả hai điểm:
+\[
+ r = \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
+ {\sqrt{\sum_{i=1}^{n}(x_i-\bar{x})^2}\sqrt{\sum_{i=1}^{n}(y_i-\bar{y})^2}}.
+\]
+Hệ số $r$ cho biết hướng và mức độ liên hệ tuyến tính quan sát được; $n$ phải được công bố riêng cho từng cặp khi dữ liệu thiếu. Để đọc kỹ một cặp được chọn, nhóm dùng hồi quy bình phương tối thiểu thông thường $\hat{y}=a+bx$. Hệ số $R^2$ mô tả tỷ lệ biến thiên của $Y$ được mô hình tuyến tính mô tả trong mẫu đang xét. Phần dư của tỉnh $i$ là $e_i=y_i-\hat{y}_i$: dấu dương nghĩa là điểm quan sát cao hơn dự đoán, còn dấu âm nghĩa là thấp hơn dự đoán. Các chỉ số này chỉ phục vụ mô tả trong snapshot năm 2024, không khẳng định tác động hay quan hệ nhân quả giữa các lĩnh vực.
+
+\subsubsection{Bức tranh tương quan giữa tám lĩnh vực}
+
+Hình~\ref{fig:dimension-correlation} thể hiện nửa dưới của ma trận tương quan để tránh lặp thông tin. Mỗi ô ghi hệ số Pearson và số tỉnh hợp lệ của cặp lĩnh vực. Thang màu cố định từ $-1$ đến $1$: sắc đỏ biểu thị cùng biến thiên dương, sắc xanh biểu thị cùng biến thiên âm, còn màu gần trắng biểu thị liên hệ tuyến tính yếu.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/dimension_relationships/dimension_correlation_heatmap_2024.png}
+    \caption{Ma trận tương quan Pearson giữa tám lĩnh vực PAPI theo tỉnh, năm 2024}
+    \label{fig:dimension-correlation}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Nguồn: dữ liệu PAPI đã xử lý của nhóm. Chỉ hiển thị nửa dưới ma trận; mỗi ô sử dụng $n=61$ tỉnh có đủ dữ liệu cho cặp tương ứng.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} D1 -- Tham gia của người dân ở cấp cơ sở và D2 -- Công khai, minh bạch trong ra quyết định là cặp có liên hệ dương mạnh nhất, với $r=0{,}72$. Một số cặp dương đáng chú ý khác là D2--D4 ($r=0{,}67$) và D2--D3 ($r=0{,}63$). Ngược lại, D7--D8 có liên hệ âm ở mức yếu đến trung bình ($r=-0{,}31$).
+    \item \textit{Định hướng:} Ưu tiên đọc sâu cặp D1--D2 trên biểu đồ phân tán, đồng thời giữ nguyên lưu ý rằng tương quan chỉ mô tả hai điểm số cùng biến thiên giữa các tỉnh.
+\end{itemize}
+
+\subsubsection{Kiểm tra cặp D1 và D2 bằng hồi quy tuyến tính}
+
+Hình~\ref{fig:dimension-scatter} biểu diễn mỗi tỉnh bằng một điểm; màu phân biệt sáu vùng, đường đứt là trung bình của D1 và D2 trong mẫu. Đường đậm là đường hồi quy OLS, vì vậy hình cho thấy cả khuynh hướng chung lẫn độ phân tán mà một hệ số tương quan đơn lẻ không thể hiện được.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/dimension_relationships/dimension_pair_scatter_2024.png}
+    \caption{Quan hệ giữa D1 và D2 theo tỉnh cùng đường hồi quy OLS, năm 2024}
+    \label{fig:dimension-scatter}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Nguồn: dữ liệu PAPI đã xử lý của nhóm; $n=61$ tỉnh. Đường nét đứt đánh dấu trung bình mẫu của từng trục.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Cặp D1--D2 có $r=0{,}72$ và $R^2=0{,}52$. Có 25 tỉnh ở phần tư cao--cao và 24 tỉnh ở phần tư thấp--thấp; hai nhóm này cho thấy khuynh hướng cùng biến thiên dương là rõ ràng, dù các điểm vẫn phân tán quanh đường hồi quy.
+    \item \textit{Định hướng:} Khi phân tích một tỉnh cụ thể, cần đối chiếu đồng thời hai điểm D1 và D2 với trung bình mẫu, thay vì suy ra tình trạng chung chỉ từ tổng điểm hoặc từ vị trí của một điểm.
+\end{itemize}
+
+\subsubsection{Những tỉnh lệch khỏi xu hướng D1--D2}
+
+Hình~\ref{fig:dimension-residual} tách 12 tỉnh có $|e_i|$ lớn nhất khỏi đám mây điểm. Cách biểu diễn dạng lollipop giúp đọc được cả chiều và độ lớn của phần dư: điểm nằm bên phải mốc 0 có D2 cao hơn giá trị dự đoán từ D1, còn điểm nằm bên trái có D2 thấp hơn giá trị dự đoán.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/dimension_relationships/dimension_residual_plot_2024.png}
+    \caption{Mười hai tỉnh có phần dư tuyệt đối lớn nhất trong mô hình D1--D2, năm 2024}
+    \label{fig:dimension-residual}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Nguồn: dữ liệu PAPI đã xử lý của nhóm; $e_i=\mathrm{D2}_i-\widehat{\mathrm{D2}}_i$. Phần dư lớn không tự động là lỗi dữ liệu hay đánh giá chất lượng của tỉnh.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Bình Dương có phần dư dương lớn nhất ($+0{,}64$ điểm), tức điểm D2 quan sát cao hơn dự đoán từ D1. Ở chiều ngược lại, Lâm Đồng ($-0{,}51$ điểm) và Hải Dương ($-0{,}51$ điểm) có D2 thấp hơn đường dự đoán nhiều nhất trong nhóm hiển thị.
+    \item \textit{Định hướng:} Các tỉnh có phần dư lớn là điểm khởi đầu để xem lại hồ sơ riêng theo từng lĩnh vực và bối cảnh địa phương; không xem chúng là ngoại lệ dữ liệu nếu chưa có bước kiểm chứng bổ sung.
+\end{itemize}
+
+\subsubsection{Mặt bằng điểm và độ phân tán theo lĩnh vực}
+
+Hình~\ref{fig:dimension-variation} tổng hợp hai đặc trưng của từng lĩnh vực: chấm là điểm trung bình, đoạn ngang là trung bình cộng trừ một độ lệch chuẩn mẫu. Độ lệch chuẩn ở đây là thước đo mô tả mức phân tán giữa các tỉnh, không phải khoảng tin cậy của trung bình.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/dimension_relationships/dimension_variation_range_2024.png}
+    \caption{Điểm trung bình và độ lệch chuẩn giữa các tỉnh theo lĩnh vực PAPI, năm 2024}
+    \label{fig:dimension-variation}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Nguồn: dữ liệu PAPI đã xử lý của nhóm; chấm là trung bình, đoạn ngang là trung bình $\pm$ một độ lệch chuẩn mẫu, $n=61$ cho mỗi lĩnh vực.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} D1 có độ phân tán lớn nhất giữa các tỉnh (SD $=0{,}52$), còn D3 đồng đều nhất (SD $=0{,}16$). D6 có điểm trung bình cao nhất ($7{,}60$), trong khi D8 có điểm trung bình thấp nhất ($3{,}39$) trong snapshot này.
+    \item \textit{Định hướng:} Đọc đồng thời điểm trung bình và SD để nhận ra lĩnh vực có mặt bằng điểm cao hoặc thấp nhưng vẫn phân hóa mạnh; các so sánh tiếp theo nên giữ cùng năm, cùng thang điểm và công bố số tỉnh thực tế.
+\end{itemize}
 
 \subsection{Phân tích Thay đổi và phân nhóm tỉnh}
 % TODO: Phân tích dumbbell, profile chuẩn hóa, PCA và luồng chuyển nhóm.
