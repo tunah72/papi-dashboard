@@ -179,7 +179,88 @@ Hình~\ref{fig:time-series-dimension-change} là biểu đồ nối hai mốc. M
 % TODO: Phân tích correlation heatmap, scatter/hồi quy, residual và mean cộng trừ SD.
 
 \subsection{Phân tích Thay đổi và phân nhóm tỉnh}
-% TODO: Phân tích dumbbell, profile chuẩn hóa, PCA và luồng chuyển nhóm.
+
+Phần này phân tích sự dịch chuyển của các tỉnh giữa hai mốc năm 2018 và năm 2024 dựa trên tổng điểm tám lĩnh vực (D1--D8). Kỹ thuật phân cụm K-Means được sử dụng để nhóm các tỉnh thành hai hồ sơ (Hồ sơ A và Hồ sơ B) với độ tách $K=2$ tối ưu theo hệ số silhouette. Bốn biểu đồ làm rõ những tỉnh thay đổi mạnh nhất, đặc trưng của từng hồ sơ, mức độ dịch chuyển trong không gian đa chiều và các luồng chuyển đổi hồ sơ phổ biến.
+
+\subsubsection{Các tỉnh có mức thay đổi tổng điểm mạnh nhất}
+
+Hình~\ref{fig:dynamics-province-change} là biểu đồ nối hai mốc (dumbbell plot). Trục ngang biểu diễn tổng điểm tám lĩnh vực, trục dọc liệt kê các tỉnh có sự thay đổi mạnh nhất. Mỗi đoạn thẳng nối điểm mốc đầu (2018, chấm rỗng) và mốc cuối (2024, chấm đặc); màu xanh và hướng sang phải biểu thị tăng, màu cam và hướng sang trái biểu thị giảm. Kỹ thuật này tập trung vào mức thay đổi tuyệt đối lớn nhất ở cả hai chiều.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/dynamics_clustering/dynamics_province_change.png}
+    \caption{Điểm đầu\textendash cuối của các tỉnh thay đổi mạnh về tổng điểm tám lĩnh vực, giai đoạn 2018\textendash 2024}
+    \label{fig:dynamics-province-change}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: chấm rỗng là năm 2018, chấm đặc là năm 2024; đoạn thẳng màu xanh hướng sang phải biểu thị tăng, màu cam hướng sang trái biểu thị giảm. Nhãn hiển thị mức thay đổi tuyệt đối.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Bình Thuận tăng mạnh nhất (+5,52 điểm), theo sau là Tây Ninh (+3,76) và Bình Định (+2,43). Ở chiều ngược lại, Bến Tre giảm nhiều nhất (-5,80 điểm), kế tiếp là Cần Thơ (-5,62) và Đắk Nông (-4,05). Trung vị thay đổi của toàn bộ là -0,94 điểm.
+    \item \textit{Định hướng:} Phân tích sâu nguyên nhân Bình Thuận cải thiện vượt bậc và lý do Bến Tre, Cần Thơ sụt giảm nghiêm trọng để rút ra bài học kinh nghiệm.
+\end{itemize}
+
+\subsubsection{Đặc trưng chuẩn hóa của từng hồ sơ}
+
+Hình~\ref{fig:dynamics-cluster-profiles} là biểu đồ thanh ngang (bar chart) thể hiện z-score trung bình. Trục dọc là các lĩnh vực, trục ngang biểu diễn giá trị z-score; thanh hướng sang phải tương ứng với phần dương (tốt hơn mặt bằng chung năm đó), thanh hướng sang trái tương ứng với phần âm. Biểu đồ đối chiếu trực tiếp Hồ sơ A và Hồ sơ B để làm nổi bật sự phân hóa cấu trúc điểm.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/dynamics_clustering/dynamics_cluster_profiles.png}
+    \caption{Đặc trưng chuẩn hóa (z-score) của tám lĩnh vực theo từng hồ sơ}
+    \label{fig:dynamics-cluster-profiles}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: mỗi thanh biểu diễn giá trị z-score của một lĩnh vực. Thanh hướng sang phải mang giá trị dương, hướng sang trái mang giá trị âm. K-Means với K=2 đạt silhouette 0,22.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Hồ sơ A (27 tỉnh ở mốc cuối) có z-score âm ở hầu hết lĩnh vực, thấp hơn mặt bằng ở Minh bạch (-0,74) và Giải trình (-0,62) nhưng tương đối nổi bật ở Môi trường (-0,05) và Chống tham nhũng (-0,42). Hồ sơ B có z-score dương toàn diện, thể hiện nhóm có hiệu quả quản trị tốt hơn.
+    \item \textit{Định hướng:} Xem xét cách các tỉnh ở Hồ sơ A có thể cải thiện yếu điểm về Minh bạch và Giải trình để tiến lên Hồ sơ B.
+\end{itemize}
+
+\subsubsection{Dịch chuyển của các tỉnh trong không gian PCA}
+
+Hình~\ref{fig:dynamics-pca-trajectory} là biểu đồ phân tán (scatter plot) kết hợp đường nối mốc thời gian. Trục ngang và trục dọc tương ứng với hai thành phần chính đầu tiên (PC1 và PC2), giải thích 63,6\% phương sai của dữ liệu. Mỗi đoạn thẳng nối vị trí của một tỉnh từ mốc 2018 (chấm rỗng) đến mốc 2024 (hình thoi đặc), thể hiện mức độ và hướng dịch chuyển trong không gian đa chiều.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/dynamics_clustering/dynamics_pca_trajectory.png}
+    \caption{Mức độ dịch chuyển đầu\textendash cuối của các tỉnh trong không gian cấu trúc PCA}
+    \label{fig:dynamics-pca-trajectory}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: chấm rỗng là mốc đầu (2018), hình thoi đặc là mốc cuối (2024). Màu sắc biểu diễn hồ sơ được gán tương ứng.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Bình Thuận có độ dài dịch chuyển xa nhất trên mặt phẳng PCA với khoảng cách 6,36; nhiều tỉnh khác cũng cho thấy quãng đường dịch chuyển đáng kể (như Tây Ninh 5,33 hay Bến Tre 5,11), minh chứng cho sự thay đổi mạnh về cấu trúc điểm. Tổng cộng có 21/59 tỉnh (35,6\%) chuyển đổi hồ sơ giữa hai mốc thời gian.
+    \item \textit{Định hướng:} Đánh giá liệu những dịch chuyển dài trên PCA có luôn đồng nghĩa với việc cải thiện tổng điểm hay chỉ đơn thuần là tái cơ cấu thế mạnh giữa các lĩnh vực.
+\end{itemize}
+
+\subsubsection{Luồng chuyển đổi hồ sơ phổ biến nhất}
+
+Hình~\ref{fig:dynamics-cluster-transitions} là biểu đồ Alluvial (luồng chuyển đổi). Cột bên trái đại diện cho phân nhóm hồ sơ năm 2018, cột bên phải là năm 2024; các dải màu đan chéo nối giữa hai cột có độ rộng tỷ lệ thuận với số lượng tỉnh chuyển đổi hoặc giữ nguyên hồ sơ. Kỹ thuật này trực quan hóa tính ổn định và xu hướng dịch chuyển giữa hai nhóm hiệu quả quản trị.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.96\textwidth]{img/dynamics_clustering/dynamics_cluster_transitions.png}
+    \caption{Các luồng chuyển đổi giữa Hồ sơ A và Hồ sơ B, giai đoạn 2018\textendash 2024}
+    \label{fig:dynamics-cluster-transitions}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: độ rộng của dải màu tỷ lệ với số lượng tỉnh trong luồng chuyển đổi; nhãn hiển thị số lượng tỉnh tại mỗi hồ sơ theo từng năm.}
+    \end{minipage}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Đa số các tỉnh (64,41\%) giữ nguyên vị thế, trong đó 20 tỉnh giữ vững Hồ sơ B và 18 tỉnh dậm chân ở Hồ sơ A. Luồng chuyển đổi lớn nhất là sự vươn lên từ Hồ sơ A sang Hồ sơ B với 12 tỉnh (20,3\%), trong khi 9 tỉnh (15,3\%) bị tụt từ B xuống A.
+    \item \textit{Định hướng:} Phân tích cụ thể danh sách 12 tỉnh vươn lên Hồ sơ B để tìm ra mô hình cải thiện hiệu quả quản trị thành công, đồng thời cảnh báo 9 tỉnh tụt hạng.
+\end{itemize}
 
 \subsection{Tổng hợp các kết quả phân tích chính}
 % TODO: Liên kết các phát hiện từ bốn hướng; không diễn giải tương quan hoặc phân cụm thành nhân quả.

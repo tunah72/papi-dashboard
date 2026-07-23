@@ -1,9 +1,71 @@
 % Slide 16
-\begin{frame}[t]{Phân tích Thay đổi và Phân nhóm tỉnh}
-  % TODO: Trình bày nhóm biểu đồ thứ nhất của trang Thay đổi và phân nhóm.
+\begin{frame}[t]{Phân tích Thay đổi và phân nhóm tỉnh}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.42\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_province_change.png}
+        \caption*{Biểu đồ nối hai mốc: điểm đầu\textendash cuối các tỉnh thay đổi mạnh}
+      \end{figure}
+      \scriptsize
+      \begin{itemize}
+        \setlength{\itemsep}{3pt}
+        \item[-] Bình Thuận tăng mạnh nhất ($+5{,}52$ điểm), theo sau là Tây Ninh.
+        \item[-] Bến Tre giảm nhiều nhất ($-5{,}80$ điểm), kế tiếp là Cần Thơ.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.42\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_cluster_profiles.png}
+        \caption*{Biểu đồ thanh ngang: đặc trưng chuẩn hóa của từng hồ sơ}
+      \end{figure}
+      \scriptsize
+      \begin{itemize}
+        \setlength{\itemsep}{3pt}
+        \item[-] Hồ sơ A (27 tỉnh) thấp hơn mặt bằng chung ở hầu hết lĩnh vực.
+        \item[-] Hồ sơ B (32 tỉnh) có điểm chuẩn hóa dương toàn diện.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.08cm}
+  \centering
+  {\scriptsize Định hướng: tìm nguyên nhân Bình Thuận cải thiện vượt bậc và cách Hồ sơ A khắc phục điểm yếu.}
 \end{frame}
 
 % Slide 17
-\begin{frame}[t]{Phân tích Thay đổi và Phân nhóm tỉnh}
-  % TODO: Trình bày nhóm biểu đồ thứ hai, kết quả chính và giải pháp đề xuất.
+\begin{frame}[t]{Phân tích Thay đổi và phân nhóm tỉnh}
+  \begin{columns}[T,onlytextwidth]
+    \begin{column}{0.49\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_pca_trajectory.png}
+        \caption*{Biểu đồ phân tán: dịch chuyển PCA đầu\textendash cuối}
+      \end{figure}
+      \scriptsize
+      \begin{itemize}
+        \setlength{\itemsep}{3pt}
+        \item[-] Bình Thuận dịch chuyển xa nhất trên mặt phẳng PCA.
+        \item[-] Tổng cộng có 21/59 tỉnh ($35{,}6\%$) chuyển đổi hồ sơ giữa hai mốc.
+      \end{itemize}
+    \end{column}
+    \begin{column}{0.49\textwidth}
+      \begin{figure}
+        \centering
+        \includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_cluster_transitions.png}
+        \caption*{Biểu đồ luồng: các luồng chuyển đổi hồ sơ phổ biến nhất}
+      \end{figure}
+      \scriptsize
+      \begin{itemize}
+        \setlength{\itemsep}{3pt}
+        \item[-] Đa số các tỉnh ($64{,}41\%$) giữ nguyên vị thế (ổn định).
+        \item[-] Luồng chuyển lớn nhất là 12 tỉnh vươn lên từ Hồ sơ A sang B.
+      \end{itemize}
+    \end{column}
+  \end{columns}
+
+  \vspace{0.02cm}
+  \centering
+  {\scriptsize Định hướng: đánh giá tác động của tái cơ cấu lĩnh vực và đúc kết mô hình từ 12 tỉnh vươn lên.}
 \end{frame}
