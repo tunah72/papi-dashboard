@@ -173,7 +173,88 @@ Hình~\ref{fig:time-series-dimension-change} là biểu đồ nối hai mốc. M
 \end{itemize}
 
 \subsection{Phân tích Khác biệt giữa vùng và tỉnh}
-% TODO: Phân tích phân phối vùng, xếp hạng tỉnh, benchmark và profile lĩnh vực.
+
+Phân tích này trả lời ba câu hỏi: mặt bằng và độ phân tán tổng điểm khác nhau như thế nào giữa sáu vùng; một tỉnh đứng ở đâu trong vùng và so với toàn bộ mẫu; cấu trúc điểm theo lĩnh vực của tỉnh lệch khỏi các mức đối chiếu ở đâu. Để các đại lượng có cùng ý nghĩa, toàn bộ kết quả dưới đây sử dụng dữ liệu PAPI năm 2024, tổng điểm tám lĩnh vực và cùng một tập tỉnh hợp lệ \cite{papiDataPortal,undpPapi2024}. Trong 63 tỉnh, 61 tỉnh có tổng điểm hợp lệ; Vĩnh Phúc và Tiền Giang không được đưa vào các phép tính tổng điểm. Quảng Ninh và vùng Đồng bằng sông Hồng được chọn làm trường hợp minh họa nhất quán cho cả bốn góc nhìn.
+
+\subsubsection{Phương pháp tính toán}
+
+Với mỗi vùng, tổng điểm của các tỉnh hợp lệ được tóm tắt bằng trung bình, trung vị, tứ phân vị thứ nhất \(Q_1\), tứ phân vị thứ ba \(Q_3\) và khoảng tứ phân vị:
+\begin{equation}
+    \mathrm{IQR} = Q_3 - Q_1.
+\end{equation}
+Số quan sát \(n\) luôn là số tỉnh thực sự có dữ liệu, không mặc định bằng tổng số tỉnh trong vùng. Trong từng vùng, các tỉnh được sắp giảm dần theo tổng điểm; các giá trị bằng nhau cùng nhận thứ hạng nhỏ nhất. Khoảng cách tới tỉnh dẫn đầu được tính bởi
+\begin{equation}
+    g_i = s_{\max} - s_i,
+\end{equation}
+trong đó \(s_i\) là điểm tỉnh \(i\). Khi so sánh với trung bình vùng hoặc toàn bộ mẫu, chênh lệch có dấu là
+\begin{equation}
+    \Delta_{i,r} = s_i - \bar{s}_r.
+\end{equation}
+Cách tính tương tự được áp dụng riêng cho D1--D8 trên cùng thang điểm 1--10. Các kết quả chỉ mô tả vị trí và mức chênh lệch trong năm 2024; thứ hạng không phải phân loại chính thức của PAPI và không cho phép kết luận về quan hệ nhân quả.
+
+\subsubsection{Phân phối tổng điểm giữa các vùng}
+
+Biểu đồ hộp trong Hình~\ref{fig:regional-province-distribution} mã hóa tổng điểm trên trục ngang và sáu vùng trên trục dọc. Mỗi hộp biểu diễn \(Q_1\)--\(Q_3\), đường giữa là trung vị, còn các điểm rời là từng tỉnh. Cách trình bày này đồng thời cho biết mặt bằng, độ phân tán và kích thước mẫu, phù hợp hơn một giá trị trung bình đơn lẻ. Hình thoi giúp nhận ra Quảng Ninh trong phân phối mà không chỉ dựa vào màu.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.78\textwidth]{img/regional_province/regional_province_distribution_2024.png}
+    \caption{Phân phối tổng điểm PAPI tám lĩnh vực theo vùng năm 2024}
+    \label{fig:regional-province-distribution}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Đồng bằng sông Hồng có trung vị cao nhất, đạt 44,15 điểm, trong khi Tây Nguyên có trung vị thấp nhất, 41,02 điểm. Đông Nam Bộ có khoảng tứ phân vị rộng nhất, 3,43 điểm, cho thấy mức phân tán giữa các tỉnh trong vùng lớn hơn.
+    \item \textit{Định hướng:} Đối chiếu các tỉnh nằm xa trung vị trong từng vùng và xem lĩnh vực nào đóng góp nhiều nhất vào chênh lệch, thay vì xem trung bình vùng là đại diện cho mọi tỉnh.
+\end{itemize}
+
+\subsubsection{Vị trí của tỉnh trong vùng}
+
+Hình~\ref{fig:regional-province-ranking} dùng biểu đồ kẹo mút để sắp các tỉnh Đồng bằng sông Hồng theo tổng điểm giảm dần. Vị trí điểm trên trục ngang mã hóa giá trị, thứ tự trên trục dọc mã hóa hạng; Quảng Ninh được nhấn bằng màu và kích thước điểm. Biểu đồ phù hợp với mười tỉnh vì giữ được cả thứ tự lẫn khoảng cách điểm mà không tạo cảm giác đây là các nhóm chất lượng chính thức.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.68\textwidth]{img/regional_province/regional_province_ranking_2024.png}
+    \caption{Xếp hạng tổng điểm PAPI tám lĩnh vực trong Đồng bằng sông Hồng năm 2024}
+    \label{fig:regional-province-ranking}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Quảng Ninh đạt 47,82 điểm và đứng thứ nhất trong 10 tỉnh có dữ liệu của vùng, nên khoảng cách tới tỉnh dẫn đầu bằng 0 điểm; Quảng Ninh cao hơn Bắc Ninh ở vị trí kế tiếp 2,34 điểm.
+    \item \textit{Định hướng:} So sánh riêng D1--D8 giữa Quảng Ninh và Bắc Ninh để xác định khoảng cách tổng điểm tập trung ở một lĩnh vực hay được hình thành từ nhiều chênh lệch nhỏ.
+\end{itemize}
+
+\subsubsection{So sánh với các mức đối chiếu}
+
+Biểu đồ trong Hình~\ref{fig:regional-province-benchmark} đặt điểm Quảng Ninh, trung bình Đồng bằng sông Hồng và trung bình toàn bộ mẫu trên cùng một trục. Dải nền biểu diễn \(Q_1\)--\(Q_3\) của 61 tỉnh; đường ngang thể hiện khoảng giá trị thấp nhất--cao nhất. Việc dùng chung thang đo giúp đọc trực tiếp độ lớn chênh lệch và tránh tách ba con số thành các thước đo không đồng nhất.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.68\textwidth]{img/regional_province/regional_province_benchmark_2024.png}
+    \caption{So sánh tổng điểm Quảng Ninh với trung bình vùng và toàn bộ mẫu năm 2024}
+    \label{fig:regional-province-benchmark}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} Quảng Ninh cao hơn trung bình Đồng bằng sông Hồng 3,50 điểm và cao hơn trung bình toàn bộ mẫu 4,39 điểm. Hai mức đối chiếu lần lượt dựa trên 10 và 61 tỉnh hợp lệ.
+    \item \textit{Định hướng:} Dùng khoảng cách với trung bình vùng để ưu tiên những lĩnh vực tạo chênh lệch lớn, đồng thời giữ trung bình toàn bộ mẫu như một mức đối chiếu rộng hơn.
+\end{itemize}
+
+\subsubsection{Cấu trúc điểm theo lĩnh vực}
+
+Hình~\ref{fig:regional-province-profile} so sánh D1--D8 của Quảng Ninh với trung bình vùng và toàn bộ mẫu trên cùng thang 1--10. Đường liền biểu diễn tỉnh, đường đứt biểu diễn vùng và đường chấm biểu diễn toàn bộ mẫu. Biểu đồ radar được dùng để nhận diện hướng lệch giữa các lĩnh vực; giá trị tại từng trục mới là cơ sở so sánh, không phải diện tích đa giác.
+
+\begin{figure}[H]
+    \centering
+    \includegraphics[width=0.60\textwidth]{img/regional_province/regional_province_profile_2024.png}
+    \caption{Cấu trúc điểm tám lĩnh vực của Quảng Ninh so với hai mức đối chiếu năm 2024}
+    \label{fig:regional-province-profile}
+\end{figure}
+
+\begin{itemize}
+    \item \textit{Nhận xét:} D4 cao hơn trung bình vùng nhiều nhất, 1,03 điểm; tiếp theo là D6 với 0,66 điểm. D3 thấp hơn trung bình vùng 0,01 điểm, là chênh lệch âm duy nhất và có độ lớn rất nhỏ.
+    \item \textit{Định hướng:} Kiểm tra các chỉ tiêu thành phần của D4 và D6 để làm rõ nguồn tạo chênh lệch; với D3, nên theo dõi thêm qua nhiều năm trước khi coi sai khác nhỏ năm 2024 là một xu hướng.
+\end{itemize}
 
 \subsection{Phân tích Mối quan hệ giữa các lĩnh vực}
 % TODO: Phân tích correlation heatmap, scatter/hồi quy, residual và mean cộng trừ SD.
