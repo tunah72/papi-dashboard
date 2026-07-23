@@ -177,7 +177,7 @@ Hình~\ref{fig:time-series-dimension-change} là biểu đồ nối hai mốc. M
 
 \subsection{Phân tích Mối quan hệ giữa các lĩnh vực}
 
-Phần này khảo sát cách các lĩnh vực PAPI cùng biến thiên giữa các tỉnh trong cùng một thời điểm, thay vì diễn giải sự thay đổi theo thời gian. Phạm vi phân tích là snapshot năm 2024 với tám lĩnh vực D1--D8. Có 61 tỉnh có đủ điểm cho cả tám lĩnh vực; Vĩnh Phúc và Tiền Giang không được đưa vào snapshot do thiếu dữ liệu tại nguồn. Mỗi điểm lĩnh vực nằm trên thang 1--10; dữ liệu được trích từ cổng dữ liệu PAPI cite{papiDataPortal}.
+Phần này trả lời câu hỏi: các lĩnh vực PAPI cùng biến thiên như thế nào giữa các tỉnh trong cùng một năm, cặp nào có liên hệ tuyến tính mạnh nhất và tỉnh nào lệch đáng kể khỏi xu hướng của cặp được chọn. Phạm vi phân tích là mặt cắt năm 2024 với tám lĩnh vực D1\textendash D8. Có 61 tỉnh có đủ điểm cho cả tám lĩnh vực; Vĩnh Phúc và Tiền Giang không được đưa vào phân tích do thiếu dữ liệu tại nguồn. Mỗi điểm lĩnh vực nằm trên thang 1\textendash 10; dữ liệu được trích từ cổng dữ liệu PAPI \cite{papiDataPortal}.
 
 \subsubsection{Phương pháp tính toán}
 
@@ -187,21 +187,21 @@ Với một cặp lĩnh vực $X$ và $Y$, hệ số tương quan Pearson đư�
  r = \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
  {\sqrt{\sum_{i=1}^{n}(x_i-\bar{x})^2}\sqrt{\sum_{i=1}^{n}(y_i-\bar{y})^2}}.
 \end{equation}
-Hệ số $r$ trong Phương trình~\ref{eq:dimension-pearson} cho biết hướng và mức độ liên hệ tuyến tính quan sát được; $n$ phải được công bố riêng cho từng cặp khi dữ liệu thiếu. Để đọc kỹ một cặp được chọn, sử dụng hồi quy bình phương tối thiểu thông thường và phần dư:
+Hệ số $r$ trong Phương trình~\ref{eq:dimension-pearson} cho biết hướng và mức độ liên hệ tuyến tính quan sát được; $n$ phải được công bố riêng cho từng cặp khi dữ liệu thiếu. Để đọc kỹ một cặp được chọn, sử dụng hồi quy bình phương tối thiểu thông thường (OLS) và phần dư:
 \begin{equation}
 \label{eq:dimension-regression}
 \hat{y}_i=a+bx_i, \qquad e_i=y_i-\hat{y}_i.
 \end{equation}
-Trong đó, $R^2$ cho biết tỷ lệ biến thiên của $Y$ được mô hình tuyến tính mô tả trong mẫu đang xét; $e_i$ dương nghĩa là điểm quan sát cao hơn dự đoán, còn $e_i$ âm nghĩa là thấp hơn dự đoán. Độ phân tán của từng lĩnh vực được mô tả bằng độ lệch chuẩn mẫu và biểu diễn bằng trung bình cộng trừ một độ lệch chuẩn. Các chỉ số này chỉ phục vụ mô tả trong snapshot năm 2024, không khẳng định tác động hay quan hệ nhân quả giữa các lĩnh vực.
+Trong đó, $R^2$ cho biết tỷ lệ biến thiên của $Y$ được mô hình tuyến tính mô tả trong mẫu đang xét; $e_i$ dương nghĩa là điểm quan sát cao hơn dự đoán, còn $e_i$ âm nghĩa là thấp hơn dự đoán. Độ phân tán của từng lĩnh vực được mô tả bằng độ lệch chuẩn mẫu (SD) và biểu diễn bằng trung bình cộng trừ một SD. Các chỉ số này chỉ phục vụ mô tả trong mặt cắt năm 2024, không khẳng định tác động hay quan hệ nhân quả giữa các lĩnh vực.
 
 \subsubsection{Bức tranh tương quan giữa tám lĩnh vực}
 
-Hình~\ref{fig:dimension-correlation} thể hiện nửa dưới của ma trận tương quan để tránh lặp thông tin. Mỗi ô ghi hệ số Pearson và số tỉnh hợp lệ của cặp lĩnh vực. Thang màu cố định từ $-1$ đến $1$: sắc đỏ biểu thị cùng biến thiên dương, sắc xanh biểu thị cùng biến thiên âm, còn màu gần trắng biểu thị liên hệ tuyến tính yếu.
+Hình~\ref{fig:dimension-correlation} là bản đồ nhiệt tương quan, chỉ thể hiện nửa dưới của ma trận để tránh lặp thông tin. Dạng biểu đồ này cho phép so sánh đồng thời toàn bộ 28 cặp lĩnh vực trong một hình. Mỗi ô ghi hệ số Pearson và số tỉnh hợp lệ của cặp lĩnh vực. Thang màu cố định từ $-1$ đến $1$: sắc xanh lục biểu thị cùng biến thiên dương, sắc đỏ cam biểu thị cùng biến thiên âm, còn màu gần trắng biểu thị liên hệ tuyến tính yếu.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.96\textwidth]{img/dimension_relationships/dimension_correlation_heatmap_2024.png}
-    \caption{Ma trận tương quan Pearson giữa tám lĩnh vực PAPI theo tỉnh, năm 2024}
+    \caption{Bản đồ nhiệt tương quan Pearson giữa tám lĩnh vực PAPI theo tỉnh, năm 2024}
     \label{fig:dimension-correlation}
     \par\smallskip
     \begin{minipage}{0.96\textwidth}
@@ -210,18 +210,18 @@ Hình~\ref{fig:dimension-correlation} thể hiện nửa dưới của ma trận
 \end{figure}
 
 \begin{itemize}
-    \item \textit{Nhận xét:} D1 -- Tham gia của người dân ở cấp cơ sở và D2 -- Công khai, minh bạch trong ra quyết định là cặp có liên hệ dương mạnh nhất, với $r=0{,}72$. Một số cặp dương đáng chú ý khác là D2--D4 ($r=0{,}67$) và D2--D3 ($r=0{,}63$). Ngược lại, D7--D8 có liên hệ âm ở mức yếu đến trung bình ($r=-0{,}31$).
-    \item \textit{Định hướng:} Ưu tiên đọc sâu cặp D1--D2 trên biểu đồ phân tán, đồng thời giữ nguyên lưu ý rằng tương quan chỉ mô tả hai điểm số cùng biến thiên giữa các tỉnh.
+    \item \textit{Nhận xét:} D1 \textendash Tham gia của người dân ở cấp cơ sở và D2 \textendash Công khai, minh bạch trong ra quyết định là cặp có liên hệ dương mạnh nhất, với $r=0{,}72$. Một số cặp dương đáng chú ý khác là D2\textendash D4 ($r=0{,}67$) và D2\textendash D3 ($r=0{,}63$). Ngược lại, D7\textendash D8 có liên hệ âm ở mức yếu đến trung bình ($r=-0{,}31$).
+    \item \textit{Định hướng:} Đọc sâu cặp D1\textendash D2 trên biểu đồ phân tán, đồng thời giữ nguyên lưu ý rằng tương quan chỉ mô tả hai điểm số cùng biến thiên giữa các tỉnh.
 \end{itemize}
 
 \subsubsection{Kiểm tra cặp D1 và D2 bằng hồi quy tuyến tính}
 
-Hình~\ref{fig:dimension-scatter} biểu diễn mỗi tỉnh bằng một điểm; màu phân biệt sáu vùng, đường đứt là trung bình của D1 và D2 trong mẫu. Đường đậm là đường hồi quy OLS, vì vậy hình cho thấy cả khuynh hướng chung lẫn độ phân tán mà một hệ số tương quan đơn lẻ không thể hiện được.
+Hình~\ref{fig:dimension-scatter} là biểu đồ phân tán; mỗi tỉnh là một điểm, màu phân biệt sáu vùng, đường đứt là trung bình của D1 và D2 trong mẫu. Đường đậm là đường hồi quy OLS. Biểu đồ được chọn vì cho thấy cả khuynh hướng chung, sự phân tán và các điểm lệch mà một hệ số tương quan đơn lẻ không thể hiện được.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.96\textwidth]{img/dimension_relationships/dimension_pair_scatter_2024.png}
-    \caption{Quan hệ giữa D1 và D2 theo tỉnh cùng đường hồi quy OLS, năm 2024}
+    \caption{Biểu đồ phân tán D1\textendash D2 theo tỉnh cùng đường hồi quy OLS, năm 2024}
     \label{fig:dimension-scatter}
     \par\smallskip
     \begin{minipage}{0.96\textwidth}
@@ -230,18 +230,18 @@ Hình~\ref{fig:dimension-scatter} biểu diễn mỗi tỉnh bằng một điể
 \end{figure}
 
 \begin{itemize}
-    \item \textit{Nhận xét:} Cặp D1--D2 có $r=0{,}72$ và $R^2=0{,}52$. Có 25 tỉnh ở phần tư cao--cao và 24 tỉnh ở phần tư thấp--thấp; hai nhóm này cho thấy khuynh hướng cùng biến thiên dương là rõ ràng, dù các điểm vẫn phân tán quanh đường hồi quy.
+    \item \textit{Nhận xét:} Cặp D1\textendash D2 có $r=0{,}72$ và $R^2=0{,}52$. Có 25 tỉnh ở phần tư cao\textendash cao và 24 tỉnh ở phần tư thấp\textendash thấp; hai nhóm này cho thấy khuynh hướng cùng biến thiên dương là rõ ràng, dù các điểm vẫn phân tán quanh đường hồi quy.
     \item \textit{Định hướng:} Khi phân tích một tỉnh cụ thể, cần đối chiếu đồng thời hai điểm D1 và D2 với trung bình mẫu, thay vì suy ra tình trạng chung chỉ từ tổng điểm hoặc từ vị trí của một điểm.
 \end{itemize}
 
-\subsubsection{Những tỉnh lệch khỏi xu hướng D1--D2}
+\subsubsection{Những tỉnh lệch khỏi xu hướng D1\textendash D2}
 
-Hình~\ref{fig:dimension-residual} tách 12 tỉnh có $|e_i|$ lớn nhất khỏi đám mây điểm. Cách biểu diễn dạng lollipop giúp đọc được cả chiều và độ lớn của phần dư: điểm nằm bên phải mốc 0 có D2 cao hơn giá trị dự đoán từ D1, còn điểm nằm bên trái có D2 thấp hơn giá trị dự đoán.
+Hình~\ref{fig:dimension-residual} là biểu đồ kẹo mút, tách 12 tỉnh có $|e_i|$ lớn nhất khỏi đám mây điểm. Dạng biểu đồ này đặt phần dư trên cùng một mốc 0, nên giúp đọc đồng thời chiều và độ lớn sai lệch: điểm nằm bên phải có D2 cao hơn giá trị dự đoán từ D1, còn điểm nằm bên trái có D2 thấp hơn giá trị dự đoán.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.96\textwidth]{img/dimension_relationships/dimension_residual_plot_2024.png}
-    \caption{Mười hai tỉnh có phần dư tuyệt đối lớn nhất trong mô hình D1--D2, năm 2024}
+    \caption{Biểu đồ kẹo mút của 12 tỉnh có phần dư tuyệt đối lớn nhất trong mô hình D1\textendash D2, năm 2024}
     \label{fig:dimension-residual}
     \par\smallskip
     \begin{minipage}{0.96\textwidth}
@@ -256,12 +256,12 @@ Hình~\ref{fig:dimension-residual} tách 12 tỉnh có $|e_i|$ lớn nhất kh�
 
 \subsubsection{Mặt bằng điểm và độ phân tán theo lĩnh vực}
 
-Hình~\ref{fig:dimension-variation} tổng hợp hai đặc trưng của từng lĩnh vực: chấm là điểm trung bình, đoạn ngang là trung bình cộng trừ một độ lệch chuẩn mẫu. Độ lệch chuẩn ở đây là thước đo mô tả mức phân tán giữa các tỉnh, không phải khoảng tin cậy của trung bình.
+Hình~\ref{fig:dimension-variation} là biểu đồ khoảng trung bình và độ lệch chuẩn. Dạng biểu đồ này kết hợp mặt bằng điểm và mức phân tán của từng lĩnh vực trong một hình: chấm là điểm trung bình, đoạn ngang là trung bình cộng trừ một SD. SD ở đây là thước đo mô tả mức phân tán giữa các tỉnh, không phải khoảng tin cậy của trung bình.
 
 \begin{figure}[H]
     \centering
     \includegraphics[width=0.96\textwidth]{img/dimension_relationships/dimension_variation_range_2024.png}
-    \caption{Điểm trung bình và độ lệch chuẩn giữa các tỉnh theo lĩnh vực PAPI, năm 2024}
+    \caption{Biểu đồ khoảng điểm trung bình và độ lệch chuẩn giữa các tỉnh theo lĩnh vực PAPI, năm 2024}
     \label{fig:dimension-variation}
     \par\smallskip
     \begin{minipage}{0.96\textwidth}
@@ -270,7 +270,7 @@ Hình~\ref{fig:dimension-variation} tổng hợp hai đặc trưng của từng 
 \end{figure}
 
 \begin{itemize}
-    \item \textit{Nhận xét:} D1 có độ phân tán lớn nhất giữa các tỉnh (SD $=0{,}52$), còn D3 đồng đều nhất (SD $=0{,}16$). D6 có điểm trung bình cao nhất ($7{,}60$), trong khi D8 có điểm trung bình thấp nhất ($3{,}39$) trong snapshot này.
+    \item \textit{Nhận xét:} D1 có độ phân tán lớn nhất giữa các tỉnh (SD $=0{,}52$), còn D3 đồng đều nhất (SD $=0{,}16$). D6 có điểm trung bình cao nhất ($7{,}60$), trong khi D8 có điểm trung bình thấp nhất ($3{,}39$) trong mặt cắt này.
     \item \textit{Định hướng:} Đọc đồng thời điểm trung bình và SD để nhận ra lĩnh vực có mặt bằng điểm cao hoặc thấp nhưng vẫn phân hóa mạnh; các so sánh tiếp theo nên giữ cùng năm, cùng thang điểm và công bố số tỉnh thực tế.
 \end{itemize}
 
