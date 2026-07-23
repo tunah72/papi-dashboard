@@ -177,14 +177,22 @@ Hình~\ref{fig:time-series-dimension-change} là biểu đồ nối hai mốc. M
 
 \subsection{Phân tích Mối quan hệ giữa các lĩnh vực}
 
-Phần này khảo sát cách các lĩnh vực PAPI cùng biến thiên giữa các tỉnh trong cùng một thời điểm, thay vì diễn giải sự thay đổi theo thời gian. Phạm vi phân tích là snapshot năm 2024 với tám lĩnh vực D1--D8. Có 61 tỉnh có đủ điểm cho cả tám lĩnh vực; Vĩnh Phúc và Tiền Giang không được đưa vào snapshot do thiếu dữ liệu tại nguồn. Mỗi điểm lĩnh vực nằm trên thang 1--10.
+Phần này khảo sát cách các lĩnh vực PAPI cùng biến thiên giữa các tỉnh trong cùng một thời điểm, thay vì diễn giải sự thay đổi theo thời gian. Phạm vi phân tích là snapshot năm 2024 với tám lĩnh vực D1--D8. Có 61 tỉnh có đủ điểm cho cả tám lĩnh vực; Vĩnh Phúc và Tiền Giang không được đưa vào snapshot do thiếu dữ liệu tại nguồn. Mỗi điểm lĩnh vực nằm trên thang 1--10; dữ liệu được trích từ cổng dữ liệu PAPI cite{papiDataPortal}.
+
+\subsubsection{Phương pháp tính toán}
 
 Với một cặp lĩnh vực $X$ và $Y$, hệ số tương quan Pearson được tính trên các tỉnh có đủ cả hai điểm:
-\[
+\begin{equation}
+\label{eq:dimension-pearson}
  r = \frac{\sum_{i=1}^{n}(x_i-\bar{x})(y_i-\bar{y})}
  {\sqrt{\sum_{i=1}^{n}(x_i-\bar{x})^2}\sqrt{\sum_{i=1}^{n}(y_i-\bar{y})^2}}.
-\]
-Hệ số $r$ cho biết hướng và mức độ liên hệ tuyến tính quan sát được; $n$ phải được công bố riêng cho từng cặp khi dữ liệu thiếu. Để đọc kỹ một cặp được chọn, nhóm dùng hồi quy bình phương tối thiểu thông thường $\hat{y}=a+bx$. Hệ số $R^2$ mô tả tỷ lệ biến thiên của $Y$ được mô hình tuyến tính mô tả trong mẫu đang xét. Phần dư của tỉnh $i$ là $e_i=y_i-\hat{y}_i$: dấu dương nghĩa là điểm quan sát cao hơn dự đoán, còn dấu âm nghĩa là thấp hơn dự đoán. Các chỉ số này chỉ phục vụ mô tả trong snapshot năm 2024, không khẳng định tác động hay quan hệ nhân quả giữa các lĩnh vực.
+\end{equation}
+Hệ số $r$ trong Phương trình~\ref{eq:dimension-pearson} cho biết hướng và mức độ liên hệ tuyến tính quan sát được; $n$ phải được công bố riêng cho từng cặp khi dữ liệu thiếu. Để đọc kỹ một cặp được chọn, sử dụng hồi quy bình phương tối thiểu thông thường và phần dư:
+\begin{equation}
+\label{eq:dimension-regression}
+\hat{y}_i=a+bx_i, \qquad e_i=y_i-\hat{y}_i.
+\end{equation}
+Trong đó, $R^2$ cho biết tỷ lệ biến thiên của $Y$ được mô hình tuyến tính mô tả trong mẫu đang xét; $e_i$ dương nghĩa là điểm quan sát cao hơn dự đoán, còn $e_i$ âm nghĩa là thấp hơn dự đoán. Độ phân tán của từng lĩnh vực được mô tả bằng độ lệch chuẩn mẫu và biểu diễn bằng trung bình cộng trừ một độ lệch chuẩn. Các chỉ số này chỉ phục vụ mô tả trong snapshot năm 2024, không khẳng định tác động hay quan hệ nhân quả giữa các lĩnh vực.
 
 \subsubsection{Bức tranh tương quan giữa tám lĩnh vực}
 
@@ -197,7 +205,7 @@ Hình~\ref{fig:dimension-correlation} thể hiện nửa dưới của ma trận
     \label{fig:dimension-correlation}
     \par\smallskip
     \begin{minipage}{0.96\textwidth}
-        \footnotesize\textit{Nguồn: dữ liệu PAPI đã xử lý của nhóm. Chỉ hiển thị nửa dưới ma trận; mỗi ô sử dụng $n=61$ tỉnh có đủ dữ liệu cho cặp tương ứng.}
+        \footnotesize\textit{Chú giải: chỉ hiển thị nửa dưới ma trận; mỗi ô sử dụng $n=61$ tỉnh có đủ dữ liệu cho cặp tương ứng.}
     \end{minipage}
 \end{figure}
 
@@ -217,7 +225,7 @@ Hình~\ref{fig:dimension-scatter} biểu diễn mỗi tỉnh bằng một điể
     \label{fig:dimension-scatter}
     \par\smallskip
     \begin{minipage}{0.96\textwidth}
-        \footnotesize\textit{Nguồn: dữ liệu PAPI đã xử lý của nhóm; $n=61$ tỉnh. Đường nét đứt đánh dấu trung bình mẫu của từng trục.}
+        \footnotesize\textit{Chú giải: $n=61$ tỉnh; đường nét đứt đánh dấu trung bình mẫu của từng trục.}
     \end{minipage}
 \end{figure}
 
@@ -237,7 +245,7 @@ Hình~\ref{fig:dimension-residual} tách 12 tỉnh có $|e_i|$ lớn nhất kh�
     \label{fig:dimension-residual}
     \par\smallskip
     \begin{minipage}{0.96\textwidth}
-        \footnotesize\textit{Nguồn: dữ liệu PAPI đã xử lý của nhóm; $e_i=\mathrm{D2}_i-\widehat{\mathrm{D2}}_i$. Phần dư lớn không tự động là lỗi dữ liệu hay đánh giá chất lượng của tỉnh.}
+        \footnotesize\textit{Chú giải: $e_i=\mathrm{D2}_i-\widehat{\mathrm{D2}}_i$. Phần dư lớn không tự động là lỗi dữ liệu hay đánh giá chất lượng của tỉnh.}
     \end{minipage}
 \end{figure}
 
@@ -257,7 +265,7 @@ Hình~\ref{fig:dimension-variation} tổng hợp hai đặc trưng của từng 
     \label{fig:dimension-variation}
     \par\smallskip
     \begin{minipage}{0.96\textwidth}
-        \footnotesize\textit{Nguồn: dữ liệu PAPI đã xử lý của nhóm; chấm là trung bình, đoạn ngang là trung bình $\pm$ một độ lệch chuẩn mẫu, $n=61$ cho mỗi lĩnh vực.}
+        \footnotesize\textit{Chú giải: chấm là trung bình, đoạn ngang là trung bình $\pm$ một độ lệch chuẩn mẫu, $n=61$ cho mỗi lĩnh vực.}
     \end{minipage}
 \end{figure}
 
