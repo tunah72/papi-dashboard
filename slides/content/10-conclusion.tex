@@ -2,20 +2,83 @@
 
 % Slide 21
 \begin{frame}[t]{Kết luận}
-  % TODO: Trình bày kết quả nhóm đạt được sau khi hoàn thành đồ án.
+  \begin{itemize}
+    \setlength{\itemsep}{8pt}
+    \item \textbf{Dữ liệu và phân tích:}
+    \begin{itemize}
+      \item Chuẩn hóa thành công bộ dữ liệu PAPI từ 14 tệp Excel thô (2011\textendash 2024).
+      \item Triển khai 5 hướng phân tích đa chiều: tổng quan, thời gian, không gian, lĩnh vực và phân nhóm.
+    \end{itemize}
+    \item \textbf{Trực quan hóa và hệ thống:}
+    \begin{itemize}
+      \item Xây dựng Dashboard bằng React và FastAPI với 20 biểu đồ tương tác cao.
+      \item Tuân thủ chặt chẽ thiết kế UI/UX: đồng bộ bộ lọc trên URL, chế độ phóng to nhất quán.
+    \end{itemize}
+    \item \textbf{Tích hợp AI Human-in-the-loop:}
+    \begin{itemize}
+      \item Phát triển Trợ lý AI hỗ trợ phân tích tại chỗ bằng ngôn ngữ tự nhiên.
+      \item Cơ chế ``chờ duyệt'' và thực thi cục bộ đảm bảo con người kiểm soát hoàn toàn hệ thống.
+    \end{itemize}
+  \end{itemize}
 \end{frame}
 
 % Slide 22
 \begin{frame}[t]{Hạn chế}
-  % TODO: Trình bày các hạn chế của dữ liệu, phương pháp và hệ thống.
+  \begin{itemize}
+    \setlength{\itemsep}{10pt}
+    \item \textbf{Giới hạn về dữ liệu:}
+    \begin{itemize}
+      \item Khoảng trống số liệu (D7, D8 chỉ có từ 2018; một số địa phương thiếu dữ liệu).
+      \item Giữ nguyên dữ liệu rỗng để bảo toàn độ tin cậy, làm giảm cỡ mẫu ở một số phép tính.
+    \end{itemize}
+    \item \textbf{Giới hạn phương pháp luận:}
+    \begin{itemize}
+      \item Phân tích định lượng (Pearson, K-Means) dừng ở mức mô tả độ phân tán và cùng biến thiên.
+      \item Không đủ cơ sở để khẳng định mối quan hệ nhân quả.
+    \end{itemize}
+    \item \textbf{Giới hạn hệ thống AI:}
+    \begin{itemize}
+      \item Trình thực thi (Executor) đóng vai trò lớp bảo vệ cục bộ, chưa phải là sandbox công khai.
+      \item Tính sẵn sàng phụ thuộc vào đường truyền mạng và quota của nhà cung cấp LLM (Groq).
+    \end{itemize}
+  \end{itemize}
 \end{frame}
 
 % Slide 23
 \begin{frame}[t]{Hướng phát triển trong tương lai}
-  % TODO: Trình bày các hướng phát triển tiếp theo của đồ án.
+  \begin{itemize}
+    \setlength{\itemsep}{12pt}
+    \item \textbf{Mở rộng chiều phân tích dữ liệu:}
+    \begin{itemize}
+      \item Tích hợp chỉ số kinh tế\textendash xã hội địa phương (GRDP, tỷ lệ hộ nghèo, thu nhập bình quân).
+      \item Xây dựng mô hình đa biến nhằm làm rõ tác động vĩ mô đến điểm quản trị công.
+    \end{itemize}
+    \item \textbf{Nâng cấp tính năng và bảo mật AI:}
+    \begin{itemize}
+      \item Cải thiện khả năng ghi nhớ ngữ cảnh dài hạn qua nhiều phiên thảo luận.
+      \item Đưa Trình thực thi vào môi trường cô lập hoàn toàn (vd: Docker) nếu triển khai public.
+    \end{itemize}
+    \item \textbf{Đóng gói phần mềm ứng dụng:}
+    \begin{itemize}
+      \item Đóng gói Dashboard thành ứng dụng Desktop độc lập (standalone application).
+      \item Hỗ trợ người dùng trải nghiệm ngay mà không cần tự cài đặt môi trường lập trình.
+    \end{itemize}
+  \end{itemize}
 \end{frame}
 
 % Slide 24
 \begin{frame}[t]{Lời cảm ơn}
-  % TODO: Hoàn thiện nội dung kết thúc sau khi thống nhất kịch bản thuyết trình.
+  \vspace{1cm}
+  \begin{center}
+    Nhóm xin gửi lời cảm ơn chân thành đến:\\
+    \vspace{0.5cm}
+    \textbf{Thầy Bùi Tiến Lên}\\
+    \textbf{Thầy Trần Huy Bân}\\
+    \textbf{Thầy Võ Nhật Tân}\\
+    \vspace{0.5cm}
+    đã tận tình giảng dạy, hướng dẫn và tạo điều kiện tốt nhất để nhóm hoàn thành đồ án môn học Trực quan hóa Dữ liệu.
+    
+    \vspace{1cm}
+    \Large \textbf{Xin chân thành cảm ơn quý Thầy và các bạn đã chú ý lắng nghe!}
+  \end{center}
 \end{frame}

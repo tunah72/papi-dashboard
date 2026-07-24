@@ -2,10 +2,25 @@
 \label{sec:conclusion}
 
 \subsection{Các kết quả chính}
-% TODO: Tóm tắt đóng góp dữ liệu, phân tích, trực quan và Dashboard.
+Đồ án đã xây dựng thành công một hệ thống trực quan hóa dữ liệu toàn diện về Chỉ số Hiệu quả Quản trị và Hành chính công cấp tỉnh (PAPI) giai đoạn 2011\textendash 2024. Những đóng góp chính bao gồm:
+\begin{itemize}
+    \item \textbf{Dữ liệu và phân tích:} Tái thiết lập và chuẩn hóa toàn bộ dữ liệu từ 14 tệp Excel thô thành các tập dữ liệu sạch (long và wide). Thực hiện năm hướng phân tích từ tổng quan, diễn biến thời gian, không gian vùng/tỉnh, mối quan hệ giữa các lĩnh vực đến phân nhóm động học.
+    \item \textbf{Trực quan hóa và Dashboard:} Xây dựng ứng dụng Dashboard dựa trên kiến trúc React và FastAPI với 20 biểu đồ tương tác cao. Hệ thống được kiểm thử khắt khe, tuân thủ nghiêm ngặt các nguyên tắc thiết kế UI/UX hiện đại như đồng bộ filter trên URL và khả năng phóng to.
+    \item \textbf{Tích hợp AI Human-in-the-loop:} Triển khai Trợ lý AI hỗ trợ phân tích tại chỗ. Cơ chế "chờ duyệt" và thực thi mã nguồn cục bộ (local execution) giúp đảm bảo sự kiểm soát tuyệt đối của con người, mọi thao tác phân tích dữ liệu đều được ghi log minh bạch.
+\end{itemize}
 
 \subsection{Hạn chế}
-% TODO: Nêu hạn chế dữ liệu, phương pháp và AI một cách ngắn gọn.
+Mặc dù đã đạt được các mục tiêu đề ra, đồ án vẫn tồn tại một số giới hạn:
+\begin{itemize}
+    \item \textbf{Về dữ liệu:} Dữ liệu nguồn có một số khoảng trống (D7, D8 chỉ xuất hiện từ năm 2018; một vài tỉnh thiếu tổng điểm hợp lệ). Đồ án chọn cách ghi nhận giá trị rỗng thay vì nội suy dữ liệu nhằm bảo toàn độ tin cậy, điều này khiến một số phép tính thống kê bị thu hẹp cỡ mẫu thực tế.
+    \item \textbf{Về phương pháp luận:} Các kết quả tính toán định lượng (tương quan Pearson, phân cụm K-Means) phần lớn chỉ dừng lại ở mô tả mức độ phân tán và cùng biến thiên. Các phát hiện này không khẳng định mối quan hệ nhân quả.
+    \item \textbf{Về AI:} Môi trường thực thi mã nguồn (Executor) của AI hiện được cấu hình như một lớp bảo vệ (guard) trên máy cục bộ, chưa phải là một sandbox bảo mật công khai. Ngoài ra, module AI vẫn phụ thuộc vào kết nối mạng và quota của nhà cung cấp LLM (Groq).
+\end{itemize}
 
 \subsection{Hướng phát triển}
-% TODO: Chỉ nêu các hướng thực tế, không mở rộng thành roadmap dài.
+Từ những hạn chế trên, dự án có thể được mở rộng theo các hướng thực tế sau:
+\begin{itemize}
+    \item \textbf{Mở rộng chiều dữ liệu:} Tích hợp các chỉ số kinh tế\textendash xã hội địa phương khác (như GRDP, thu nhập bình quân) để tiến hành phân tích đa biến, từ đó làm rõ hơn bối cảnh tác động tới điểm PAPI.
+    \item \textbf{Nâng cấp bảo mật AI:} Phát triển Executor thành một môi trường cô lập hoàn toàn (ví dụ thông qua Docker container) trong trường hợp muốn triển khai Dashboard lên một máy chủ phục vụ cộng đồng.
+    \item \textbf{Đóng gói phần mềm:} Đóng gói Dashboard thành một ứng dụng chạy trên máy tính độc lập (standalone desktop app) nhằm giúp người dùng cuối dễ dàng trải nghiệm công cụ phân tích mà không cần cài đặt môi trường lập trình (Python/Node.js).
+\end{itemize}

@@ -198,9 +198,13 @@ Biểu đồ hộp trong Hình~\ref{fig:regional-province-distribution} mã hóa
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.78\textwidth]{img/regional_province/regional_province_distribution_2024.png}
+    \includegraphics[width=0.96\textwidth]{img/regional_province/regional_province_distribution_2024.png}
     \caption{Phân phối tổng điểm PAPI tám lĩnh vực theo vùng năm 2024}
     \label{fig:regional-province-distribution}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: hộp biểu diễn khoảng tứ phân vị từ $Q_1$ đến $Q_3$, đường giữa là trung vị. Hình thoi đánh dấu Quảng Ninh, chấm tròn là các tỉnh khác.}
+    \end{minipage}
 \end{figure}
 
 \begin{itemize}
@@ -214,9 +218,13 @@ Hình~\ref{fig:regional-province-ranking} dùng biểu đồ kẹo mút để s�
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.68\textwidth]{img/regional_province/regional_province_ranking_2024.png}
+    \includegraphics[width=0.96\textwidth]{img/regional_province/regional_province_ranking_2024.png}
     \caption{Xếp hạng tổng điểm PAPI tám lĩnh vực trong Đồng bằng sông Hồng năm 2024}
     \label{fig:regional-province-ranking}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: trục dọc thể hiện thứ hạng từ cao xuống thấp; chiều dài đoạn thẳng và vị trí điểm đánh dấu biểu thị tổng điểm của từng tỉnh.}
+    \end{minipage}
 \end{figure}
 
 \begin{itemize}
@@ -230,9 +238,13 @@ Biểu đồ trong Hình~\ref{fig:regional-province-benchmark} đặt điểm Qu
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.68\textwidth]{img/regional_province/regional_province_benchmark_2024.png}
+    \includegraphics[width=0.96\textwidth]{img/regional_province/regional_province_benchmark_2024.png}
     \caption{So sánh tổng điểm Quảng Ninh với trung bình vùng và toàn bộ mẫu năm 2024}
     \label{fig:regional-province-benchmark}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: dải nền biểu diễn khoảng tứ phân vị $Q_1$--$Q_3$ của toàn bộ mẫu, đường kẻ ngang chỉ định phạm vi từ giá trị thấp nhất đến cao nhất.}
+    \end{minipage}
 \end{figure}
 
 \begin{itemize}
@@ -246,9 +258,13 @@ Hình~\ref{fig:regional-province-profile} so sánh D1--D8 của Quảng Ninh v�
 
 \begin{figure}[H]
     \centering
-    \includegraphics[width=0.60\textwidth]{img/regional_province/regional_province_profile_2024.png}
+    \includegraphics[width=0.96\textwidth]{img/regional_province/regional_province_profile_2024.png}
     \caption{Cấu trúc điểm tám lĩnh vực của Quảng Ninh so với hai mức đối chiếu năm 2024}
     \label{fig:regional-province-profile}
+    \par\smallskip
+    \begin{minipage}{0.96\textwidth}
+        \footnotesize\textit{Chú giải: lưới đa giác biểu diễn tám lĩnh vực trên thang điểm 10. Đường liền nét là điểm tỉnh; đường đứt nét và đường chấm là các mức đối chiếu.}
+    \end{minipage}
 \end{figure}
 
 \begin{itemize}
@@ -359,6 +375,20 @@ Hình~\ref{fig:dimension-variation} là biểu đồ khoảng trung bình và đ
 
 Phần này phân tích sự dịch chuyển của các tỉnh giữa hai mốc năm 2018 và năm 2024 dựa trên tổng điểm tám lĩnh vực (D1--D8). Kỹ thuật phân cụm K-Means được sử dụng để nhóm các tỉnh thành hai hồ sơ (Hồ sơ A và Hồ sơ B) với độ tách $K=2$ tối ưu theo hệ số silhouette. Bốn biểu đồ làm rõ những tỉnh thay đổi mạnh nhất, đặc trưng của từng hồ sơ, mức độ dịch chuyển trong không gian đa chiều và các luồng chuyển đổi hồ sơ phổ biến.
 
+\subsubsection{Phương pháp tính toán}
+
+Sự dịch chuyển và phân nhóm các tỉnh được đánh giá thông qua mức độ thay đổi điểm số, z-score, phân tích thành phần chính (PCA) và thuật toán phân cụm K-Means. Cụ thể, đặc trưng của từng tỉnh được chuẩn hóa bằng z-score để loại bỏ sự khác biệt về mặt bằng điểm giữa các lĩnh vực:
+\begin{equation}
+    z_{i,j} = \frac{s_{i,j} - \bar{s}_j}{\sigma_j},
+\end{equation}
+trong đó $s_{i,j}$ là điểm của tỉnh $i$ ở lĩnh vực $j$, $\bar{s}_j$ và $\sigma_j$ lần lượt là trung bình và độ lệch chuẩn của lĩnh vực $j$. Thuật toán K-Means phân các tỉnh thành hai hồ sơ ($K=2$) nhằm tối đa hóa hệ số silhouette, phản ánh mức độ gắn kết bên trong cụm và khoảng cách giữa các cụm. 
+
+Để đánh giá mức độ dịch chuyển, dữ liệu đa chiều được chiếu xuống mặt phẳng thông qua hai thành phần chính đầu tiên (PC1 và PC2). Khoảng cách dịch chuyển $d$ của một tỉnh từ năm 2018 ($t_1$) đến năm 2024 ($t_2$) là khoảng cách Euclid trong không gian PCA:
+\begin{equation}
+    d = \sqrt{(\mathrm{PC1}_{t_2} - \mathrm{PC1}_{t_1})^2 + (\mathrm{PC2}_{t_2} - \mathrm{PC2}_{t_1})^2}.
+\end{equation}
+Khoảng cách này chỉ biểu diễn sự biến động về cấu trúc điểm tương đối, không trực tiếp phản ánh mức tăng hay giảm tổng điểm tuyệt đối.
+
 \subsubsection{Các tỉnh có mức thay đổi tổng điểm mạnh nhất}
 
 Hình~\ref{fig:dynamics-province-change} là biểu đồ nối hai mốc (dumbbell plot). Trục ngang biểu diễn tổng điểm tám lĩnh vực, trục dọc liệt kê các tỉnh có sự thay đổi mạnh nhất. Mỗi đoạn thẳng nối điểm mốc đầu (2018, chấm rỗng) và mốc cuối (2024, chấm đặc); màu xanh và hướng sang phải biểu thị tăng, màu cam và hướng sang trái biểu thị giảm. Kỹ thuật này tập trung vào mức thay đổi tuyệt đối lớn nhất ở cả hai chiều.
@@ -440,4 +470,13 @@ Hình~\ref{fig:dynamics-cluster-transitions} là biểu đồ Alluvial (luồng 
 \end{itemize}
 
 \subsection{Tổng hợp các kết quả phân tích chính}
-% TODO: Liên kết các phát hiện từ bốn hướng; không diễn giải tương quan hoặc phân cụm thành nhân quả.
+
+Từ năm góc nhìn trực quan và phân tích định lượng, bức tranh về Hiệu quả Quản trị và Hành chính công cấp tỉnh (PAPI) giai đoạn 2011\textendash 2024 thể hiện sự phân hóa rõ rệt nhưng cũng mang những xu hướng chung đáng chú ý:
+
+Thứ nhất, xét về \textbf{xu hướng dài hạn và cấu trúc điểm}, điểm PAPI toàn quốc trải qua nhiều biến động, trong đó năm 2015 ghi nhận sự sụt giảm đồng loạt ở các vùng, và năm 2024 đánh dấu bước phục hồi mạnh mẽ. Sự thay đổi này chủ yếu được dẫn dắt bởi sự cải thiện vượt bậc của D4 (Kiểm soát tham nhũng trong khu vực công) và D6 (Thủ tục hành chính công), trong khi D3 (Trách nhiệm giải trình với người dân) lại có xu hướng đi xuống.
+
+Thứ hai, về \textbf{mặt bằng và phân bố địa lý}, Đồng bằng sông Hồng đã vươn lên dẫn đầu và duy trì vị thế vững chắc, với trung vị cao nhất toàn quốc năm 2024. Điển hình là Quảng Ninh, tỉnh luôn vượt trội so với trung bình vùng và toàn quốc. Ngược lại, Tây Nguyên vẫn nằm ở nhóm cuối, và Đông Nam Bộ tuy phục hồi tốt nhưng lại có độ phân tán lớn nhất, cho thấy hiệu quả quản trị không đồng đều ngay trong nội bộ vùng.
+
+Thứ ba, sự \textbf{liên hệ giữa các khía cạnh quản trị} cho thấy D1 (Tham gia của người dân ở cấp cơ sở) và D2 (Công khai, minh bạch trong ra quyết định) có mối tương quan dương mạnh nhất ($r=0{,}72$). Các địa phương thường đạt kết quả cao hoặc thấp đồng thời ở cả hai lĩnh vực này. Tuy nhiên, sự tồn tại của những tỉnh có phần dư lớn trong mô hình (điểm thực tế lệch xa so với dự đoán) cho thấy đặc thù địa phương đóng vai trò quan trọng, không thể áp dụng máy móc một xu hướng chung.
+
+Cuối cùng, sự \textbf{dịch chuyển và phân hóa hồ sơ} từ 2018 đến 2024 khẳng định chất lượng quản trị không phải là một trạng thái tĩnh. Mặc dù đa số các tỉnh giữ nguyên vị thế, vẫn có 12 tỉnh vươn lên thành công từ Hồ sơ A sang Hồ sơ B. Những biến động cá biệt như sự bứt phá của Bình Thuận hay sụt giảm của Bến Tre cho thấy các địa phương hoàn toàn có thể tái cơ cấu thế mạnh để cải thiện tổng điểm. Cần lưu ý rằng các phát hiện này tập trung mô tả mức độ cùng biến thiên và đặc điểm phân bố, không kết luận mối quan hệ nhân quả giữa các lĩnh vực hay các can thiệp chính sách cụ thể.
