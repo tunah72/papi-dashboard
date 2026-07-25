@@ -45,13 +45,11 @@ JSONL ghi request/context, answer/clarification, pending/superseded proposal, ap
 Result table/log giới hạn 500 hàng nhưng luôn có shape, `totalRows` và `truncated`; figure lưu Plotly JSON.
 Không ghi API key hoặc internal reasoning.
 
-Streamlit trong `app/` vẫn là frozen fallback. Các module `app/ai/` tiếp tục chạy độc lập nhưng không là
-bề mặt AI đích của React.
-
 ## Kiểm thử
 
 ```bash
-python3 -m pytest tests/test_assistant_http.py tests/test_api_ai.py tests/test_api_exec.py -q
+python3 -m pip install pytest==9.1.0 httpx==0.28.1
+python3 -m pytest tests/test_assistant_http.py tests/test_executor.py -q
 cd frontend
 npm test -- --run
 npm run lint

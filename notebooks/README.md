@@ -15,7 +15,8 @@ phải nguồn tài liệu song song.
 
 ## Chuẩn bị
 ```bash
-pip install -r ../requirements-dev.txt
+python -m pip install -r ../requirements.txt
+python -m pip install openpyxl==3.1.5 matplotlib==3.10.8 seaborn==0.13.2 jupyter==1.1.1
 ```
 - `preprocessing.ipynb` đọc `../data/raw/` → ghi `../data/processed/` + `../docs/data/processing-log.md`.
 - `eda.ipynb` chỉ đọc `../data/processed/` (không sửa dữ liệu).

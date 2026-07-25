@@ -1,7 +1,7 @@
 """Unit test cho src/analysis/trend.py — hàm thuần, dữ liệu nhỏ tự dựng.
 
 Chạy: pytest tests/test_trend.py   (hoặc: python -m pytest)
-Không phụ thuộc Streamlit hay dữ liệu parquet thật.
+Không phụ thuộc giao diện hay dữ liệu parquet thật.
 """
 import math
 import sys

@@ -1,33 +1,31 @@
-# Đồ án Trực quan hóa Dữ liệu (PAPI) — môi trường Python
-# Cài: pip install -r requirements.txt
+# Phụ thuộc để chạy PAPI Dashboard
+# Cài đặt: python -m pip install -r requirements.txt
 
-# Xử lý & phân tích dữ liệu
+# Đọc dữ liệu đã xử lý và thực hiện phân tích
 pandas==2.3.3
 numpy==2.3.3
-openpyxl==3.1.5          # đọc file Excel raw
-pyarrow==22.0.0          # đọc/ghi parquet
-
-# Trực quan hóa
-matplotlib==3.10.8
-seaborn==0.13.2
-
-# Thống kê & machine learning (clustering, anomaly, regression cho AI techniques)
+pyarrow==22.0.0
 scikit-learn==1.8.0
 scipy==1.17.1
 
-# Notebook (để giảng viên chạy lại)
-jupyter
-nbformat==5.10.4
-nbconvert==7.17.0
-ipykernel
-
-# Dashboard legacy fallback
-streamlit==1.58.0
-plotly==6.8.0
-
-# FastAPI local
+# Dịch vụ FastAPI cục bộ
 fastapi==0.116.1
 uvicorn[standard]==0.35.0
+python-dotenv==1.2.2
 
-# AI module (LLM provider: Groq)
-groq>=0.13
+# Trợ lý AI và biểu đồ được thực thi sau phê duyệt
+plotly==6.8.0
+groq==1.5.0
+
+# Kiểm thử
+pytest==9.1.0
+httpx==0.28.1
+
+# Xây dựng lại dữ liệu và làm việc với notebook
+openpyxl==3.1.5
+matplotlib==3.10.8
+seaborn==0.13.2
+jupyter==1.1.1
+nbformat==5.10.4
+nbconvert==7.17.0
+ipykernel==7.3.0

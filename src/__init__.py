@@ -1,1 +1,1 @@
-"""Các module Python thuần dùng chung cho Streamlit fallback và FastAPI local."""
+"""Các module Python dùng cho xử lý dữ liệu và FastAPI cục bộ."""

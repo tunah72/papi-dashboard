@@ -1,13 +1,11 @@
 """Kiểm tra GeoJSON được chuẩn hoá cho choropleth Plotly mà không sửa nguồn."""
 import copy
 import json
-import sys
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[1]
-sys.path.insert(0, str(ROOT / "app"))
 
-from lib.data import normalize_geojson_for_plotly  # noqa: E402
+from src.data_loader import normalize_geojson_for_plotly
 
 
 def _signed_area(ring):

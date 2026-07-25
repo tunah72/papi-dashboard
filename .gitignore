@@ -16,8 +16,8 @@ venv/
 # Excel lock files
 ~$*
 
-# Streamlit secrets (API key của LLM)
-.streamlit/secrets.toml
+# Secrets cục bộ
+.env
 
 # Logs sinh ra lúc chạy AI module (giữ thư mục, bỏ nội dung)
 logs/*

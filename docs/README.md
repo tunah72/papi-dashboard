@@ -1,14 +1,12 @@
 # Tài liệu PAPI Dashboard
 
-Đây là điểm vào chính cho tài liệu đang dùng. Khi có mâu thuẫn, ưu tiên code/runtime/test hiện tại,
-sau đó đến tài liệu dữ liệu và thiết kế, kiến trúc, rồi mới đến tài liệu lịch sử trong `archive/`.
+Đây là điểm vào chính cho tài liệu đang dùng. Khi có mâu thuẫn, ưu tiên mã nguồn và kết quả chạy hiện
+tại, sau đó đến tài liệu dữ liệu, thiết kế và kiến trúc.
 
 ## Bắt đầu
 
-1. [Trạng thái dự án](project-status.md) — capability và bằng chứng kiểm thử hiện tại.
-2. [Kiến trúc](architecture.md) — luồng dữ liệu, React, FastAPI, AI và Streamlit fallback.
-3. [Cài đặt và phát triển](guides/getting-started.md) — lệnh chạy, test và quy tắc sửa đổi.
-4. [Hướng dẫn demo/vấn đáp](dashboard-handoff.md) — mạch trình bày và checklist trước demo.
+1. [Kiến trúc](architecture.md) — luồng dữ liệu, React, FastAPI và Trợ lý AI.
+2. [Cài đặt và vận hành](guides/getting-started.md) — lệnh cài đặt, chạy và kiểm tra.
 
 ## Nguồn sự thật theo chủ đề
 
@@ -32,18 +30,10 @@ sau đó đến tài liệu dữ liệu và thiết kế, kiến trúc, rồi m�
 ### Làm việc nhóm
 
 - [Hướng dẫn thành viên](guides/team-guide.md)
-- [Design system Streamlit legacy](guides/design-system.md)
 - [Quy ước báo cáo và slides](notes/NOTES.md)
-
-### Quyết định và lịch sử
-
-- [ADR React + FastAPI local](adr/2026-07-20-react-fastapi-local-migration.md)
-- [Tài liệu lịch sử](archive/README.md) — chỉ dùng để truy vết, không dùng làm trạng thái hiện tại.
 
 ## Quy ước duy trì
 
-- `project-status.md` chỉ ghi trạng thái đã kiểm chứng và kết quả test gần nhất.
 - Thay đổi dữ liệu phải cập nhật `data/README.md` và để pipeline sinh `processing-log.md`.
 - Thay đổi hành vi UI phải cập nhật đặc tả tương ứng trong `design/`.
 - Thay đổi contract AI phải cập nhật `ai/README.md`, manual tests và OpenAPI schema.
-- Tài liệu kế hoạch đã hoàn tất được tóm tắt trong `archive/`, không để lẫn với tài liệu vận hành.

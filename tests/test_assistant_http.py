@@ -21,6 +21,17 @@ def _message(message="Chỉ số PAPI là gì?", session_id=None, revision_of=No
     }
 
 
+def test_key_loads_root_dotenv_without_overriding_environment(tmp_path, monkeypatch):
+    (tmp_path / ".env").write_text('GROQ_API_KEY="key-from-file"\n', encoding="utf-8")
+    monkeypatch.setattr(assistant, "ROOT", tmp_path)
+    monkeypatch.delenv("GROQ_API_KEY", raising=False)
+
+    assert assistant._key() == "key-from-file"
+
+    monkeypatch.setenv("GROQ_API_KEY", "key-from-environment")
+    assert assistant._key() == "key-from-environment"
+
+
 def test_knowledge_context_has_eight_dimensions_years_and_source():
     knowledge = assistant._knowledge_context()
     assert all(f"D{index}:" in knowledge for index in range(1, 9))
@@ -32,7 +43,7 @@ def test_knowledge_context_has_eight_dimensions_years_and_source():
 def test_answer_is_logged_without_execution(client, monkeypatch):
     executed = []
     monkeypatch.setattr(assistant, "generate_reply", lambda *args, **kwargs: {"kind": "answer", "answer": "PAPI phản ánh trải nghiệm của người dân."})
-    monkeypatch.setattr(assistant.api_exec, "execute", lambda *args, **kwargs: executed.append(True))
+    monkeypatch.setattr(assistant.executor, "execute", lambda *args, **kwargs: executed.append(True))
 
     response = client.post("/api/v1/assistant/messages", json=_message())
     assert response.status_code == 200
@@ -50,7 +61,7 @@ def test_revision_supersedes_old_proposal_and_only_latest_executes(client, monke
         {"kind": "proposal", "explanation": "Bản mới", "code": "# Tính lại\nresult = prov_year.head(2)"},
     ])
     monkeypatch.setattr(assistant, "generate_reply", lambda *args, **kwargs: next(replies))
-    monkeypatch.setattr(assistant.api_exec, "execute", lambda code, data: {
+    monkeypatch.setattr(assistant.executor, "execute", lambda code, data: {
         "result": pd.DataFrame({"value": [1, 2]}), "fig": None, "stdout": "ok", "warnings": [], "error": None,
     })
 

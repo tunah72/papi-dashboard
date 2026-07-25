@@ -1,8 +1,8 @@
 """Logic thuần cho Hướng 1 — diễn biến PAPI theo thời gian.
 
 Mọi hàm ở đây nhận DataFrame đã xử lý (theo schema data.load_data) và trả về số/Series/dict.
-KHÔNG import streamlit/plotly, KHÔNG vẽ, KHÔNG đọc file — để page H1 lẫn module AI
-(technique trend_classification) gọi chung một nguồn sự thật, và để unit-test ngoài Streamlit.
+Không phụ thuộc giao diện, không vẽ và không đọc file để Dashboard, AI và kiểm
+thử cùng sử dụng một nguồn sự thật.
 
 Schema dùng tới:
 - prov_year: wide panel 63 tỉnh × năm, có cột total_papi / total_papi_6dim và D1..D8.

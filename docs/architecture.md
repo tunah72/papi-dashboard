@@ -1,7 +1,6 @@
 # Kiến trúc PAPI Dashboard
 
-React + FastAPI là bề mặt chính. Streamlit trong `app/` là fallback đóng băng để trình diễn dự phòng;
-capability mới chỉ được phát triển trên React/FastAPI.
+Hệ thống gồm giao diện React, dịch vụ FastAPI cục bộ và các mô-đun xử lý dữ liệu Python.
 
 ## Sơ đồ tổng thể
 
@@ -35,7 +34,7 @@ frontend/src/pages/*
 - `src/data_loader.py`: đọc snapshot processed và chuẩn hóa GeoJSON trong bộ nhớ.
 - `src/analysis/`: hàm thống kê cho diễn biến, tỉnh/vùng, quan hệ lĩnh vực và phân nhóm.
 
-`data/raw/` là bất biến. App/API không đọc Excel trực tiếp và không sửa dữ liệu nguồn. Dữ liệu thiếu
+`data/raw/` là bất biến. Ứng dụng không đọc Excel trực tiếp và không sửa dữ liệu nguồn. Dữ liệu thiếu
 được giữ là thiếu; `NaN`/`Infinity` được chuyển thành JSON `null` tại HTTP boundary.
 
 Các artifact chính:
@@ -111,19 +110,14 @@ message
 Frontend không gửi code tùy ý tới execution API. Server lưu proposal, code chuẩn hóa và checksum;
 execution chỉ nhận `sessionId`, `proposalId`, `approved: true` và từ chối proposal cũ bằng `409`.
 
-Executor chạy process con, timeout 8 giây, giới hạn stdout, dùng bản sao DataFrame và kiểm AST/deny-list.
+`server/executor.py` chạy tiến trình con, giới hạn thời gian và đầu ra, dùng bản sao DataFrame và
+kiểm tra cây cú pháp cùng danh sách thao tác bị chặn.
 Đây là guard cho demo local, không phải public security sandbox. Table/result log được giới hạn 500
 hàng nhưng luôn giữ shape, `totalRows` và `truncated`; API key và internal reasoning không được log.
 
-## Streamlit fallback
-
-`app/main.py` vẫn khai báo sáu trang Streamlit, bao gồm AI page cũ. `app/lib/data.py` là adapter cache
-trên cùng processed snapshot; `app/ai/` giữ executor/provider legacy để fallback chạy độc lập.
-Không thêm tính năng mới vào bề mặt này.
-
 ## Ranh giới phụ thuộc
 
-- `src/` không phụ thuộc Streamlit hoặc React.
+- `src/` không phụ thuộc React.
 - React không truy cập filesystem, raw data, secrets hoặc công thức nghiệp vụ.
 - FastAPI chỉ đọc processed snapshot trong luồng dashboard.
 - Không so tổng 6 lĩnh vực với tổng 8 lĩnh vực qua mốc 2018.

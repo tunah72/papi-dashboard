@@ -7,16 +7,15 @@ import json
 import os
 import re
 import threading
-import tomllib
 import uuid
 from datetime import datetime, timezone
 from pathlib import Path
 from typing import Any
 
 import pandas as pd
+from dotenv import load_dotenv
 
-from app.ai import api_exec
-from server import services
+from server import executor, services
 from server.view_models import json_safe
 
 
@@ -90,17 +89,8 @@ def _proposal_state(session_id: str) -> tuple[dict[str, Any] | None, str | None]
 
 
 def _key() -> str | None:
-    key = os.environ.get("GROQ_API_KEY")
-    if key:
-        return key
-    secrets = ROOT / ".streamlit" / "secrets.toml"
-    if secrets.exists():
-        try:
-            value = tomllib.loads(secrets.read_text(encoding="utf-8")).get("GROQ_API_KEY")
-            return str(value) if value else None
-        except (OSError, tomllib.TOMLDecodeError):
-            return None
-    return None
+    load_dotenv(ROOT / ".env", override=False)
+    return os.environ.get("GROQ_API_KEY") or None
 
 
 def _knowledge_context() -> str:
@@ -173,7 +163,7 @@ Ba output hợp lệ:
 Quy tắc:
 - Câu hỏi kiến thức trả answer có nguồn. Không bịa số liệu.
 - Nếu cần tính mới, trả proposal. Không nói rằng code đã chạy.
-- Code không import, không đọc/ghi file, không gọi mạng; chỉ dùng {api_exec.available_names(services.data())}.
+- Code không import, không đọc/ghi file, không gọi mạng; chỉ dùng {executor.available_names(services.data())}.
 - Code chỉ đọc bản sao dữ liệu, có comment tiếng Việt, gán bảng/scalar vào result và Plotly figure tùy chọn vào fig.
 - Không dùng open/exec/eval/__import__/input, dunder, process hoặc filesystem.
 - {clarification_rule}
@@ -318,7 +308,7 @@ def execute_proposal(*, session_id: str, proposal_id: str) -> dict[str, Any]:
     if latest.get("codeHash") != _hash(code):
         raise AssistantConflict("Code proposal không khớp checksum đã lưu.")
     _append_event(session_id, "proposal_approved", proposalId=proposal_id, codeHash=latest["codeHash"])
-    output = api_exec.execute(code, services.data())
+    output = executor.execute(code, services.data())
     result = _serialize_result(output.get("result"))
     figure = json.loads(output["fig"].to_json()) if output.get("fig") is not None else None
     status = "failed" if output.get("error") else "succeeded"

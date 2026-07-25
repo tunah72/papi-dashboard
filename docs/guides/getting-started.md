@@ -1,4 +1,4 @@
-# Cài đặt và phát triển
+# Cài đặt và vận hành
 
 ## 1. Chuẩn bị
 
@@ -8,7 +8,7 @@ Yêu cầu Python 3.11+, Node.js 20+ và npm.
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r requirements-dev.txt
+python -m pip install -r requirements.txt
 cd frontend && npm ci && cd ..
 ```
 
@@ -31,19 +31,23 @@ npm run dev
 
 Mở `http://127.0.0.1:5173`. OpenAPI ở `http://127.0.0.1:8000/docs`.
 
-Dashboard không cần API key. Floating AI Assistant chỉ gọi Groq khi người dùng gửi câu hỏi. Cấu hình
-key local bằng:
+Dashboard không cần API key. Trợ lý AI chỉ gọi Groq khi người dùng gửi câu hỏi. Khi cần dùng AI,
+tạo file cấu hình cục bộ:
 
 ```bash
-cp .streamlit/secrets.toml.example .streamlit/secrets.toml
+cp .env.example .env
+# Điền GROQ_API_KEY thật vào .env
 ```
 
-Điền `GROQ_API_KEY` thật vào file vừa tạo. File này bị Git ignore; luôn kiểm tra `git status` trước commit.
-
-Streamlit fallback có thể chạy độc lập bằng `streamlit run app/main.py`, nhưng không phải bề mặt phát
-triển capability mới.
+FastAPI tự nạp `.env`; biến môi trường đã có trong hệ điều hành được ưu tiên hơn giá trị trong file.
 
 ## 3. Kiểm thử
+
+Các kiểm thử Python cần thêm `pytest` và `httpx`:
+
+```bash
+python -m pip install pytest==9.1.0 httpx==0.28.1
+```
 
 Python:
 
@@ -76,26 +80,23 @@ tự động nếu provider lỗi.
 Chỉ chạy khi thay đổi hoặc kiểm chứng pipeline:
 
 ```bash
+python -m pip install openpyxl==3.1.5
 python src/build_dataset.py
 ```
 
 Lệnh đọc 14 file trong `data/raw/`, ghi `data/processed/` và cập nhật
 `docs/data/processing-log.md`. Kiểm tra diff ngay sau khi chạy; không chỉnh sửa raw data.
 
-Notebook chạy theo thứ tự:
-
-1. `notebooks/data_understanding.ipynb`
-2. `notebooks/preprocessing.ipynb`
-3. `notebooks/eda.ipynb`
+Hướng dẫn chạy notebook nằm tại `notebooks/README.md`.
 
 ## 5. Nguyên tắc sửa đổi
 
-1. Đọc `docs/project-status.md`, đặc tả trang trong `docs/design/` và contract dữ liệu liên quan.
+1. Đọc `docs/architecture.md`, đặc tả trang trong `docs/design/` và contract dữ liệu liên quan.
 2. Giữ logic nghiệp vụ trong `src/analysis/` hoặc FastAPI; React chỉ render view-model và interaction.
 3. Không sửa `data/raw/`, không bịa dữ liệu thiếu và không so tổng 6/8 lĩnh vực qua mốc 2018.
 4. Thêm test cùng thay đổi; kiểm tra runtime ở desktop, tablet và mobile nếu sửa UI.
 5. Cập nhật đúng tài liệu nguồn sự thật, không tạo thêm kế hoạch song song.
-6. Không commit secrets, log phiên, cache, `dist/` hoặc test artifacts.
+6. Không commit API key, log phiên, cache, `dist/` hoặc test artifacts.
 
 ## 6. Checklist bàn giao
 

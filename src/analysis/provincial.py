@@ -1,7 +1,7 @@
 """Logic thuần cho Hướng 2 — so sánh giữa các tỉnh và vùng.
 
 Các hàm trong module chỉ biến đổi ``prov_year`` đã xử lý. Chúng không đọc file,
-không import Streamlit/Plotly để page dashboard, AI và unit test cùng dùng một
+không phụ thuộc giao diện để Dashboard, AI và kiểm thử cùng dùng một
 nguồn sự thật.
 """
 import pandas as pd

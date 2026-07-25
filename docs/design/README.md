@@ -1,8 +1,8 @@
 # Đặc tả thiết kế PAPI Dashboard
 
 Thư mục này là nguồn sự thật cho năm trang Dashboard React. Đặc tả tập trung vào kiến trúc thông tin,
-layout, lựa chọn biểu đồ, insight dưới biểu đồ, interaction và acceptance. Trạng thái triển khai và
-kết quả test hiện tại nằm trong `docs/project-status.md`.
+layout, lựa chọn biểu đồ, insight dưới biểu đồ, interaction và acceptance. Trạng thái triển khai được
+đối chiếu trực tiếp với mã nguồn và kết quả kiểm thử hiện tại.
 
 Tài liệu dữ liệu chuẩn: [`../data/README.md`](../data/README.md). Khi đặc tả và dữ liệu mâu thuẫn,
 phải sửa đặc tả theo dữ liệu, không tự tạo thêm số liệu hoặc biến phân tích ở frontend.

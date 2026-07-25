@@ -2,26 +2,21 @@
 
 ## Nguồn sự thật
 
-- Trạng thái: `docs/project-status.md`
 - Kiến trúc: `docs/architecture.md`
 - Dữ liệu: `docs/data/README.md`
 - Thiết kế React: `docs/design/README.md`
 - AI: `docs/ai/README.md`
 
-Tài liệu trong `docs/archive/` chỉ dùng để truy vết migration đã hoàn tất.
-
 ## Bản đồ module
 
-| Hướng | React page | FastAPI/analysis | Streamlit fallback |
-|---|---|---|---|
-| Tổng quan | `Overview.tsx` | `server/services.py` | `overview.py` |
-| Diễn biến | `TimeTrend.tsx` | `src/analysis/trend.py` | `time_trend.py` |
-| Vùng & tỉnh | `Provincial.tsx` | `src/analysis/provincial.py` | `provincial.py` |
-| Quan hệ lĩnh vực | `Dimension.tsx` | `src/analysis/dimensions.py` | `dimension.py` |
-| Thay đổi & phân nhóm | `Dynamics.tsx` | `src/analysis/dynamics.py` | `dynamics.py` |
-| Trợ lý AI | `FloatingAssistant.tsx` | `server/assistant.py` | `ai_assistant.py` |
-
-Capability mới thuộc React/FastAPI. Chỉ sửa Streamlit khi cần giữ fallback chạy đúng.
+| Hướng | React page | FastAPI/analysis |
+|---|---|---|
+| Tổng quan | `Overview.tsx` | `server/services.py` |
+| Diễn biến | `TimeTrend.tsx` | `src/analysis/trend.py` |
+| Vùng và tỉnh | `Provincial.tsx` | `src/analysis/provincial.py` |
+| Quan hệ lĩnh vực | `Dimension.tsx` | `src/analysis/dimensions.py` |
+| Thay đổi và phân nhóm | `Dynamics.tsx` | `src/analysis/dynamics.py` |
+| Trợ lý AI | `FloatingAssistant.tsx` | `server/assistant.py`, `server/executor.py` |
 
 ## Definition of Done
 

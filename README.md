@@ -1,22 +1,46 @@
 # PAPI Dashboard
 
-Đồ án cuối kỳ môn Trực quan hóa Dữ liệu (CSC10108), trực quan hóa Chỉ số Hiệu quả Quản trị và
-Hành chính công cấp tỉnh (PAPI) của Việt Nam giai đoạn 2011–2024.
+Đồ án môn Trực quan hóa dữ liệu (CSC10108) xây dựng bảng điều khiển tương tác để khám phá Chỉ số
+Hiệu quả Quản trị và Hành chính công cấp tỉnh (PAPI) của Việt Nam. Hệ thống sử dụng React cho giao
+diện, FastAPI cho dịch vụ dữ liệu và Python cho xử lý, phân tích.
 
-Sản phẩm chính gồm năm trang phân tích React, FastAPI local và một Floating AI Assistant
-human-in-the-loop. AI có thể trả lời kiến thức hoặc đề xuất code; code chỉ được chạy local sau khi
-người dùng phê duyệt proposal mới nhất.
+## Dữ liệu
+
+- Nguồn: PAPI Việt Nam, UNDP Việt Nam, CECODES và RTA.
+- Phạm vi: 63 tỉnh, thành phố trong 14 năm từ 2011 đến 2024; D7 và D8 có từ năm 2018.
+- Dữ liệu sau xử lý: 6.094 điểm lĩnh vực và 882 tổ hợp tỉnh - năm.
+- Quy trình, định nghĩa và giới hạn: [Tài liệu dữ liệu PAPI](docs/data/README.md).
 
 ## Tính năng
 
-- Năm trang: Tổng quan, Diễn biến theo thời gian, Vùng & tỉnh, Mối quan hệ lĩnh vực, Thay đổi & phân nhóm.
-- 20 biểu đồ có insight, nguồn, đơn vị, cỡ mẫu, bảng truy cập được và chế độ phóng to.
-- Filter/selection quan trọng được giữ trong URL để refresh và chia sẻ liên kết.
-- Floating AI Assistant dùng chung, hỗ trợ answer, clarification, proposal, revision, approval và log.
-- Pipeline dữ liệu tái lập từ 14 file Excel nguồn; không nội suy dữ liệu thiếu.
-- Streamlit trong `app/` được giữ như fallback đóng băng, không phải giao diện phát triển chính.
+- Năm trang phân tích: Tổng quan, Diễn biến theo thời gian, Vùng và tỉnh, Mối quan hệ lĩnh vực,
+  Thay đổi và phân nhóm.
+- 20 biểu đồ tương tác kèm nhận xét, nguồn, đơn vị, số quan sát và chế độ phóng to.
+- Bộ lọc và đối tượng được chọn được lưu trong URL để hỗ trợ tải lại và chia sẻ.
+- Trợ lý AI theo cơ chế con người phê duyệt: hiển thị mã đề xuất, cho phép yêu cầu sửa và chỉ thực
+  thi cục bộ sau khi người dùng đồng ý.
 
-## Chạy local
+## Minh chứng
+
+- [Minh chứng kết quả](https://drive.google.com/drive/folders/1EJoYErH-xulCpA_Sxmi9DxXkS5oMcfq9?usp=sharing)
+- [Video demo](https://drive.google.com/file/d/1OIrdref8werXjB4FZUlOxp96OkxdJQKn/view?usp=sharing)
+- [Mã nguồn GitHub](https://github.com/tunah72/papi-dashboard)
+
+## Cấu trúc
+
+```text
+frontend/       Giao diện React và kiểm thử trình duyệt
+server/         FastAPI, dịch vụ dữ liệu và Trợ lý AI
+src/            Tiền xử lý dữ liệu và logic phân tích
+tests/          Kiểm thử Python
+data/           Dữ liệu gốc và dữ liệu đã xử lý
+notebooks/      Khám phá và kiểm chứng dữ liệu
+docs/           Tài liệu dữ liệu, thiết kế và kiến trúc
+report/         Báo cáo LaTeX
+slides/         Slide thuyết trình LaTeX
+```
+
+## Hướng dẫn chạy
 
 Yêu cầu Python 3.11+, Node.js 20+ và npm.
 
@@ -24,81 +48,28 @@ Yêu cầu Python 3.11+, Node.js 20+ và npm.
 python3 -m venv .venv
 source .venv/bin/activate
 python -m pip install --upgrade pip
-python -m pip install -r requirements-dev.txt
+python -m pip install -r requirements.txt
+cd frontend && npm ci && cd ..
 ```
 
-Terminal 1:
+Dashboard không cần API key. Để sử dụng Trợ lý AI, tạo cấu hình cục bộ:
+
+```bash
+cp .env.example .env
+# Điền GROQ_API_KEY thật vào .env
+```
+
+FastAPI tự nạp file `.env`; biến môi trường đã khai báo trong hệ điều hành sẽ được ưu tiên.
+
+Chạy FastAPI tại thư mục gốc:
 
 ```bash
 python -m uvicorn server.main:app --host 127.0.0.1 --port 8000
 ```
 
-Terminal 2:
+Chạy React trong terminal khác:
 
 ```bash
 cd frontend
-npm ci
 npm run dev
 ```
-
-Mở `http://127.0.0.1:5173`. Dashboard không cần API key; để gửi câu hỏi AI, sao chép
-`.streamlit/secrets.toml.example` thành `.streamlit/secrets.toml` và điền `GROQ_API_KEY` local.
-
-## Kiểm thử
-
-```bash
-python -m pytest -q
-cd frontend
-npm test
-npm run lint
-npm run build
-npx playwright test
-```
-
-Live Groq smoke không nằm trong test mặc định vì sử dụng quota bên ngoài.
-
-## Dữ liệu
-
-- Nguồn: PAPI Việt Nam, UNDP Việt Nam, CECODES và RTA.
-- Phạm vi: 63 tỉnh/thành, 2011–2024; D7–D8 có từ 2018.
-- Bảng long đã xử lý: 6.094 dòng; panel tỉnh–năm: 882 dòng.
-- Nguồn và quy trình xử lý: [docs/data/README.md](docs/data/README.md).
-
-Chỉ chạy lại pipeline khi thật sự cần thay đổi dữ liệu:
-
-```bash
-python src/build_dataset.py
-```
-
-## Tài liệu
-
-- [Chỉ mục tài liệu](docs/README.md)
-- [Trạng thái dự án](docs/project-status.md)
-- [Kiến trúc](docs/architecture.md)
-- [Hướng dẫn cài đặt và phát triển](docs/guides/getting-started.md)
-- [Đặc tả thiết kế](docs/design/README.md)
-- [AI human-in-the-loop](docs/ai/README.md)
-- [Hướng dẫn demo/vấn đáp](docs/dashboard-handoff.md)
-
-## Cấu trúc
-
-```text
-frontend/       React + TypeScript và browser tests
-server/         FastAPI, view-model và orchestration AI
-src/            pipeline dữ liệu và logic phân tích thuần
-app/            Streamlit legacy fallback
-tests/          Python tests
-data/           dữ liệu raw/processed
-notebooks/      data understanding, preprocessing và EDA
-docs/           tài liệu nguồn sự thật và thiết kế
-report/         báo cáo LaTeX
-slides/         slide Beamer
-logs/           lifecycle log local của AI
-```
-
-## Nhóm thực hiện
-
-- 23120199 — Lê Xuân Trí
-- 23120208 — Dương Tuấn Anh
-- 23122038 — Nguyễn Trần Trung Kiên
-- 23122045 — Lê Đức Phúc
