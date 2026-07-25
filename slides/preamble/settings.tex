@@ -1,6 +1,7 @@
 \usetheme{Madrid}
 \usecolortheme{default}
 \useinnertheme{circles}
+\renewcommand{\bfdefault}{bx}
 
 %------------- Màu nhận diện Dashboard PAPI -------------
 \definecolor{PapiCanvas}{HTML}{F5F7F6}
@@ -43,6 +44,18 @@
 
 \newcommand{\sourcefoot}[1]{%
   \vspace{0.05cm}\par{\tiny\color{PapiMuted}Nguồn: #1}\par
+}
+
+\setbeamercolor{block body}{fg=PapiText,bg=PapiAccentWash}
+\newcommand{\analysismethod}[1]{%
+  \begin{beamercolorbox}[rounded=true,sep=0.08cm,wd=\textwidth]{block body}
+    \centering\scriptsize #1
+  \end{beamercolorbox}
+}
+\newcommand{\analysisdirection}[1]{%
+  \begin{beamercolorbox}[rounded=true,sep=0.10cm,wd=\textwidth]{block body}
+    \scriptsize\textbf{Định hướng:} #1
+  \end{beamercolorbox}
 }
 
 %------------- Mục lục đầu mỗi section -------------

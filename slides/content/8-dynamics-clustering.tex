@@ -1,37 +1,42 @@
 % Slide 16
 \begin{frame}[t]{Phân tích Thay đổi và phân nhóm tỉnh}
+  \analysismethod{%
+    \textbf{Hai mốc đủ dữ liệu}
+    \(\rightarrow\) Chuẩn hóa theo năm
+    \(\rightarrow\) K-Means
+    \(\rightarrow\) PCA và luồng chuyển nhóm
+  }
+
+  \vspace{0.10cm}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.49\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth,height=0.42\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_province_change.png}
+        \includegraphics[width=\textwidth,height=0.35\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_province_change.png}
         \caption*{Biểu đồ nối hai mốc: điểm đầu\textendash cuối các tỉnh thay đổi mạnh}
       \end{figure}
       \scriptsize
       \begin{itemize}
         \setlength{\itemsep}{3pt}
-        \item[-] Bình Thuận tăng mạnh nhất ($+5{,}52$ điểm), theo sau là Tây Ninh.
-        \item[-] Bến Tre giảm nhiều nhất ($-5{,}80$ điểm), kế tiếp là Cần Thơ.
+        \item[-] Bình Thuận tăng mạnh nhất (\textbf{+5,52 điểm}), theo sau là Tây Ninh.
+        \item[-] Bến Tre giảm nhiều nhất (\textbf{-5,80 điểm}), kế tiếp là Cần Thơ.
       \end{itemize}
     \end{column}
     \begin{column}{0.49\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth,height=0.42\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_cluster_profiles.png}
+        \includegraphics[width=\textwidth,height=0.35\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_cluster_profiles.png}
         \caption*{Biểu đồ thanh ngang: đặc trưng chuẩn hóa của từng hồ sơ}
       \end{figure}
       \scriptsize
       \begin{itemize}
         \setlength{\itemsep}{3pt}
-        \item[-] Hồ sơ A (27 tỉnh) thấp hơn mặt bằng chung ở hầu hết lĩnh vực.
-        \item[-] Hồ sơ B (32 tỉnh) có điểm chuẩn hóa dương toàn diện.
+        \item[-] \textbf{Hồ sơ A} (\textbf{27 tỉnh}) thấp hơn mặt bằng chung ở hầu hết lĩnh vực.
+        \item[-] \textbf{Hồ sơ B} (\textbf{32 tỉnh}) có điểm chuẩn hóa dương toàn diện.
       \end{itemize}
     \end{column}
   \end{columns}
 
-  \vspace{0.08cm}
-  \centering
-  {\scriptsize Định hướng: tìm nguyên nhân Bình Thuận cải thiện vượt bậc và cách Hồ sơ A khắc phục điểm yếu.}
 \end{frame}
 
 % Slide 17
@@ -40,32 +45,34 @@
     \begin{column}{0.49\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_pca_trajectory.png}
+        \includegraphics[width=\textwidth,height=0.33\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_pca_trajectory.png}
         \caption*{Biểu đồ phân tán: dịch chuyển PCA đầu\textendash cuối}
       \end{figure}
       \scriptsize
       \begin{itemize}
         \setlength{\itemsep}{3pt}
-        \item[-] Bình Thuận dịch chuyển xa nhất trên mặt phẳng PCA.
-        \item[-] Tổng cộng có 21/59 tỉnh ($35{,}6\%$) chuyển đổi hồ sơ giữa hai mốc.
+        \item[-] \textbf{Bình Thuận} dịch chuyển xa nhất trên mặt phẳng PCA.
+        \item[-] Tổng cộng có \textbf{21/59 tỉnh} (\textbf{35,6\%}) chuyển đổi hồ sơ giữa hai mốc.
       \end{itemize}
     \end{column}
     \begin{column}{0.49\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_cluster_transitions.png}
+        \includegraphics[width=\textwidth,height=0.33\textheight,keepaspectratio]{img/dynamics_clustering/dynamics_cluster_transitions.png}
         \caption*{Biểu đồ luồng: các luồng chuyển đổi hồ sơ phổ biến nhất}
       \end{figure}
       \scriptsize
       \begin{itemize}
         \setlength{\itemsep}{3pt}
-        \item[-] Đa số các tỉnh ($64{,}41\%$) giữ nguyên vị thế (ổn định).
-        \item[-] Luồng chuyển lớn nhất là 12 tỉnh vươn lên từ Hồ sơ A sang B.
+        \item[-] Đa số các tỉnh (\textbf{64,41\%}) giữ nguyên vị thế (ổn định).
+        \item[-] Luồng chuyển lớn nhất là \textbf{12 tỉnh} vươn lên từ \textbf{Hồ sơ A sang B}.
       \end{itemize}
     \end{column}
   \end{columns}
 
   \vspace{0.02cm}
-  \centering
-  {\scriptsize Định hướng: đánh giá tác động của tái cơ cấu lĩnh vực và đúc kết mô hình từ 12 tỉnh vươn lên.}
+  \analysisdirection{%
+    tìm nguyên nhân Bình Thuận cải thiện và cách Hồ sơ A khắc phục điểm yếu; đánh giá tác động của
+    tái cơ cấu lĩnh vực và đúc kết mô hình từ 12 tỉnh vươn lên.
+  }
 \end{frame}

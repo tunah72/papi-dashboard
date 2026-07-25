@@ -1,41 +1,43 @@
 % Slide 14
 \begin{frame}[t]{Phân tích Mối quan hệ giữa các lĩnh vực}
+  \analysismethod{%
+    \textbf{Pearson \(r\)}
+    \(\rightarrow\) Hồi quy/\(R^2\)
+    \(\rightarrow\) Phần dư
+    \(\rightarrow\) Trung bình \(\pm\) độ lệch chuẩn;
+    chỉ mô tả liên hệ
+  }
+
+  \vspace{0.10cm}
   \begin{columns}[T,onlytextwidth]
     \begin{column}{0.49\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth,height=0.42\textheight,keepaspectratio]{img/dimension_relationships/dimension_correlation_heatmap_2024.png}
+        \includegraphics[width=\textwidth,height=0.35\textheight,keepaspectratio]{img/dimension_relationships/dimension_correlation_heatmap_2024.png}
         \caption*{Bản đồ nhiệt Pearson: toàn bộ cặp lĩnh vực D1\textendash D8}
       \end{figure}
       \scriptsize
       \begin{itemize}
-        \setlength{\topsep}{1pt}
-        \setlength{\itemsep}{1pt}
-        \setlength{\parsep}{0pt}
-        \item[-] D1\textendash D2 có $r=0{,}72$, cao nhất trong 28 cặp.
-        \item[-] Cả 61 tỉnh đều có dữ liệu hợp lệ năm 2024.
+        \setlength{\itemsep}{3pt}
+        \item[-] \textbf{D1-D2} có \(\mathbf{r=0{,}72}\), cao nhất trong \textbf{28 cặp}.
+        \item[-] Cả \textbf{61 tỉnh} đều có dữ liệu hợp lệ năm 2024.
       \end{itemize}
     \end{column}
     \begin{column}{0.49\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth,height=0.42\textheight,keepaspectratio]{img/dimension_relationships/dimension_pair_scatter_2024.png}
+        \includegraphics[width=\textwidth,height=0.35\textheight,keepaspectratio]{img/dimension_relationships/dimension_pair_scatter_2024.png}
         \caption*{D1\textendash D2: mỗi điểm là một tỉnh; màu biểu thị vùng}
       \end{figure}
       \scriptsize
       \begin{itemize}
-        \setlength{\topsep}{1pt}
-        \setlength{\itemsep}{1pt}
-        \setlength{\parsep}{0pt}
-        \item[-] Hồi quy OLS cho $R^2=0{,}52$; xu hướng vẫn phân tán giữa các tỉnh.
-        \item[-] 25 tỉnh cao\textendash cao; 24 tỉnh thấp\textendash thấp.
+        \setlength{\itemsep}{3pt}
+        \item[-] Hồi quy OLS cho \(\mathbf{R^2=0{,}52}\); xu hướng vẫn phân tán giữa các tỉnh.
+        \item[-] \textbf{25 tỉnh} cao-cao; \textbf{24 tỉnh} thấp-thấp.
       \end{itemize}
     \end{column}
   \end{columns}
 
-  \vspace{0.08cm}
-  \centering
-  {\scriptsize \textbf{Cách đọc:} Pearson $r$ $\rightarrow$ hồi quy/$R^2$ $\rightarrow$ phần dư $\rightarrow$ trung bình $\pm$ độ lệch chuẩn; chỉ mô tả liên hệ, không hàm ý nhân quả.}
   \sourcefoot{PAPI Việt Nam 2024.}
 \end{frame}
 
@@ -45,37 +47,34 @@
     \begin{column}{0.49\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{img/dimension_relationships/dimension_residual_plot_2024.png}
+        \includegraphics[width=\textwidth,height=0.31\textheight,keepaspectratio]{img/dimension_relationships/dimension_residual_plot_2024.png}
         \caption*{Phần dư D2 so với đường hồi quy từ D1}
       \end{figure}
       \scriptsize
       \begin{itemize}
-        \setlength{\topsep}{1pt}
-        \setlength{\itemsep}{1pt}
-        \setlength{\parsep}{0pt}
-        \item[-] Bình Dương lệch dương nhiều nhất: D2 cao hơn dự đoán $0{,}64$ điểm.
-        \item[-] Lâm Đồng và Hải Dương lệch âm khoảng $0{,}51$ điểm.
+        \setlength{\itemsep}{3pt}
+        \item[-] Bình Dương lệch dương nhiều nhất: D2 cao hơn dự đoán \textbf{0,64 điểm}.
+        \item[-] Lâm Đồng và Hải Dương lệch âm khoảng \textbf{0,51 điểm}.
       \end{itemize}
     \end{column}
     \begin{column}{0.49\textwidth}
       \begin{figure}
         \centering
-        \includegraphics[width=\textwidth,height=0.38\textheight,keepaspectratio]{img/dimension_relationships/dimension_variation_range_2024.png}
+        \includegraphics[width=\textwidth,height=0.31\textheight,keepaspectratio]{img/dimension_relationships/dimension_variation_range_2024.png}
         \caption*{Điểm trung bình $\pm$ một độ lệch chuẩn theo từng lĩnh vực}
       \end{figure}
       \scriptsize
       \begin{itemize}
-        \setlength{\topsep}{1pt}
-        \setlength{\itemsep}{1pt}
-        \setlength{\parsep}{0pt}
-        \item[-] D1 phân hóa mạnh nhất ($s=0{,}52$); D3 đồng đều nhất ($s=0{,}16$).
-        \item[-] D6 có trung bình cao nhất ($7{,}60$); $s$ mô tả phân tán, không phải khoảng tin cậy.
+        \setlength{\itemsep}{3pt}
+        \item[-] \textbf{D1} phân hóa mạnh nhất (\(\mathbf{s=0{,}52}\)); D3 đồng đều nhất (\(\mathbf{s=0{,}16}\)).
+        \item[-] \textbf{D6} có trung bình cao nhất (\textbf{7,60}); \(s\) mô tả phân tán, không phải khoảng tin cậy.
       \end{itemize}
     \end{column}
   \end{columns}
 
   \vspace{0.02cm}
-  \centering
-  {\scriptsize \textbf{Định hướng:} dùng phần dư để chọn tỉnh đối chiếu; dùng trung bình và độ lệch chuẩn để nhận diện phân hóa. Phần dư lớn chưa phải lỗi dữ liệu.}
-  \sourcefoot{PAPI Việt Nam 2024; $n=61$ tỉnh.}
+  \analysisdirection{%
+    dùng phần dư để chọn tỉnh đối chiếu; dùng trung bình và độ lệch chuẩn để nhận diện phân hóa.
+    Phần dư lớn chưa phải lỗi dữ liệu.
+  }
 \end{frame}
